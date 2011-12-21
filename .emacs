@@ -1,3 +1,10 @@
+(global-unset-key [prior])  ; page up
+(global-unset-key [next])   ; page down
+(global-unset-key [left])
+(global-unset-key [right])
+(global-unset-key [up])
+(global-unset-key [down])
+
 (set-background-color "black")
 (set-face-background 'default "black")
 (set-face-background 'region "black")
@@ -8,11 +15,11 @@
 
 (add-to-list 'exec-path "C:/Program Files/Aspell/bin/")
 (setq ispell-program-name "aspell")
+(setq-default ispell-program-name "aspell")
 
 (defun dont-kill-emacs ()
  (interactive)
  (error (substitute-command-keys "To exit emacs: \\[kill-emacs]")))
-
 (global-set-key "\C-x\C-c" 'dont-kill-emacs)
 
 (defun remove-hard-wrap () 
@@ -21,27 +28,12 @@
   (let ((fill-column 90002000)) 
     (fill-paragraph nil)))
 (global-set-key "\C-x\M-q" 'remove-hard-wrap)
-
 (global-set-key "\C-c;" 'comment-region)
-
-;(add-to-list 'load-path "/home/Jason/lib/emacs")
-;(setq load-path (append (mapcar 'expand-file-name '("~/lib/emacs"))  
-;load-path
-;))
-
-;;(setq load-path (cons (expand-file-name "~/elisp") load-path))
-;;(load-library "word-count")
-
-;; (autoload 'word-count-mode "word-count"
-;;          "Minor mode to count words." t nil)
-;; (global-set-key "\M-+" 'word-count-mode)
-
+(global-set-key "\M-]" 'next-buffer)
+(global-set-key "\M-[" 'previous-buffer)
 
 (setq-default transient-mark-mode t)
 (setq-default global-font-lock-mode t)
-
-
-
 
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
@@ -49,17 +41,14 @@
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 (add-hook 'latex-mode-hook 'turn-on-auto-fill)
 
-(tool-bar-mode nil)
-(menu-bar-mode nil)
+
+(tool-bar-mode 0)
+(menu-bar-mode 0)
 
 (require 'mwheel) ; Emacs
 
-
-(setq-default ispell-program-name "aspell")
-
 (fset 'date
     [?\C-u escape ?! ?d ?a ?t ?e return])
-
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
@@ -82,11 +71,12 @@
 (set-cursor-color "red")
 
 (setq visible-bell t)
- 
+
+;; Itasca FLAC mode 
 (require 'generic-x) ;; we need this
 (define-generic-mode 
   'itasca-mode                         ;; name of the mode to create
-  '(";")                           ;; comments start with '!!'
+  '(";")                           ;; comments start with ';'
   '("def" "loop" "endloop" "end_loop" "then" "else" "elseif" "else_if" 
     "while" "while_stepping" "config" "array" "end" "if" "endif" "end_if"
     "loop" "endloop" "end_loop" "command" "endcommand" "end_command")
@@ -102,15 +92,15 @@
 
 ; "\\<\\(close\\|fsr\\|open\\|s\\(?:tring\\|xx\\|yy\\|zz\\)\\|write\\|xvel\\)\\>"
 
-; eval with eval-print-last-sexp
-(regexp-opt '(
-"string" 
-"sxx" 
-"syy" 
-"szz" 
-"open" 
-"close" 
-"xvel"
-"fsr"
-"write"
-) t)
+;; ; eval with eval-print-last-sexp
+;; (regexp-opt '(
+;; "string" 
+;; "sxx" 
+;; "syy" 
+;; "szz" 
+;; "open" 
+;; "close" 
+;; "xvel"
+;; "fsr"
+;; "write"
+;; ) t)
