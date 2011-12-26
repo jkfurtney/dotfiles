@@ -4,6 +4,8 @@
 (global-unset-key [right])
 (global-unset-key [up])
 (global-unset-key [down])
+(global-unset-key "\C-z")
+
 
 (set-background-color "black")
 (set-face-background 'default "black")
@@ -55,6 +57,7 @@
 
 (tool-bar-mode 0)
 (menu-bar-mode 0)
+(setq make-backup-files nil)
 
 (require 'mwheel) ; Emacs
 
