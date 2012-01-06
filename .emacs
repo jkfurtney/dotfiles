@@ -6,7 +6,6 @@
 (global-unset-key [down])
 (global-unset-key "\C-z")
 
-
 (set-background-color "black")
 (set-face-background 'default "black")
 (set-face-background 'region "black")
@@ -15,18 +14,16 @@
 (set-foreground-color "white")
 (set-cursor-color "red")
 
-(setq c-default-style "k&r"
+(setq c-default-style "bsd"
       c-basic-offset 2)
 
 (if (eq system-type 'darwin)
-  (add-to-list 'exec-path "/opt/local/bin/")
-  (setq ispell-program-name "aspell")
-)
+    (add-to-list 'exec-path "/opt/local/bin/"))
 
-(if (eq system-type 'ms-dos)
-  (add-to-list 'exec-path "C:/Program Files/Aspell/bin/")
-  (setq ispell-program-name "aspell")
-)
+(if  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
+    (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/"))
+
+(setq ispell-program-name "aspell")
 
 (defun dont-kill-emacs ()
  (interactive)
@@ -54,6 +51,12 @@
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 (add-hook 'latex-mode-hook 'turn-on-auto-fill)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+(add-hook 'c++-mode-hook
+      '(lambda ()
+         (add-hook 'before-save-hook
+                   (lambda ()
+                     (untabify (point-min) (point-max))))))
 
 (tool-bar-mode 0)
 (menu-bar-mode 0)
@@ -96,3 +99,43 @@
 ;; "fsr"
 ;; "write"
 ;; ) t)
+
+
+(defun sum-region (a b)
+  "sum numbers in the region"
+  (interactive "r")
+  (message "sum: %d"
+    (apply '+ (mapcar 'string-to-number
+      (split-string (buffer-substring a b)))))
+  (insert (number-to-string (apply '+ (mapcar 'string-to-number (split-string (buffer-substring a b)))))))
+
+(defun filename-comment ()
+  "Insert filename as c++ comment eg. //filename.h"
+  (interactive)
+  (insert (concat "//" (file-name-nondirectory buffer-file-name))))
+
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+
+;name-last-keyboard-macro
+;insert-kbd-macro
+
+(fset 'move-comment-above
+   [?\C-s ?/ ?\C-b ?\C-k ?\C-a ?\C-y return ?\C-n])
+
+(defun move-region-to-file (a b fname)
+  "Text in the region is moved to the given new file"
+ (interactive "r\nFMove region to new file:")
+ (if (file-exists-p fname) (error "File already exists"))
+ (kill-region a b)
+ (find-file fname)
+ (yank))
+
+(defun move-region-to-header-file (a b fname)
+  "Text in the region is moved to the given new file \n #include \"filename.h\" is inserted at the current location"
+ (interactive "r\nFMove region to new header file:")
+ (if (file-exists-p fname) (error "File already exists"))
+ (insert (concat "#include \"" (file-name-nondirectory fname) "\"\n"))
+ (kill-region a b)
+ (find-file fname)
+ (yank))
+
