@@ -134,8 +134,8 @@
   "Text in the region is moved to the given new file \n #include \"filename.h\" is inserted at the current location"
  (interactive "r\nFMove region to new header file:")
  (if (file-exists-p fname) (error "File already exists"))
- (insert (concat "#include \"" (file-name-nondirectory fname) "\"\n"))
  (kill-region a b)
+ (insert (concat "#include \"" (file-name-nondirectory fname) "\"\n"))
  (find-file fname)
  (yank))
 
