@@ -25,7 +25,7 @@ footer=r"""
 """
 
 base_name = "_"+os.path.splitext(sys.argv[1])[0]
-new_filename = base_name + '.tmp_latex'
+new_filename = base_name + '.latex'
 
 outfile = open(new_filename,'w')
 
@@ -33,7 +33,7 @@ print >> outfile, header
 
 in_block_comment = 0
 for line in lines:
-    if line.startswith('"""'):
+    if line.startswith('"""') or line.startswith('r"""'):
         if not in_block_comment: in_block_comment =1
         else:                    in_block_comment =0
         continue
@@ -50,6 +50,7 @@ os.remove(base_name + '.log')
 os.remove(base_name + '.aux')
 if retcode==0:
     print "pdflatex returned OK"
+    os.remove(new_filename)
 else:
     print "pdflatex returned an error"
 sys.exit(retcode)
