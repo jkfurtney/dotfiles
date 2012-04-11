@@ -1,0 +1,3 @@
+include README.md CHANGELOG.md MIT-LICENSE
+recursive-include jtools *.py
+recursive-include tests *.py
