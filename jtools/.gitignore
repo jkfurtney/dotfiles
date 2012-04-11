@@ -1,6 +1,8 @@
-.DS_Store
+*.DS_Store
 *.pyc
 *.pyo
 *.swp
 .coverage
-.tox
+build/
+dist/
+jtools.egg-info/

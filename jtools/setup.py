@@ -45,6 +45,8 @@ setup(
     entry_points = {
         'console_scripts': [
             'jtools = jtools.main:main',
+            'texpull = jtools.texpull.py',
+            'mkm = jtools.mkm.py'
         ]
     }
 )
