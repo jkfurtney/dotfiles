@@ -9,6 +9,8 @@ header = r"""
 \documentclass[]{article}
 \usepackage{graphicx}
 \usepackage{amssymb}
+\usepackage[parfill]{parskip}
+\setlength{\parindent}{0pt}
 \begin{document}
 """
 
