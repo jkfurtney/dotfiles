@@ -1,15 +1,17 @@
-PATH=$PATH:/c/Python26
-alias ip='python /c/Python26/scripts/ipython -i'
-
 alias gs='git status'
 alias gk='gitk --all'
 alias fcpp='find . -name "*.cpp"'
-#PATH=.:$PATH:/c/Python27
-#alias ip='python /c/python27/scripts/ipython-script.py -i'
+#alias ip='ipython -i'
+alias ipp='~/.local/bin/ipython -i'
 set -o ignoreeof
 alias rm='rm -i'
 alias mv='mv -i'
 alias gd='git diff'
 alias gba='git branch -a'
-alias emacs='C:\\emacs-22.3\\bin\\runemacs.exe'
 alias gut='git ls-files --other --exclude-standard'
+PATH=.:~/bin/:~/.local/bin/:$PATH
+alias ipnb='~/.local/bin/ipython notebook --pylab inline'
+alias kp='~/.local/bin/kernprof.py'
+alias ptest='python tests/test_fmm.py'
+alias pbuild='python setup.py install --user --record install.log && ptest'
+alias nt='nosetests -v'

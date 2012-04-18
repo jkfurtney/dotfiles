@@ -5,7 +5,6 @@
 (global-unset-key [up])
 (global-unset-key [down])
 (global-unset-key "\C-z")
-(define-key global-map [(insert)] nil)
 
 (set-background-color "black")
 (set-face-background 'default "black")
@@ -140,5 +139,4 @@
  (find-file fname)
  (yank))
 
-(if (eq system-type 'gnu/linux)
-    (setq x-select-enable-clipboard t))
+(setq python-check-command "pep8 -r --ignore=E221")
