@@ -25,3 +25,4 @@ def get_version(version=None):
 
 from access_control import access_control
 from report import latex_report
+from main import prefix
