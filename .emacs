@@ -140,3 +140,6 @@
  (yank))
 
 (setq python-check-command "pep8 -r --ignore=E221")
+
+(setq x-select-enable-clipboard t)
+(setq initial-frame-alist '((width . 80) (height . 43)))
