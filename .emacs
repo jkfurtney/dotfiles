@@ -143,3 +143,27 @@
 
 (setq x-select-enable-clipboard t)
 (setq initial-frame-alist '((width . 80) (height . 43)))
+
+(defun move-line-percentage (p)
+  "Move point percentage p from top of buffer"
+  (interactive "N")
+  (goto-char (point-min))
+  (next-line (truncate (* (count-screen-lines) (/ p 100.0)))))
+
+(global-unset-key "\C-j")
+
+(defmacro set-key-percent (key-string percent)
+  `(global-set-key (concat "\C-j" ,key-string)
+     (lambda () (interactive)
+      (move-line-percentage ,percent))))
+
+(set-key-percent "q" 10)
+(set-key-percent "w" 20)
+(set-key-percent "e" 30)
+(set-key-percent "r" 40)
+(set-key-percent "t" 50)
+(set-key-percent "y" 60)
+(set-key-percent "u" 70)
+(set-key-percent "i" 80)
+(set-key-percent "o" 90)
+(set-key-percent "p" 100)
