@@ -167,3 +167,7 @@
 (set-key-percent "i" 80)
 (set-key-percent "o" 90)
 (set-key-percent "p" 100)
+
+(add-to-list 'load-path "~/.emacs.d/")
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
