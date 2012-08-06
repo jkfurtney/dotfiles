@@ -171,3 +171,11 @@
 (add-to-list 'load-path "~/.emacs.d/")
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
+
+;;; Lisp (SLIME) interaction
+(setq inferior-lisp-program "clisp")
+(add-to-list 'load-path "~/.slime")
+(require 'slime)
+(slime-setup)
+
+(setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
