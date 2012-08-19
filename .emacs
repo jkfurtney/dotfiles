@@ -142,40 +142,86 @@
 (setq python-check-command "pep8 -r --ignore=E221")
 
 (setq x-select-enable-clipboard t)
-(setq initial-frame-alist '((width . 80) (height . 43)))
 
-(defun move-line-percentage (p)
-  "Move point percentage p from top of buffer"
-  (interactive "N")
-  (goto-char (point-min))
-  (next-line (truncate (* (count-screen-lines) (/ p 100.0)))))
+
+;; (defun move-line-percentage (p)
+;;   "Move point percentage p from top of buffer"
+;;   (interactive "N")
+;;   (goto-char (point-min))
+;;   (next-line (truncate (* (count-screen-lines) (/ p 100.0)))))
 
 (global-unset-key "\C-j")
 
-(defmacro set-key-percent (key-string percent)
-  `(global-set-key (concat "\C-j" ,key-string)
-     (lambda () (interactive)
-      (move-line-percentage ,percent))))
+;; (defmacro set-key-percent (key-string percent)
+;;   `(global-set-key (concat "\C-j" ,key-string)
+;;      (lambda () (interactive)
+;;       (move-line-percentage ,percent))))
 
-(set-key-percent "q" 10)
-(set-key-percent "w" 20)
-(set-key-percent "e" 30)
-(set-key-percent "r" 40)
-(set-key-percent "t" 50)
-(set-key-percent "y" 60)
-(set-key-percent "u" 70)
-(set-key-percent "i" 80)
-(set-key-percent "o" 90)
-(set-key-percent "p" 100)
+;; (set-key-percent "q" 10)
+;; (set-key-percent "w" 20)
+;; (set-key-percent "e" 30)
+;; (set-key-percent "r" 40)
+;; (set-key-percent "t" 50)
+;; (set-key-percent "y" 60)
+;; (set-key-percent "u" 70)
+;; (set-key-percent "i" 80)
+;; (set-key-percent "o" 90)
+;; (set-key-percent "p" 100)
 
 (add-to-list 'load-path "~/.emacs.d/")
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
 
-;;; Lisp (SLIME) interaction
-(setq inferior-lisp-program "clisp")
-(add-to-list 'load-path "~/.slime")
-(require 'slime)
-(slime-setup)
 
-(setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
+
+(if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
+    ;;; Lisp (SLIME) interaction -- linux only
+    (progn
+      (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
+      (setq inferior-lisp-program "clisp")
+      (add-to-list 'load-path "~/.slime")
+      (require 'slime)
+      (slime-setup)))
+
+(require 'magit)
+(require 'magit-svn)
+
+(if  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
+                                        ; windows specific magit init
+    (progn
+      (defun magit-escape-for-shell (str)
+        (if (or (string= str "git")
+                (string-match "^--" str))
+            str
+          (concat "'" (replace-regexp-in-string "'" "'\\''" str) "'")))
+      (custom-set-variables
+       '(magit-git-executable "C:\\Program Files (x86)\\Git\\bin\\git"))
+
+      ;; windows specific font stuff
+      (setq w32-get-true-file-attributes nil)
+      (set-default-font
+       "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")
+      (set-face-attribute 'default nil :height 140)))
+
+
+(defun kill-other-buffers ()
+    "Kill all other buffers."
+    (interactive)
+    (mapc 'kill-buffer
+          (delq (current-buffer)
+                (remove-if-not 'buffer-file-name (buffer-list)))))
+
+(defun kill-all-buffers ()
+  (interactive)
+  (mapc 'kill-buffer (buffer-list)))
+
+(global-set-key "\C-js" 'magit-status)
+(global-set-key "\C-jk" 'kill-all-buffers)
+
+
+;; computer specific setup
+(cond ((equal (system-name) "SHOTOVER")
+       (setq initial-frame-alist '((width . 80) (height . 37))))
+      ((equal (system-name) "other-system-name")
+       (setq initial-frame-alist '((width . 80) (height . 35))))
+      (t (setq initial-frame-alist '((width . 80) (height . 43)))))
