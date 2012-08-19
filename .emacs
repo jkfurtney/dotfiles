@@ -225,3 +225,7 @@
       ((equal (system-name) "other-system-name")
        (setq initial-frame-alist '((width . 80) (height . 35))))
       (t (setq initial-frame-alist '((width . 80) (height . 43)))))
+
+;; not on windows $HOME is different in bash and emacs!
+;; cp ~/.gitconfig ~/AppData/Roaming/
+;; to get magit to recognize user.name and user.email
