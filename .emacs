@@ -226,6 +226,21 @@
        (setq initial-frame-alist '((width . 80) (height . 35))))
       (t (setq initial-frame-alist '((width . 80) (height . 43)))))
 
-;; not on windows $HOME is different in bash and emacs!
+;; computer specific setup
+(cond
+ ; vaio
+ ((equal (system-name) "SHOTOVER")
+  (setq initial-frame-alist '((width . 80) (height . 37)))
+  (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
+  (add-to-list 'load-path "C:/src/slime/")
+  (require 'slime)
+  (slime-setup '(slime-repl slime-fancy)))
+
+ ((equal (system-name) "other-system-name")
+  (setq initial-frame-alist '((width . 80) (height . 35))))
+ ; default
+ (t (setq initial-frame-alist '((width . 80) (height . 43)))))
+
+;; note on windows $HOME is different in bash and emacs!
 ;; cp ~/.gitconfig ~/AppData/Roaming/
 ;; to get magit to recognize user.name and user.email
