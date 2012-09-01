@@ -218,14 +218,6 @@
 (global-set-key "\C-js" 'magit-status)
 (global-set-key "\C-jk" 'kill-all-buffers)
 
-
-;; computer specific setup
-(cond ((equal (system-name) "SHOTOVER")
-       (setq initial-frame-alist '((width . 80) (height . 37))))
-      ((equal (system-name) "other-system-name")
-       (setq initial-frame-alist '((width . 80) (height . 35))))
-      (t (setq initial-frame-alist '((width . 80) (height . 43)))))
-
 ;; computer specific setup
 (cond
  ; vaio
@@ -236,10 +228,11 @@
   (require 'slime)
   (slime-setup '(slime-repl slime-fancy)))
 
- ((equal (system-name) "other-system-name")
-  (setq initial-frame-alist '((width . 80) (height . 35))))
+ ((equal (system-name) "UNSER")
+  (setq initial-frame-alist '((width . 80) (height . 41)))
+  (set-face-attribute 'default nil :height 150))
  ; default
- (t (setq initial-frame-alist '((width . 80) (height . 43)))))
+ (t (setq initial-frame-alist '((width . 80) (height . 34)))))
 
 ;; note on windows $HOME is different in bash and emacs!
 ;; cp ~/.gitconfig ~/AppData/Roaming/
