@@ -215,6 +215,15 @@
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
 
+(defun p-compile ()
+  "build python extension module. First call prompts for a directory"
+  (interactive)
+  (unless (boundp 'python-build-dir)
+    (setq python-build-dir (read-directory-name "python build dir")))
+  (let ((default-directory pbuild-dir))
+       (compile "python setup.py install --user")))
+
+
 (global-set-key "\C-js" 'magit-status)
 (global-set-key "\C-jk" 'kill-all-buffers)
 
