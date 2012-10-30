@@ -219,9 +219,18 @@
   "build python extension module. First call prompts for a directory"
   (interactive)
   (unless (boundp 'python-build-dir)
-    (setq python-build-dir (read-directory-name "python build dir")))
+    (setq python-build-dir (read-directory-name "python build dir ")))
   (let ((default-directory python-build-dir))
        (compile "python setup.py install --user")))
+
+(defun s-compile ()
+  "build sphinx documentation. First call prompts for a directory"
+  (interactive)
+  (unless (boundp 'sphinx-build-dir)
+    (setq sphinx-build-dir (read-directory-name "sphinx build dir ")))
+  (let ((default-directory sphinx-build-dir))
+       (compile "make html")))
+
 
 
 (global-set-key "\C-js" 'magit-status)
@@ -246,4 +255,3 @@
 ;; note on windows $HOME is different in bash and emacs!
 ;; cp ~/.gitconfig ~/AppData/Roaming/
 ;; to get magit to recognize user.name and user.email
-
