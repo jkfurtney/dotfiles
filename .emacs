@@ -173,7 +173,6 @@
 (global-set-key (kbd "C-=") 'er/expand-region)
 
 
-
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     ;;; Lisp (SLIME) interaction -- linux only
     (progn
@@ -223,16 +222,6 @@
   (let ((default-directory python-build-dir))
        (compile "python setup.py install --user")))
 
-(defun s-compile ()
-  "build sphinx documentation. First call prompts for a directory"
-  (interactive)
-  (unless (boundp 'sphinx-build-dir)
-    (setq sphinx-build-dir (read-directory-name "sphinx build dir ")))
-  (let ((default-directory sphinx-build-dir))
-       (compile "make html")))
-
-
-
 (global-set-key "\C-js" 'magit-status)
 (global-set-key "\C-jk" 'kill-all-buffers)
 
@@ -269,3 +258,34 @@
     (cons msg code))
   ;; Specify my function (maybe I should have done a lambda function)
 (setq compilation-exit-message-function 'compilation-exit-autoclose)
+
+;; reStructuredText / Sphinx stuff
+(defun chunk-start ()
+  "move point to begining of white-space seperated chunk"
+  (interactive)
+  (search-backward-regexp "\\s-")
+  (forward-char))
+(defun chunk-end ()
+  "move point to end of white-space separated chunk"
+  (interactive)
+  (search-forward-regexp "\\s-")
+  (backward-char))
+(defun rest-wrap-math ()
+  "wrap :math:`__` around the current word"
+  (interactive)
+  (chunk-start)
+  (insert ":math:`")
+  (chunk-end)
+  (insert "`"))
+
+(global-set-key "\C-jm" 'rest-wrap-math)
+
+(defun s-compile-cmd (cmd)
+  "build sphinx documentation. First call prompts for a directory"
+  (interactive)
+  (unless (boundp 'sphinx-build-dir)
+    (setq sphinx-build-dir (xread-directory-name "sphinx build dir ")))
+  (let ((default-directory sphinx-build-dir))
+       (compile cmd)))
+(defun s-compile () (interactive) (s-compile-cmd "make html"))
+(defun s-pcompile () (interactive) (s-compile-cmd "make latexpdf"))
