@@ -284,8 +284,11 @@
   "build sphinx documentation. First call prompts for a directory"
   (interactive)
   (unless (boundp 'sphinx-build-dir)
-    (setq sphinx-build-dir (xread-directory-name "sphinx build dir ")))
+    (setq sphinx-build-dir (read-directory-name "sphinx build dir ")))
   (let ((default-directory sphinx-build-dir))
        (compile cmd)))
 (defun s-compile () (interactive) (s-compile-cmd "make html"))
 (defun s-pcompile () (interactive) (s-compile-cmd "make latexpdf"))
+
+; the vc-find-file-hook seems to cause a big slowdown in windows
+(remove-hook 'find-file-hooks 'vc-find-file-hook)
