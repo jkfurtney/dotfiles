@@ -292,3 +292,12 @@
 
 ; the vc-find-file-hook seems to cause a big slowdown in windows
 (remove-hook 'find-file-hooks 'vc-find-file-hook)
+
+;; hopfully this will help my fingers hurt less
+(global-set-key "\C-o" 'find-file)
+(global-set-key "\C-i" 'isearch-forward)
+(global-set-key "\C-s" 'save-buffer)
+(global-set-key (kbd "C-0") 'delete-window)
+(global-set-key (kbd "C-1") 'delete-other-windows)
+(global-set-key (kbd "C-2") 'split-window-below)
+(global-set-key (kbd "<f1>") 'kill-buffer)
