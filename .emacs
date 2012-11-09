@@ -299,6 +299,7 @@
 (define-key input-decode-map (kbd "C-i") (kbd "H-i"))
 (global-set-key (kbd "H-i") 'isearch-forward)
 (global-set-key (kbd "C-s") 'save-buffer)
+(global-set-key (kbd "M-u") 'undo)
 (global-set-key (kbd "M-0") 'delete-window)
 (global-set-key (kbd "M-1") 'delete-other-windows)
 (global-set-key (kbd "M-2") 'split-window-below)
@@ -315,3 +316,4 @@
 (global-unset-key (kbd "C-x 1"))
 (global-unset-key (kbd "C-x 2"))
 (global-unset-key (kbd "C-x C-f"))
+(global-unset-key (kbd "C-x u"))
