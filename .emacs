@@ -295,9 +295,23 @@
 
 ;; hopfully this will help my fingers hurt less
 (global-set-key "\C-o" 'find-file)
-(global-set-key "\C-i" 'isearch-forward)
-(global-set-key "\C-s" 'save-buffer)
-(global-set-key (kbd "C-0") 'delete-window)
-(global-set-key (kbd "C-1") 'delete-other-windows)
-(global-set-key (kbd "C-2") 'split-window-below)
+; hack needed to unset tab
+(define-key input-decode-map (kbd "C-i") (kbd "H-i"))
+(global-set-key (kbd "H-i") 'isearch-forward)
+(global-set-key (kbd "C-s") 'save-buffer)
+(global-set-key (kbd "M-0") 'delete-window)
+(global-set-key (kbd "M-1") 'delete-other-windows)
+(global-set-key (kbd "M-2") 'split-window-below)
 (global-set-key (kbd "<f1>") 'kill-buffer)
+(global-set-key (kbd "<f12>") 'other-window)
+(global-set-key (kbd "M-k")
+		'(lambda () (interactive)
+		  (move-beginning-of-line nil)
+		  (kill-line)))
+
+(global-unset-key (kbd "C-x C-s"))
+(global-unset-key (kbd "C-x k"))
+(global-unset-key (kbd "C-x 0"))
+(global-unset-key (kbd "C-x 1"))
+(global-unset-key (kbd "C-x 2"))
+(global-unset-key (kbd "C-x C-f"))
