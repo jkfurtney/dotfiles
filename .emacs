@@ -1,3 +1,35 @@
+; basic key bindings
+
+; C-o for find file
+(global-set-key "\C-o" 'find-file)
+(require 'dired)
+(define-key dired-mode-map (kbd "C-o") 'find-file)
+
+; C-i for search forward
+(define-key input-decode-map (kbd "C-i") (kbd "H-i")); hack needed to unset tab
+(global-set-key (kbd "H-i") 'isearch-forward)
+(define-key isearch-mode-map "\C-f" 'isearch-repeat-forward)
+
+(global-set-key (kbd "C-s") 'save-buffer)
+(global-set-key (kbd "M-u") 'undo)
+(global-set-key (kbd "M-0") 'delete-window)
+(global-set-key (kbd "M-1") 'delete-other-windows)
+(global-set-key (kbd "M-2") 'split-window-below)
+(global-set-key (kbd "<f1>") 'kill-buffer)
+(global-set-key (kbd "<f12>") 'other-window)
+(global-set-key (kbd "M-k") ; kill the entire line
+		'(lambda () (interactive)
+		  (move-beginning-of-line nil)
+		  (kill-line)))
+
+; Unset problematic keys
+(global-unset-key (kbd "C-x C-s"))
+(global-unset-key (kbd "C-x k"))
+(global-unset-key (kbd "C-x 0"))
+(global-unset-key (kbd "C-x 1"))
+(global-unset-key (kbd "C-x 2"))
+(global-unset-key (kbd "C-x C-f"))
+(global-unset-key (kbd "C-x u"))
 (global-unset-key [prior])  ; page up
 (global-unset-key [next])   ; page down
 (global-unset-key [left])
@@ -5,6 +37,7 @@
 (global-unset-key [up])
 (global-unset-key [down])
 (global-unset-key "\C-z")
+(global-unset-key "\C-j")
 
 (set-background-color "black")
 (set-face-background 'default "black")
@@ -64,9 +97,6 @@
 
 (require 'mwheel) ; Emacs
 
-(fset 'date
-    [?\C-u escape ?! ?d ?a ?t ?e return])
-
 ;; Itasca FLAC mode
 (require 'generic-x) ;; we need this
 (define-generic-mode
@@ -84,9 +114,6 @@
   "A mode for Itasca FLAC data files"            ;; doc string for this mode
 )
 
-
-; "\\<\\(close\\|fsr\\|open\\|s\\(?:tring\\|xx\\|yy\\|zz\\)\\|write\\|xvel\\)\\>"
-
 ;; ; eval with eval-print-last-sexp
 ;; (regexp-opt '(
 ;; "string"
@@ -99,7 +126,6 @@
 ;; "fsr"
 ;; "write"
 ;; ) t)
-
 
 (defun sum-region (a b)
   "sum numbers in the region"
@@ -143,32 +169,8 @@
 
 (setq x-select-enable-clipboard t)
 
-
-;; (defun move-line-percentage (p)
-;;   "Move point percentage p from top of buffer"
-;;   (interactive "N")
-;;   (goto-char (point-min))
-;;   (next-line (truncate (* (count-screen-lines) (/ p 100.0)))))
-
-(global-unset-key "\C-j")
-
-;; (defmacro set-key-percent (key-string percent)
-;;   `(global-set-key (concat "\C-j" ,key-string)
-;;      (lambda () (interactive)
-;;       (move-line-percentage ,percent))))
-
-;; (set-key-percent "q" 10)
-;; (set-key-percent "w" 20)
-;; (set-key-percent "e" 30)
-;; (set-key-percent "r" 40)
-;; (set-key-percent "t" 50)
-;; (set-key-percent "y" 60)
-;; (set-key-percent "u" 70)
-;; (set-key-percent "i" 80)
-;; (set-key-percent "o" 90)
-;; (set-key-percent "p" 100)
-
 (add-to-list 'load-path "~/.emacs.d/")
+
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
 
@@ -292,28 +294,3 @@
 
 ; the vc-find-file-hook seems to cause a big slowdown in windows
 (remove-hook 'find-file-hooks 'vc-find-file-hook)
-
-;; hopfully this will help my fingers hurt less
-(global-set-key "\C-o" 'find-file)
-; hack needed to unset tab
-(define-key input-decode-map (kbd "C-i") (kbd "H-i"))
-(global-set-key (kbd "H-i") 'isearch-forward)
-(global-set-key (kbd "C-s") 'save-buffer)
-(global-set-key (kbd "M-u") 'undo)
-(global-set-key (kbd "M-0") 'delete-window)
-(global-set-key (kbd "M-1") 'delete-other-windows)
-(global-set-key (kbd "M-2") 'split-window-below)
-(global-set-key (kbd "<f1>") 'kill-buffer)
-(global-set-key (kbd "<f12>") 'other-window)
-(global-set-key (kbd "M-k")
-		'(lambda () (interactive)
-		  (move-beginning-of-line nil)
-		  (kill-line)))
-
-(global-unset-key (kbd "C-x C-s"))
-(global-unset-key (kbd "C-x k"))
-(global-unset-key (kbd "C-x 0"))
-(global-unset-key (kbd "C-x 1"))
-(global-unset-key (kbd "C-x 2"))
-(global-unset-key (kbd "C-x C-f"))
-(global-unset-key (kbd "C-x u"))
