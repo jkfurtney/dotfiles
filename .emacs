@@ -8,8 +8,9 @@
 ; C-i for search forward
 (define-key input-decode-map (kbd "C-i") (kbd "H-i")); hack needed to unset tab
 (global-set-key (kbd "H-i") 'isearch-forward)
-(define-key isearch-mode-map "\C-f" 'isearch-repeat-forward)
+(define-key isearch-mode-map (kbd "H-i") 'isearch-repeat-forward)
 
+(global-set-key (kbd "M-s") 'ispell-word)
 (global-set-key (kbd "C-s") 'save-buffer)
 (global-set-key (kbd "M-u") 'undo)
 (global-set-key (kbd "M-0") 'delete-window)
@@ -38,6 +39,7 @@
 (global-unset-key [down])
 (global-unset-key "\C-z")
 (global-unset-key "\C-j")
+(global-unset-key (kbd "M-$"))
 
 (set-background-color "black")
 (set-face-background 'default "black")
