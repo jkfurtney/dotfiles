@@ -241,7 +241,12 @@
 
  ((equal (system-name) "UNSER")
   (setq initial-frame-alist '((width . 80) (height . 41)))
-  (set-face-attribute 'default nil :height 150))
+  (set-face-attribute 'default nil :height 150)
+  (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
+  (add-to-list 'load-path "C:/src/slime/")
+  (require 'slime)
+  (slime-setup '(slime-repl slime-fancy)))
+
  ; default
  (t (setq initial-frame-alist '((width . 80) (height . 34)))))
 
@@ -296,3 +301,7 @@
 
 ; the vc-find-file-hook seems to cause a big slowdown in windows
 (remove-hook 'find-file-hooks 'vc-find-file-hook)
+
+(let ((file-name "C:/src/Blo-Up/interpreter/sign.el"))
+  (when (file-exists-p file-name)
+    (load file-name)))
