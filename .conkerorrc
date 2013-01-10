@@ -1,0 +1,8 @@
+// -*- mode: javascript -*-
+
+require("page-modes/gmail");
+require("page-modes/google-search-results");
+require("tab-bar.js");
+hints_ambiguous_auto_exit_delay=500;
+hints_auto_exit_delay=500;
+user_pref("layout.spellcheckDefault", 2);

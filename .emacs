@@ -19,9 +19,9 @@
 (global-set-key (kbd "<f1>") 'kill-buffer)
 (global-set-key (kbd "<f12>") 'other-window)
 (global-set-key (kbd "M-k") ; kill the entire line
-		'(lambda () (interactive)
-		  (move-beginning-of-line nil)
-		  (kill-line)))
+                '(lambda () (interactive)
+                  (move-beginning-of-line nil)
+                  (kill-line)))
 
 ; Unset problematic keys
 (global-unset-key (kbd "C-x C-s"))
@@ -51,12 +51,6 @@
 
 (setq c-default-style "bsd"
       c-basic-offset 2)
-
-(if (eq system-type 'darwin)
-    (add-to-list 'exec-path "/opt/local/bin/"))
-
-(if  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
-    (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/"))
 
 (setq ispell-program-name "aspell")
 
@@ -96,38 +90,6 @@
 (tool-bar-mode 0)
 (menu-bar-mode 0)
 (setq make-backup-files nil)
-
-(require 'mwheel) ; Emacs
-
-;; Itasca FLAC mode
-(require 'generic-x) ;; we need this
-(define-generic-mode
-  'itasca-flac-mode                         ;; name of the mode to create
-  '(";")                           ;; comments start with ';'
-  '("def" "loop" "endloop" "end_loop" "then" "else" "elseif" "else_if"
-    "while" "while_stepping" "config" "array" "end" "if" "endif" "end_if"
-    "loop" "endloop" "end_loop" "command" "endcommand" "end_command")
-  '(("=" . 'font-lock-operator)
-    ("\\<\\(a\\(?:bs\\|cos\\|n\\(?:d\\|gle\\|isotropic\\)\\|pp\\(?:_pnt\\|gw_pnt\\|ly\\|th_pnt\\)\\|r\\(?:ea\\|ray\\)\\|s\\(?:in\\|pect\\|x[xy]\\|yy\\|zz\\)\\|t\\(?:an2?\\|t\\(?:_pnt\\|ach\\)\\)\\|[34]\\)\\|b\\(?:a\\(?:ck\\|ud\\)\\|icoe\\|s\\(?:x[xy]\\|yy\\|zz\\)\\)\\|c\\(?:a\\(?:ll\\|se\\(?:_?of\\)?\\)\\|f_\\(?:axi\\|creep\\|dyn\\|ext\\|gw\\|ps\\|therm\\)\\|ga\\|har\\|lo\\(?:ck\\|se\\)\\|m_max\\|o\\(?:lumns\\|mmand\\|n\\(?:fig\\|stitutive\\(?:_?model\\)\\)\\|s\\)\\|parse\\|r\\(?:dt\\|eep\\|t\\(?:del\\|ime\\)\\)\\|s\\(?:c\\|x[xy]\\|yy\\|zz\\)\\|ycle\\)\\|d\\(?:a\\(?:mp\\(?:ing\\)?\\|tum\\)\\|e\\(?:fine\\|grad\\|nsity\\)\\|o_update\\|s\\(?:x[xy]\\|yy\\|zz\\)\\|ump\\|y\\(?:_state\\|dt\\(?:_gp[ij]\\)?\\|namic\\|t\\(?:del\\|ime\\)\\)\\|[ty]\\)\\|e\\(?:_p\\|cho\\|ga\\|l\\(?:astic\\|se\\)\\|nd\\(?:_\\(?:c\\(?:ase\\|ommand\\)\\|if\\|loop\\|section\\)\\|c\\(?:ase\\|ommand\\)\\|if\\|loop\\|section\\)?\\|rror\\|v_\\(?:p\\|tot\\)\\|x\\(?:it\\|p\\)\\)\\|f\\(?:2mod\\|_prop\\|c_arg\\|i\\(?:lcolor\\|sh\\(?:_msg\\|call\\)?\\|x\\)\\|l\\(?:ags\\|o\\(?:at\\|w\\)\\|prop\\)\\|m\\(?:em\\|od\\)\\|o\\(?:b[lu]\\|rce\\|s\\(?:_f\\)?\\)\\|r\\(?:ee\\|iend\\)\\|s\\(?:tring\\|[ir]\\)\\|tens\\)\\|g\\(?:2flow\\|e\\(?:n\\|t_mem\\)\\|flow\\|msmul\\|p\\(?:_copy\\|p\\)\\|r\\(?:\\(?:an\\|i\\)d\\)\\|w\\(?:dt\\|t\\(?:del\\|ime\\)\\)\\)\\|h\\(?:b[ms]\\|elp\\|is\\(?:file\\)?\\)\\|i\\(?:e\\(?:b\\(?:_pnt\\)?\\|rr\\)\\|face\\|gp\\|m\\(?:em\\|plicit\\)\\|n\\(?:formation\\|i\\(?:\\(?:mode\\|tia\\)l\\)\\|t\\(?:_pnt\\|erface\\)?\\)\\|tasca\\|zones\\|[fn]\\)\\|j\\(?:err\\|gp\\|zones\\)\\|l\\(?:arge\\|egend\\|ff_pnt\\|i\\(?:mits\\|st\\)\\|mul\\|n\\|o\\(?:g\\|op\\|se_mem\\)\\)\\|m\\(?:a\\(?:rk\\|t_\\(?:\\(?:inver\\|transpo\\)se\\)\\|x\\(?:dt\\)?\\)\\|e\\(?:chanical\\|m\\(?:ory\\)?\\|ssage\\)\\|in\\(?:dt\\)?\\|o\\(?:del?\\|hr-coulomb\\|\\(?:nchrom\\|vi\\)e\\)\\)\\|n\\(?:c\\(?:ontours\\|write\\)\\|e\\(?:rr\\(?:_fish\\)?\\|w\\)\\|grwater\\|mechanical\\|ot\\|step\\|thermal\\|ull\\|wgpp\\)\\|o\\(?:pen\\|r\\|ut\\)\\|p\\(?:_stress\\|a\\(?:c\\|\\(?:lett\\|[ru]s\\)e\\)\\|fast\\|l\\(?:ot\\|t\\(?:angle\\|\\(?:cohes\\|frict\\|tens\\)ion\\)\\)\\|o\\(?:ro2\\|wer\\)\\|r\\(?:e\\(?:_?parse\\)\\|int\\|op\\)\\|slow\\|[ip]\\)\\|quit\\|r\\(?:_integrate\\|a\\(?:nge\\|yleigh\\)\\|e\\(?:ad\\|s\\(?:et\\|tore\\)\\|turn\\|z_exe\\)\\|\\(?:ff_pn\\|sa\\)t\\)\\|s\\(?:_\\(?:3dd\\|dyn\\|echo\\|flow\\|imp\\|log\\|m\\(?:e\\(?:ch\\|ss\\)\\|ovie\\)\\|therm\\)\\|a\\(?:t\\|ve\\)\\|cl\\(?:in\\|ose\\)\\|e\\(?:ction\\|t\\)\\|gn\\|i\\(?:g[12]\\|n\\)\\|m\\(?:_max\\|all\\)\\|o\\(?:lve\\|pen\\)\\|qrt\\|read\\|s\\(?:[ir]3d\\|[ir]\\)?\\|t\\(?:ate\\|ep\\|op\\|r\\(?:_pnt\\|ing\\|ucture\\)\\)\\|write\\|x[xy]\\|y[sy]\\|zz\\)\\|t\\(?:a\\(?:b\\(?:_pnt\\|le\\(?:_size\\)?\\)\\|n\\)\\|e\\(?:mperature\\|n\\(?:flg\\|sion\\)\\)\\|flow\\|h\\(?:dt\\|e\\(?:n\\|rmal\\|ta\\)\\|t\\(?:del\\|ime\\)\\)\\|itle\\|olerance\\|rac\\(?:_pnt\\|k\\)\\|ype\\)\\|u\\(?:biquitous\\|cs\\|d\\(?:coe\\|m_pnt\\)\\|mul\\|n\\(?:b\\(?:al\\|flow\\)\\|mark\\)\\|rand\\)\\|v\\(?:_n\\(?:gw\\|mech\\|therm\\)\\|ector\\|g\\(?:a\\|p\\(?:0\\|c\\(?:n?w\\)\\)\\)\\|is\\(?:cous\\|rat\\)\\|ol_strain\\|s\\(?:x[xz]\\|yy\\|zz\\|[ir]\\)?\\)\\|w\\(?:ater\\|b\\(?:iot\\|ulk\\)\\|dens\\|hile\\(?:_?stepping\\)?\\|i\\(?:ndow\\|pp\\)\\|k\\(?:1[12]\\|22\\)\\|rite\\)\\|x\\(?:acc\\|body\\|disp\\|f\\(?:low\\|or\\(?:ce\\|m\\)\\)\\|grav\\|nwflow\\|reaction\\|table\\|vel\\|ywrite\\)\\|y\\(?:acc\\|body\\|disp\\|f\\(?:low\\|orce\\)\\|grav\\|nwflow\\|reaction\\|table\\|vel\\)\\|z\\(?:_\\(?:copy\\|group\\|hyst\\|model\\|prop\\)\\|art\\|d\\(?:e\\(?:1[12]\\|22\\|33\\)\\|pp\\|rot\\)\\|msmul\\|poros\\|s\\(?:1[12]\\|22\\|33\\|ub\\)\\|t\\(?:e[a-d]\\|s[a-d]\\)\\|visc\\|xbar\\)\\|[rxy]\\)\\>"
- . 'font-lock-type-face)
-    ("[0-9]+" . 'font-lock-variable-name-face))
-  '("\\.dat$" "\\.fis$")                      ;; files for which to activate this mode
-   nil                              ;; other functions to call
-  "A mode for Itasca FLAC data files"            ;; doc string for this mode
-)
-
-;; ; eval with eval-print-last-sexp
-;; (regexp-opt '(
-;; "string"
-;; "sxx"
-;; "syy"
-;; "szz"
-;; "open"
-;; "close"
-;; "xvel"
-;; "fsr"
-;; "write"
-;; ) t)
 
 (defun sum-region (a b)
   "sum numbers in the region"
@@ -176,7 +138,14 @@
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
 
+(require 'magit)
+(require 'magit-svn)
 
+(global-set-key "\C-js" 'magit-status)
+
+;; OS specific setup
+
+;; Linux specific setup
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     ;;; Lisp (SLIME) interaction -- linux only
     (progn
@@ -186,12 +155,22 @@
       (require 'slime)
       (slime-setup)))
 
-(require 'magit)
-(require 'magit-svn)
+;; OS X specific setup
+(if (eq system-type 'darwin)
+    (add-to-list 'exec-path "/opt/local/bin/"))
 
+;; windows specific setup
 (if  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
-                                        ; windows specific magit init
     (progn
+
+      (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
+
+      (let ((file-name "C:/src/Blo-Up/interpreter/sign.el"))
+	(when (file-exists-p file-name)
+	  (load file-name)))
+      (load "C:/src/itasca-emacs/itasca.el")
+
+      ; windows specific magit init
       (defun magit-escape-for-shell (str)
         (if (or (string= str "git")
                 (string-match "^--" str))
@@ -218,6 +197,8 @@
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
 
+(global-set-key "\C-jk" 'kill-all-buffers)
+
 (defun p-compile ()
   "build python extension module. First call prompts for a directory"
   (interactive)
@@ -226,8 +207,6 @@
   (let ((default-directory python-build-dir))
        (compile "python setup.py install --user")))
 
-(global-set-key "\C-js" 'magit-status)
-(global-set-key "\C-jk" 'kill-all-buffers)
 
 ;; computer specific setup
 (cond
@@ -301,7 +280,3 @@
 
 ; the vc-find-file-hook seems to cause a big slowdown in windows
 (remove-hook 'find-file-hooks 'vc-find-file-hook)
-
-(let ((file-name "C:/src/Blo-Up/interpreter/sign.el"))
-  (when (file-exists-p file-name)
-    (load file-name)))
