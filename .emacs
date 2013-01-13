@@ -70,6 +70,7 @@
 (global-set-key "\M-]" 'next-buffer)
 (global-set-key "\M-[" 'previous-buffer)
 
+(show-paren-mode 1)
 (setq-default transient-mark-mode t)
 (setq-default global-font-lock-mode t)
 (setq-default  inhibit-startup-screen t)
@@ -149,11 +150,8 @@
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     ;;; Lisp (SLIME) interaction -- linux only
     (progn
-      (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
-      (setq inferior-lisp-program "clisp")
-      (add-to-list 'load-path "~/.slime")
-      (require 'slime)
-      (slime-setup)))
+      (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")))
+
 
 ;; OS X specific setup
 (if (eq system-type 'darwin)
@@ -215,6 +213,14 @@
   (setq initial-frame-alist '((width . 80) (height . 37)))
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
   (add-to-list 'load-path "C:/src/slime/")
+  (require 'slime)
+  (slime-setup '(slime-repl slime-fancy)))
+
+ ; vaio Ubuntu virtual machine
+ ((equal (system-name) "u64")
+  (setq initial-frame-alist '((width . 80) (height . 40)))
+  (setq inferior-lisp-program "ecl")
+  (add-to-list 'load-path "~/src/slime/")
   (require 'slime)
   (slime-setup '(slime-repl slime-fancy)))
 
