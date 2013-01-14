@@ -286,3 +286,6 @@
 
 ; the vc-find-file-hook seems to cause a big slowdown in windows
 (remove-hook 'find-file-hooks 'vc-find-file-hook)
+
+(when (> 23 emacs-major-version)
+  (electric-pair-mode 1))
