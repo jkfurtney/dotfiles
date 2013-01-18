@@ -14,6 +14,8 @@ define_key(default_global_keymap, "C-left", "back");
 define_key(default_global_keymap, "M-]", "buffer-next");
 define_key(default_global_keymap, "M-[", "buffer-previous");
 define_key(default_global_keymap, "C-tab", "buffer-next");
+define_key(content_buffer_normal_keymap, "back_space", "back");
+
 
 define_browser_object_class(
     "history-url", null,
