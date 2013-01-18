@@ -5,9 +5,11 @@ require("page-modes/google-search-results");
 require("page-modes/reddit");
 
 require("tab-bar.js");
-hints_ambiguous_auto_exit_delay=250;
 hints_auto_exit_delay=250;
 user_pref("layout.spellcheckDefault", 2);
+
+url_completion_use_history = true;
+url_completion_use_bookmarks = true;
 
 define_key(default_global_keymap, "C-o", "find-url-new-buffer");
 define_key(default_global_keymap, "f1", "kill-buffer");
