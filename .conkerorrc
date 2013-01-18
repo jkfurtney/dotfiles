@@ -2,6 +2,8 @@
 
 require("page-modes/gmail");
 require("page-modes/google-search-results");
+require("page-modes/reddit");
+
 require("tab-bar.js");
 hints_ambiguous_auto_exit_delay=250;
 hints_auto_exit_delay=250;
@@ -89,3 +91,12 @@ interactive("readability_arc90",
             });
 
 define_key(content_buffer_normal_keymap, "`", "readability_arc90");
+
+register_user_stylesheet(
+    "data:text/css," +
+        escape(
+            "@namespace url(\"http://www.w3.org/1999/xhtml\");\n" +
+            "span.__conkeror_hint {\n"+
+            "  font-size: 18px !important;\n"+
+            "  line-height: 18px !important;\n"+
+            "}"));
