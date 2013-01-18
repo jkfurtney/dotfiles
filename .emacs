@@ -54,6 +54,10 @@
 
 (setq ispell-program-name "aspell")
 
+(setq calendar-latitude 44.954109)
+(setq calendar-longitude -93.187408)
+(setq calendar-location-name "Minneapolis/St. Paul")
+
 (defun dont-kill-emacs ()
  (interactive)
  (error (substitute-command-keys "To exit emacs: \\[kill-emacs]")))
@@ -70,69 +74,39 @@
 (global-set-key "\M-]" 'next-buffer)
 (global-set-key "\M-[" 'previous-buffer)
 
-(show-paren-mode 1)
 (setq-default transient-mark-mode t)
 (setq-default global-font-lock-mode t)
 (setq-default  inhibit-startup-screen t)
 (setq visible-bell t)
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
+(show-paren-mode 1)
+(when (< 23 emacs-major-version)
+  (electric-pair-mode 1))
+(column-number-mode 1)
+(tool-bar-mode 0)
+(menu-bar-mode 0)
+(setq make-backup-files nil)
 
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 (add-hook 'latex-mode-hook 'turn-on-auto-fill)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-(add-hook 'c++-mode-hook
-      '(lambda ()
-         (add-hook 'before-save-hook
-                   (lambda ()
-                     (untabify (point-min) (point-max))))))
-
-(tool-bar-mode 0)
-(menu-bar-mode 0)
-(setq make-backup-files nil)
-
-(defun sum-region (a b)
-  "sum numbers in the region"
-  (interactive "r")
-  (message "sum: %d"
-    (apply '+ (mapcar 'string-to-number
-      (split-string (buffer-substring a b)))))
-  (insert (number-to-string (apply '+ (mapcar 'string-to-number (split-string (buffer-substring a b)))))))
-
-(defun filename-comment ()
-  "Insert filename as c++ comment eg. //filename.h"
+(defun kill-all-buffers ()
   (interactive)
-  (insert (concat "//" (file-name-nondirectory buffer-file-name))))
+  (mapc 'kill-buffer (buffer-list)))
 
-(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+(global-set-key "\C-jk" 'kill-all-buffers)
+(global-set-key "\C-jK" 'kill-other-buffers)
 
-;name-last-keyboard-macro
-;insert-kbd-macro
-
-(fset 'move-comment-above
-   [?\C-s ?/ ?\C-b ?\C-k ?\C-a ?\C-y return ?\C-n])
-
-(defun move-region-to-file (a b fname)
-  "Text in the region is moved to the given new file"
- (interactive "r\nFMove region to new file:")
- (if (file-exists-p fname) (error "File already exists"))
- (kill-region a b)
- (find-file fname)
- (yank))
-
-(defun move-region-to-header-file (a b fname)
-  "Text in the region is moved to the given new file \n #include \"filename.h\" is inserted at the current location"
- (interactive "r\nFMove region to new header file:")
- (if (file-exists-p fname) (error "File already exists"))
- (kill-region a b)
- (insert (concat "#include \"" (file-name-nondirectory fname) "\"\n"))
- (find-file fname)
- (yank))
-
-(setq python-check-command "pep8 -r --ignore=E221")
-
-(setq x-select-enable-clipboard t)
+;; Helper for compilation. Close the compilation window if
+;; there was no error at all.
+(defun compilation-exit-autoclose (status code msg)
+  (when (and (eq status 'exit) (zerop code))
+    (bury-buffer)
+    (delete-window (get-buffer-window (get-buffer "*compilation*"))))
+    (cons msg code))
+(setq compilation-exit-message-function 'compilation-exit-autoclose)
 
 (add-to-list 'load-path "~/.emacs.d/")
 
@@ -150,16 +124,19 @@
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     ;;; Lisp (SLIME) interaction -- linux only
     (progn
+      (setq x-select-enable-clipboard t)
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")))
-
 
 ;; OS X specific setup
 (if (eq system-type 'darwin)
-    (add-to-list 'exec-path "/opt/local/bin/"))
+    (progn
+      (setq x-select-enable-clipboard t)
+      (add-to-list 'exec-path "/opt/local/bin/")))
 
 ;; windows specific setup
 (if  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
     (progn
+      (remove-hook 'find-file-hooks 'vc-find-file-hook)
 
       (add-to-list 'load-path "c:/src/dotfiles/")
       (load "./w32-browser.el")
@@ -186,28 +163,6 @@
       (set-default-font
        "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")
       (set-face-attribute 'default nil :height 140)))
-
-
-(defun kill-other-buffers ()
-    "Kill all other buffers."
-    (interactive)
-    (mapc 'kill-buffer
-          (delq (current-buffer)
-                (remove-if-not 'buffer-file-name (buffer-list)))))
-
-(defun kill-all-buffers ()
-  (interactive)
-  (mapc 'kill-buffer (buffer-list)))
-
-(global-set-key "\C-jk" 'kill-all-buffers)
-
-(defun p-compile ()
-  "build python extension module. First call prompts for a directory"
-  (interactive)
-  (unless (boundp 'python-build-dir)
-    (setq python-build-dir (read-directory-name "python build dir ")))
-  (let ((default-directory python-build-dir))
-       (compile "python setup.py install --user")))
 
 
 ;; computer specific setup
@@ -243,55 +198,5 @@
 ;; cp ~/.gitconfig ~/AppData/Roaming/
 ;; to get magit to recognize user.name and user.email
 
-;; Helper for compilation. Close the compilation window if
-;; there was no error at all.
-(defun compilation-exit-autoclose (status code msg)
-  ;; If M-x compile exists with a 0
-  (when (and (eq status 'exit) (zerop code))
-    ;; then bury the *compilation* buffer, so that C-x b doesn't go there
-    (bury-buffer)
-    ;; and delete the *compilation* window
-    (delete-window (get-buffer-window (get-buffer "*compilation*"))))
-  ;; Always return the anticipated result of compilation-exit-message-function
-    (cons msg code))
-  ;; Specify my function (maybe I should have done a lambda function)
-(setq compilation-exit-message-function 'compilation-exit-autoclose)
-
-;; reStructuredText / Sphinx stuff
-(defun chunk-start ()
-  "move point to begining of white-space seperated chunk"
-  (interactive)
-  (search-backward-regexp "\\s-")
-  (forward-char))
-(defun chunk-end ()
-  "move point to end of white-space separated chunk"
-  (interactive)
-  (search-forward-regexp "\\s-")
-  (backward-char))
-(defun rest-wrap-math ()
-  "wrap :math:`__` around the current word"
-  (interactive)
-  (chunk-start)
-  (insert ":math:`")
-  (chunk-end)
-  (insert "`"))
-
-(global-set-key "\C-jm" 'rest-wrap-math)
-
-(defun s-compile-cmd (cmd)
-  "build sphinx documentation. First call prompts for a directory"
-  (interactive)
-  (unless (boundp 'sphinx-build-dir)
-    (setq sphinx-build-dir (read-directory-name "sphinx build dir ")))
-  (let ((default-directory sphinx-build-dir))
-       (compile cmd)))
-(defun s-compile () (interactive) (s-compile-cmd "make html"))
-(defun s-pcompile () (interactive) (s-compile-cmd "make latexpdf"))
-
-; the vc-find-file-hook seems to cause a big slowdown in windows
-(remove-hook 'find-file-hooks 'vc-find-file-hook)
-
-(when (< 23 emacs-major-version)
-  (electric-pair-mode 1))
-
-(column-number-mode 1)
+(load "sphinx.el")
+(load "jkf-python.el")
