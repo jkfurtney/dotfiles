@@ -161,6 +161,10 @@
 (if  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
     (progn
 
+      (add-to-list 'load-path "c:/src/dotfiles/")
+      (load "./w32-browser.el")
+      (load "./dired+.el")
+
       (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
 
       (let ((file-name "C:/src/Blo-Up/interpreter/sign.el"))
