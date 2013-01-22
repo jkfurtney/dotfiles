@@ -29,3 +29,5 @@
        (compile cmd)))
 (defun s-compile () (interactive) (s-compile-cmd "make html"))
 (defun s-pcompile () (interactive) (s-compile-cmd "make latexpdf"))
+
+(defun sphinx-reset () (interactive) (makunbound 'sphinx-build-dir))

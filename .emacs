@@ -1,5 +1,7 @@
 ; basic key bindings
 
+; C-q C-j to insert a newline in the mini-buffer, I can never remember this.
+
 ; C-o for find file
 (global-set-key "\C-o" 'find-file)
 (require 'dired)
