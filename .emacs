@@ -202,3 +202,4 @@
 
 (load "sphinx.el")
 (load "jkf-python.el")
+(load "jkf-c.el")
