@@ -31,3 +31,12 @@
 (defun s-pcompile () (interactive) (s-compile-cmd "make latexpdf"))
 
 (defun sphinx-reset () (interactive) (makunbound 'sphinx-build-dir))
+
+(defun sphinx-open-pdf () (interactive)
+  (when (boundp 'sphinx-build-dir)
+    (w32-browser (car (file-expand-wildcards
+		       (concat sphinx-build-dir "build/latex/*.pdf"))))))
+
+(global-set-key "\C-jp" 'sphinx-open-pdf)
+(global-set-key "\C-jC" 's-compile)
+(global-set-key "\C-jc" 's-pcompile)
