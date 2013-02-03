@@ -7,6 +7,8 @@
 (require 'dired)
 (define-key dired-mode-map (kbd "C-o") 'find-file)
 
+(global-set-key (kbd "M-/") 'hippie-expand)
+
 ; C-i for search forward
 (define-key input-decode-map (kbd "C-i") (kbd "H-i")); hack needed to unset tab
 (global-set-key (kbd "H-i") 'isearch-forward)
