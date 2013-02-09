@@ -148,10 +148,11 @@
       (load "./dired+.el")
 
       (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
+      (add-to-list 'exec-path "C:/Program Files (x86)/GnuWin32/bin/")
 
       (let ((file-name "C:/src/Blo-Up/interpreter/sign.el"))
-	(when (file-exists-p file-name)
-	  (load file-name)))
+        (when (file-exists-p file-name)
+          (load file-name)))
       (load "C:/src/itasca-emacs/itasca.el")
 
       ; windows specific magit init
@@ -206,3 +207,8 @@
 (load "sphinx.el")
 (load "jkf-python.el")
 (load "jkf-c.el")
+
+(defun a2ps-file () (interactive)
+  (let ((template  "a2ps.exe --columns=2 -o %s.ps -M letter --portrait %s")
+        (fn (dired-get-filename)))
+    (shell-command (format template fn fn ))))
