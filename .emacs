@@ -128,6 +128,7 @@
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     ;;; Lisp (SLIME) interaction -- linux only
     (progn
+      (add-to-list 'load-path "~/src/dotfiles/")
       (setq x-select-enable-clipboard t)
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")))
 
