@@ -1,0 +1,7 @@
+proc            /proc           proc    defaults          0       0
+/dev/mmcblk0p1  /boot           vfat    defaults          0       2
+/dev/mmcblk0p2  /               ext4    defaults,noatime  0       1
+# a swapfile is not a swap partition, so no using swapon|off from here on, use  dphys-swapfile swap[on|off]  for that
+
+
+UUID="787aa371-d821-39cb-8e4e-d70f9bf03dd1" /mnt/TimeMachine hfsplus rw,force,exec,auto,users 0 3
