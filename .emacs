@@ -4,9 +4,6 @@
 
 ; C-o for find file
 (global-set-key "\C-o" 'find-file)
-(require 'dired)
-(define-key dired-mode-map (kbd "C-o") 'find-file)
-
 (global-set-key (kbd "M-/") 'hippie-expand)
 
 ; C-i for search forward
@@ -149,8 +146,8 @@
       (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
 
       (let ((file-name "C:/src/Blo-Up/interpreter/sign.el"))
-	(when (file-exists-p file-name)
-	  (load file-name)))
+        (when (file-exists-p file-name)
+          (load file-name)))
       (load "C:/src/itasca-emacs/itasca.el")
 
       ; windows specific magit init
@@ -189,7 +186,7 @@
 
  ((equal (system-name) "UNSER")
   (setq initial-frame-alist '((width . 80) (height . 41)))
-  (set-face-attribute 'default nil :height 150)
+  (set-face-attribute 'default nil :height 140)
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
   (add-to-list 'load-path "C:/src/slime/")
   (require 'slime)
@@ -205,3 +202,7 @@
 (load "sphinx.el")
 (load "jkf-python.el")
 (load "jkf-c.el")
+
+(add-hook 'dired-mode-hook
+          (function (lambda ()
+                      (local-unset-key (kbd "C-o")))))
