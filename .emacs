@@ -213,3 +213,5 @@
   (let ((template  "a2ps.exe --columns=2 -o %s.ps -M letter --portrait %s")
         (fn (dired-get-filename)))
     (shell-command (format template fn fn ))))
+
+(fset 'yes-or-no-p 'y-or-n-p)
