@@ -1,0 +1,18 @@
+alias gs='git status'
+alias gk='gitk --all'
+alias fcpp='find . -name "*.cpp"'
+PATH=.:$PATH:/c/Python27
+alias ip='python /c/python27/scripts/ipython-script.py -i'
+set -o ignoreeof
+alias rm='rm -i'
+alias mv='mv -i'
+alias gd='git diff'
+alias gba='git branch -a'
+alias emacs='C:\\emacs-23.3\\bin\\runemacs.exe'
+alias gut='git ls-files --other --exclude-standard'
+alias gig='git clean -ndX'
+alias pbuild='python setup.py build'
+alias pinst='python setup.py install'
+alias a2ps='C:\Program Files (x86)\GnuWin32\bin\a2ps.exe -M letter'
+alias gscp='git stash && git svn dcommit && git stash pop'
+alias ipnb='python /c/python27/scripts/ipython-script.py notebook --pylab inline'
