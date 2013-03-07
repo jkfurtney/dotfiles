@@ -215,3 +215,5 @@
     (shell-command (format template fn fn ))))
 
 (fset 'yes-or-no-p 'y-or-n-p)
+
+(require 'smart-operator)
