@@ -109,16 +109,6 @@
     (cons msg code))
 (setq compilation-exit-message-function 'compilation-exit-autoclose)
 
-(add-to-list 'load-path "~/.emacs.d/")
-
-(require 'expand-region)
-(global-set-key (kbd "C-=") 'er/expand-region)
-
-(require 'magit)
-(require 'magit-svn)
-
-(global-set-key "\C-js" 'magit-status)
-
 ;; OS specific setup
 
 ;; Linux specific setup
@@ -223,3 +213,13 @@
 ;(setq ein:use-auto-complete t)
 (setq ein:use-auto-complete-superpack t)
 (global-set-key [(shift return)] 'ein:worksheet-execute-cell)
+(global-set-key (kbd "C-j n") 'ein:notebooklist-open)
+
+
+;(add-to-list 'load-path "~/.emacs.d/")
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
+
+(require 'magit)
+(require 'magit-svn)
+(global-set-key "\C-js" 'magit-status)
