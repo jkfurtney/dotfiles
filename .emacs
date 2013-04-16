@@ -217,3 +217,9 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (require 'smart-operator)
+(require 'auto-complete-config)
+(ac-config-default)
+(require 'ein)
+;(setq ein:use-auto-complete t)
+(setq ein:use-auto-complete-superpack t)
+(global-set-key [(shift return)] 'ein:worksheet-execute-cell)
