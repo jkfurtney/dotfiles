@@ -116,6 +116,7 @@
     ;;; Lisp (SLIME) interaction -- linux only
     (progn
       (add-to-list 'load-path "~/src/dotfiles/")
+      (add-to-list 'custom-theme-load-path "~/dotfiles/themes/")
       (setq x-select-enable-clipboard t)
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")))
 
@@ -131,6 +132,7 @@
       (remove-hook 'find-file-hooks 'vc-find-file-hook)
 
       (add-to-list 'load-path "c:/src/dotfiles/")
+      (add-to-list 'custom-theme-load-path "c:/src/dotfiles/themes/")
       (load "./w32-browser.el")
       (load "./dired+.el")
 
