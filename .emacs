@@ -201,6 +201,11 @@
           (function (lambda ()
                       (local-unset-key (kbd "C-o")))))
 
+(add-hook 'emacs-lisp-mode-hook
+          (function (lambda ()
+                      (local-unset-key (kbd "C-j")))))
+
+
 (defun a2ps-file () (interactive)
   (let ((template  "a2ps.exe --columns=2 -o %s.ps -M letter --portrait %s")
         (fn (dired-get-filename)))
@@ -216,7 +221,13 @@
 (setq ein:use-auto-complete-superpack t)
 (global-set-key [(shift return)] 'ein:worksheet-execute-cell)
 (global-set-key (kbd "C-j n") 'ein:notebooklist-open)
-(global-set-key (kbd "C-s") 'ein:notebook-save-notebook-command)
+
+
+(add-hook 'ein:notebook-multilang-mode-hook
+          (function (lambda ()
+		      (local-set-key (kbd "C-s")
+				     'ein:notebook-save-notebook-command))))
+
 
 
 
@@ -227,3 +238,5 @@
 (require 'magit)
 (require 'magit-svn)
 (global-set-key "\C-js" 'magit-status)
+
+(load-theme 'zenburn)
