@@ -216,6 +216,8 @@
 (setq ein:use-auto-complete-superpack t)
 (global-set-key [(shift return)] 'ein:worksheet-execute-cell)
 (global-set-key (kbd "C-j n") 'ein:notebooklist-open)
+(global-set-key (kbd "C-s") 'ein:notebook-save-notebook-command)
+
 
 
 ;(add-to-list 'load-path "~/.emacs.d/")
