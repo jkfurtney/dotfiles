@@ -1,7 +1,7 @@
 ;; emacs stuff specific to python programming
 
 (setq python-check-command "pep8 -r --ignore=E221")
-
+(add-to-list 'auto-mode-alist '("\\.pyx\\'" . python-mode))
 (defun p-compile ()
   "build python extension module. First call prompts for a directory"
   (interactive)

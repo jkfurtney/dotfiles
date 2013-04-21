@@ -5,6 +5,8 @@
 ; C-o for find file
 (global-set-key "\C-o" 'find-file)
 (global-set-key (kbd "M-/") 'hippie-expand)
+(global-set-key (kbd "M-p") 'backward-paragraph)
+(global-set-key (kbd "M-n") 'forward-paragraph)
 
 ; C-i for search forward
 (define-key input-decode-map (kbd "C-i") (kbd "H-i")); hack needed to unset tab
@@ -203,6 +205,7 @@
 
 (add-hook 'emacs-lisp-mode-hook
           (function (lambda ()
+		      (eldoc-mode t)
                       (local-unset-key (kbd "C-j")))))
 
 
@@ -239,9 +242,12 @@
 (require 'magit-svn)
 (global-set-key "\C-js" 'magit-status)
 
-(load-theme 'zenburn)
+;(load-theme 'zenburn)
 
 (require 'ido)
+(require 'ido-ubiquitous)
+(require 'ido-vertical-mode)
+(ido-vertical-mode t)
 (ido-mode t)
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
@@ -257,6 +263,31 @@
   t)
 (eval-after-load "ace-jump-mode"
   '(ace-jump-mode-enable-mark-sync))
-(define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
+(define-key global-map (kbd "C-M-z") 'ace-jump-mode-pop-mark)
+(define-key global-map (kbd "C-z") 'ace-jump-mode)
 
 ;(require 'skeleton-complete)
+
+; Display Visited Files Path in the Frame Title
+; via emacs Redux
+(setq frame-title-format
+      '((:eval (if (buffer-file-name)
+                   (abbreviate-file-name (buffer-file-name))
+                 "%b"))))
+(defun move-line-up ()
+  "Move up the current line."
+  (interactive)
+  (transpose-lines 1)
+  (forward-line -2)
+  (indent-according-to-mode))
+
+(defun move-line-down ()
+  "Move down the current line."
+  (interactive)
+  (forward-line 1)
+  (transpose-lines 1)
+  (forward-line -1)
+  (indent-according-to-mode))
+
+(define-key global-map (kbd "C-S-n") 'move-line-down)
+(define-key global-map (kbd "C-S-p") 'move-line-up)
