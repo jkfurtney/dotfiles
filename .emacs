@@ -111,13 +111,24 @@
     (cons msg code))
 (setq compilation-exit-message-function 'compilation-exit-autoclose)
 
+
+
+; get load-path first
+(if (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
+    (progn
+      (add-to-list 'load-path "~/src/dotfiles/"))
+  (progn
+      (add-to-list 'load-path "c:/src/dotfiles/")))
+
+(require 'yasnippet)
+
 ;; OS specific setup
 
 ;; Linux specific setup
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     ;;; Lisp (SLIME) interaction -- linux only
     (progn
-      (add-to-list 'load-path "~/src/dotfiles/")
+
       (add-to-list 'custom-theme-load-path "~/dotfiles/themes/")
       (setq x-select-enable-clipboard t)
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")))
@@ -133,13 +144,16 @@
     (progn
       (remove-hook 'find-file-hooks 'vc-find-file-hook)
 
-      (add-to-list 'load-path "c:/src/dotfiles/")
+
       (add-to-list 'custom-theme-load-path "c:/src/dotfiles/themes/")
       (load "./w32-browser.el")
       (load "./dired+.el")
 
       (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
       (add-to-list 'exec-path "C:/Program Files (x86)/GnuWin32/bin/")
+
+      (setq yas/snippet-dirs '("c:/src/dotfiles/snippets"
+			       "c:/src/itasca-emacs/snippets"))
 
       (let ((file-name "C:/src/Blo-Up/interpreter/sign.el"))
         (when (file-exists-p file-name)
@@ -208,7 +222,6 @@
 		      (eldoc-mode t)
                       (local-unset-key (kbd "C-j")))))
 
-
 (defun a2ps-file () (interactive)
   (let ((template  "a2ps.exe --columns=2 -o %s.ps -M letter --portrait %s")
         (fn (dired-get-filename)))
@@ -231,9 +244,6 @@
 		      (local-set-key (kbd "C-s")
 				     'ein:notebook-save-notebook-command))))
 
-
-
-
 ;(add-to-list 'load-path "~/.emacs.d/")
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
@@ -249,9 +259,9 @@
 (require 'ido-vertical-mode)
 (ido-vertical-mode t)
 (ido-mode t)
-(setq ido-enable-flex-matching t)
+;(setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
-(setq ido-create-new-buffer 'always)
+;(setq ido-create-new-buffer 'always)
 
 (require 'ace-jump-mode)
 (define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
@@ -274,6 +284,7 @@
       '((:eval (if (buffer-file-name)
                    (abbreviate-file-name (buffer-file-name))
                  "%b"))))
+
 (defun move-line-up ()
   "Move up the current line."
   (interactive)
@@ -291,3 +302,5 @@
 
 (define-key global-map (kbd "C-S-n") 'move-line-down)
 (define-key global-map (kbd "C-S-p") 'move-line-up)
+
+(yas/global-mode 1)
