@@ -304,3 +304,16 @@
 (define-key global-map (kbd "C-S-p") 'move-line-up)
 
 (yas/global-mode 1)
+
+(defun space-hack ()
+  "causes space to jump over  ) or ] if a space precedes it"
+  (interactive)
+  (if (and (eql (char-before) ?\s)
+	   (or (eql (char-after) ?\))
+	       (eql (char-after) ?\])))
+      (progn
+	(message "Jumping over %c" (char-after))
+	(backward-delete-char 1)
+	(forward-char))
+    (insert ?\s)))
+(define-key global-map (kbd "SPC") 'space-hack)
