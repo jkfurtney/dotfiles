@@ -25,6 +25,7 @@
                 '(lambda () (interactive)
                   (move-beginning-of-line nil)
                   (kill-line)))
+(global-set-key (kbd  "C-z") '(lambda () (interactive) nil))
 
 ; Unset problematic keys
 (global-unset-key (kbd "C-x C-s"))
@@ -40,7 +41,7 @@
 (global-unset-key [right])
 (global-unset-key [up])
 (global-unset-key [down])
-(global-unset-key "\C-z")
+
 (global-unset-key "\C-j")
 (global-unset-key (kbd "M-$"))
 
@@ -259,13 +260,11 @@
 (require 'ido-vertical-mode)
 (ido-vertical-mode t)
 (ido-mode t)
-;(setq ido-enable-flex-matching t)
+(setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
-;(setq ido-create-new-buffer 'always)
+(setq ido-create-new-buffer 'always)
 
 (require 'ace-jump-mode)
-(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
-
 (autoload
   'ace-jump-mode-pop-mark
   "ace-jump-mode"
@@ -274,7 +273,7 @@
 (eval-after-load "ace-jump-mode"
   '(ace-jump-mode-enable-mark-sync))
 (define-key global-map (kbd "C-M-z") 'ace-jump-mode-pop-mark)
-(define-key global-map (kbd "C-z") 'ace-jump-mode)
+(define-key global-map (kbd "M-z") 'ace-jump-mode)
 
 ;(require 'skeleton-complete)
 
@@ -317,3 +316,36 @@
 	(forward-char))
     (insert ?\s)))
 (define-key global-map (kbd "SPC") 'space-hack)
+
+(require 'paredit)
+(add-hook 'lisp-mode-hook 'enable-paredit-mode)
+(add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
+
+
+(setq edebug-trace 1)
+(setq sentence-end-double-space nil)
+(setq next-line-add-newlines t)
+
+(global-set-key (kbd "C-.") 'helm-imenu)
+
+
+(add-to-list 'load-path "c:/src/helm")
+(require 'helm-config)
+(require 'helm-descbinds)
+(global-set-key (kbd "C-h b") 'helm-descbinds)
+
+(require 'recentf)
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(global-set-key (kbd "C-S-o") 'recentf-open-files)
+(define-key global-map (kbd "RET") 'newline-and-indent)
+
+(set-register ?e '(file . "c:/src/dotfiles/.emacs"))
+(set-register ?s '(file . "c:/src/"))
+(set-register ?n '(file . "c:/src/notes.org"))
+
+(setq kill-buffer-query-functions
+  (remq 'process-kill-buffer-query-function
+         kill-buffer-query-functions))
+
+(which-function-mode 1)
