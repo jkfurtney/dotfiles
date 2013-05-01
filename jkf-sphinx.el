@@ -18,7 +18,7 @@
   (chunk-end)
   (insert "`"))
 
-(global-set-key "\C-jm" 'rest-wrap-math)
+(global-set-key (kbd "C-c m") 'rest-wrap-math)
 
 (defun s-compile-cmd (cmd)
   "build sphinx documentation. First call prompts for a directory"
@@ -37,6 +37,6 @@
     (w32-browser (car (file-expand-wildcards
 		       (concat sphinx-build-dir "build/latex/*.pdf"))))))
 
-(global-set-key "\C-jp" 'sphinx-open-pdf)
-(global-set-key "\C-jC" 's-compile)
-(global-set-key "\C-jc" 's-pcompile)
+(global-set-key (kbd "C-c p") 'sphinx-open-pdf)
+(global-set-key (kbd "C-c C") 's-compile)
+(global-set-key (kbd "C-c c") 's-pcompile)

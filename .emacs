@@ -6,6 +6,14 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
+ ;; (defvar my-packages '(starter-kit zenburn-theme auctex color-theme-solarized csharp-mode ecb_snap find-file-in-project flymake-css flymake-php idle-highlight ido-ubiquitous ipython python-mode magit markdown-mode paredit pastels-on-dark-theme php-mode rainbow-mode smex solarized-theme starter-kit-js zenburn-theme)
+ ;;  "A list of packages to ensure are installed at launch.")
+
+ ;;  (dolist (p my-packages)
+ ;;    (when (not (package-installed-p p))
+ ;;      (package-install p)))
+
+
 ; basic key bindings
 ; C-q C-j to insert a newline in the mini-buffer, I can never remember this.
 
@@ -49,8 +57,6 @@
 (global-unset-key [up])
 (global-unset-key [down])
 
-(global-unset-key "\C-j")
-(global-unset-key (kbd "M-$"))
 
 (set-background-color "black")
 (set-face-background 'default "black")
@@ -107,8 +113,8 @@
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
 
-(global-set-key "\C-jk" 'kill-all-buffers)
-(global-set-key "\C-jK" 'kill-other-buffers)
+(global-set-key (kbd "C-c k") 'kill-all-buffers)
+(global-set-key (kbd "C-c K") 'kill-other-buffers)
 
 ;; Helper for compilation. Close the compilation window if
 ;; there was no error at all.
@@ -136,7 +142,6 @@
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     ;;; Lisp (SLIME) interaction -- linux only
     (progn
-
       (add-to-list 'custom-theme-load-path "~/dotfiles/themes/")
       (setq x-select-enable-clipboard t)
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")))
@@ -151,7 +156,6 @@
 (if  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
     (progn
       (remove-hook 'find-file-hooks 'vc-find-file-hook)
-
 
       (add-to-list 'custom-theme-load-path "c:/src/dotfiles/themes/")
       (load "./w32-browser.el")
@@ -217,18 +221,13 @@
 ;; cp ~/.gitconfig ~/AppData/Roaming/
 ;; to get magit to recognize user.name and user.email
 
-(load "sphinx.el")
+(load "jkf-sphinx.el")
 (load "jkf-python.el")
 (load "jkf-c.el")
 
 (add-hook 'dired-mode-hook
           (function (lambda ()
                       (local-unset-key (kbd "C-o")))))
-
-(add-hook 'emacs-lisp-mode-hook
-          (function (lambda ()
-		      (eldoc-mode t)
-                      (local-unset-key (kbd "C-j")))))
 
 (defun a2ps-file () (interactive)
   (let ((template  "a2ps.exe --columns=2 -o %s.ps -M letter --portrait %s")
@@ -244,7 +243,7 @@
 ;(setq ein:use-auto-complete t)
 (setq ein:use-auto-complete-superpack t)
 (global-set-key [(shift return)] 'ein:worksheet-execute-cell)
-(global-set-key (kbd "C-j n") 'ein:notebooklist-open)
+(global-set-key (kbd "C-c n") 'ein:notebooklist-open)
 
 
 (add-hook 'ein:notebook-multilang-mode-hook
@@ -258,7 +257,7 @@
 
 (require 'magit)
 (require 'magit-svn)
-(global-set-key "\C-js" 'magit-status)
+(global-set-key (kbd "C-c s") 'magit-status)
 
 ;(load-theme 'zenburn)
 
