@@ -1,5 +1,12 @@
-; basic key bindings
 
+; packages helm helm-descbinds
+
+(require 'package)
+(add-to-list 'package-archives
+  '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(package-initialize)
+
+; basic key bindings
 ; C-q C-j to insert a newline in the mini-buffer, I can never remember this.
 
 ; C-o for find file
@@ -273,7 +280,7 @@
 (eval-after-load "ace-jump-mode"
   '(ace-jump-mode-enable-mark-sync))
 (define-key global-map (kbd "C-M-z") 'ace-jump-mode-pop-mark)
-(define-key global-map (kbd "M-z") 'ace-jump-mode)
+(define-key global-map (kbd "C-z") 'ace-jump-mode)
 
 ;(require 'skeleton-complete)
 
@@ -322,14 +329,14 @@
 (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
 
 
-(setq edebug-trace 1)
+(setq edebug-trace nil)
 (setq sentence-end-double-space nil)
 (setq next-line-add-newlines t)
 
 (global-set-key (kbd "C-.") 'helm-imenu)
 
 
-(add-to-list 'load-path "c:/src/helm")
+;(add-to-list 'load-path "c:/src/helm")
 (require 'helm-config)
 (require 'helm-descbinds)
 (global-set-key (kbd "C-h b") 'helm-descbinds)
