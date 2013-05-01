@@ -1,24 +1,26 @@
-
-; packages helm helm-descbinds
-
 (require 'package)
 (add-to-list 'package-archives
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
- ;; (defvar my-packages '(starter-kit zenburn-theme auctex color-theme-solarized csharp-mode ecb_snap find-file-in-project flymake-css flymake-php idle-highlight ido-ubiquitous ipython python-mode magit markdown-mode paredit pastels-on-dark-theme php-mode rainbow-mode smex solarized-theme starter-kit-js zenburn-theme)
- ;;  "A list of packages to ensure are installed at launch.")
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smart-operator smex uuid websocket yasnippet)
+  "A list of packages to ensure are installed at launch.")
 
- ;;  (dolist (p my-packages)
- ;;    (when (not (package-installed-p p))
- ;;      (package-install p)))
+(dolist (p my-packages)
+  (when (not (package-installed-p p))
+    (if (y-or-n-p (format "Package %s is missing. Install it? " p))
+	(package-install p))))
 
-
-; basic key bindings
 ; C-q C-j to insert a newline in the mini-buffer, I can never remember this.
 
-; C-o for find file
-(global-set-key "\C-o" 'find-file)
+; basic key bindings
+(require 'dired+)
+(global-set-key "\C-o" 'find-file) ; C-o for find file
+(add-hook 'dired-mode-hook
+          (function (lambda ()
+		      (local-unset-key (kbd "<f1>"))
+                      (local-unset-key (kbd "C-o")))))
+
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "M-p") 'backward-paragraph)
 (global-set-key (kbd "M-n") 'forward-paragraph)
@@ -57,7 +59,6 @@
 (global-unset-key [up])
 (global-unset-key [down])
 
-
 (set-background-color "black")
 (set-face-background 'default "black")
 (set-face-background 'region "black")
@@ -66,11 +67,7 @@
 (set-foreground-color "white")
 (set-cursor-color "red")
 
-(setq c-default-style "bsd"
-      c-basic-offset 2)
-
 (setq ispell-program-name "aspell")
-
 (setq calendar-latitude 44.954109)
 (setq calendar-longitude -93.187408)
 (setq calendar-location-name "Minneapolis/St. Paul")
@@ -86,14 +83,14 @@
   (let ((fill-column 90002000))
     (fill-paragraph nil)))
 
-(global-set-key "\C-x\M-q" 'remove-hard-wrap)
-(global-set-key "\C-c;" 'comment-region)
-(global-set-key "\M-]" 'next-buffer)
-(global-set-key "\M-[" 'previous-buffer)
+(global-set-key (kbd "C-x M-q") 'remove-hard-wrap)
+(global-set-key (kbd "C-c ;") 'comment-region)
+(global-set-key (kbd "M-]") 'next-buffer)
+(global-set-key (kbd "M-[") 'previous-buffer)
 
 (setq-default transient-mark-mode t)
 (setq-default global-font-lock-mode t)
-(setq-default  inhibit-startup-screen t)
+(setq-default inhibit-startup-screen t)
 (setq visible-bell t)
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
@@ -126,6 +123,7 @@
 (setq compilation-exit-message-function 'compilation-exit-autoclose)
 
 
+;;;; OS specific setup
 
 ; get load-path first
 (if (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
@@ -133,10 +131,6 @@
       (add-to-list 'load-path "~/src/dotfiles/"))
   (progn
       (add-to-list 'load-path "c:/src/dotfiles/")))
-
-(require 'yasnippet)
-
-;; OS specific setup
 
 ;; Linux specific setup
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
@@ -157,20 +151,17 @@
     (progn
       (remove-hook 'find-file-hooks 'vc-find-file-hook)
 
-      (add-to-list 'custom-theme-load-path "c:/src/dotfiles/themes/")
       (load "./w32-browser.el")
-      (load "./dired+.el")
-
       (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
       (add-to-list 'exec-path "C:/Program Files (x86)/GnuWin32/bin/")
 
-      (setq yas/snippet-dirs '("c:/src/dotfiles/snippets"
-			       "c:/src/itasca-emacs/snippets"))
+      (setq yas/snippet-dirs '("c:/src/itasca-emacs/snippets"))
 
       (let ((file-name "C:/src/Blo-Up/interpreter/sign.el"))
         (when (file-exists-p file-name)
           (load file-name)))
-      (load "C:/src/itasca-emacs/itasca.el")
+      (add-to-list 'load-path "C:/src/itasca-emacs")
+      (require 'itasca)
 
       ; windows specific magit init
       (defun magit-escape-for-shell (str)
@@ -194,7 +185,6 @@
  ((equal (system-name) "SHOTOVER")
   (setq initial-frame-alist '((width . 80) (height . 37)))
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
-  (add-to-list 'load-path "C:/src/slime/")
   (require 'slime)
   (slime-setup '(slime-repl slime-fancy)))
 
@@ -202,7 +192,6 @@
  ((equal (system-name) "u64")
   (setq initial-frame-alist '((width . 80) (height . 40)))
   (setq inferior-lisp-program "ecl")
-  (add-to-list 'load-path "~/src/slime/")
   (require 'slime)
   (slime-setup '(slime-repl slime-fancy)))
 
@@ -210,7 +199,6 @@
   (setq initial-frame-alist '((width . 80) (height . 41)))
   (set-face-attribute 'default nil :height 140)
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
-  (add-to-list 'load-path "C:/src/slime/")
   (require 'slime)
   (slime-setup '(slime-repl slime-fancy)))
 
@@ -225,10 +213,6 @@
 (load "jkf-python.el")
 (load "jkf-c.el")
 
-(add-hook 'dired-mode-hook
-          (function (lambda ()
-                      (local-unset-key (kbd "C-o")))))
-
 (defun a2ps-file () (interactive)
   (let ((template  "a2ps.exe --columns=2 -o %s.ps -M letter --portrait %s")
         (fn (dired-get-filename)))
@@ -239,27 +223,23 @@
 (require 'smart-operator)
 (require 'auto-complete-config)
 (ac-config-default)
+
 (require 'ein)
-;(setq ein:use-auto-complete t)
 (setq ein:use-auto-complete-superpack t)
 (global-set-key [(shift return)] 'ein:worksheet-execute-cell)
 (global-set-key (kbd "C-c n") 'ein:notebooklist-open)
-
 
 (add-hook 'ein:notebook-multilang-mode-hook
           (function (lambda ()
 		      (local-set-key (kbd "C-s")
 				     'ein:notebook-save-notebook-command))))
 
-;(add-to-list 'load-path "~/.emacs.d/")
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
 
 (require 'magit)
 (require 'magit-svn)
 (global-set-key (kbd "C-c s") 'magit-status)
-
-;(load-theme 'zenburn)
 
 (require 'ido)
 (require 'ido-ubiquitous)
@@ -280,8 +260,6 @@
   '(ace-jump-mode-enable-mark-sync))
 (define-key global-map (kbd "C-M-z") 'ace-jump-mode-pop-mark)
 (define-key global-map (kbd "C-z") 'ace-jump-mode)
-
-;(require 'skeleton-complete)
 
 ; Display Visited Files Path in the Frame Title
 ; via emacs Redux
@@ -308,6 +286,7 @@
 (define-key global-map (kbd "C-S-n") 'move-line-down)
 (define-key global-map (kbd "C-S-p") 'move-line-up)
 
+(require 'yasnippet)
 (yas/global-mode 1)
 
 (defun space-hack ()
@@ -327,31 +306,32 @@
 (add-hook 'lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
 
-
 (setq edebug-trace nil)
 (setq sentence-end-double-space nil)
 (setq next-line-add-newlines t)
 
-(global-set-key (kbd "C-.") 'helm-imenu)
-
-
-;(add-to-list 'load-path "c:/src/helm")
 (require 'helm-config)
 (require 'helm-descbinds)
+(global-set-key (kbd "C-.") 'helm-imenu)
 (global-set-key (kbd "C-h b") 'helm-descbinds)
 
 (require 'recentf)
 (recentf-mode 1)
 (setq recentf-max-menu-items 25)
 (global-set-key (kbd "C-S-o") 'recentf-open-files)
+
 (define-key global-map (kbd "RET") 'newline-and-indent)
 
 (set-register ?e '(file . "c:/src/dotfiles/.emacs"))
 (set-register ?s '(file . "c:/src/"))
 (set-register ?n '(file . "c:/src/notes.org"))
 
+; Dont prompt me if I try to kill a buffer with an active process
+; via http://www.masteringemacs.org/
 (setq kill-buffer-query-functions
   (remq 'process-kill-buffer-query-function
          kill-buffer-query-functions))
 
 (which-function-mode 1)
+
+(setq erc-hide-list '("JOIN" "PART" "QUIT"))
