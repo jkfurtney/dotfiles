@@ -1,0 +1,23 @@
+
+
+(make-variable-buffer-local
+ (defvar $1-var nil
+   "Doc string for var."))
+
+(defun $1-function ()
+  "Docstring for function"
+  (interactive)
+  $0)
+
+;;;###autoload
+(define-minor-mode $1-mode
+  "Docstring for mode"
+  :lighter " $1"
+  :keymap (let ((map (make-sparse-keymap)))
+            (define-key map (kbd "C-c f") '$1-function)
+            map))
+
+;;;###autoload
+;(add-hook 'text-mode-hook '$1-mode)
+
+(provide '$1-mode)
