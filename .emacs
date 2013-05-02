@@ -9,7 +9,7 @@
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (if (y-or-n-p (format "Package %s is missing. Install it? " p))
-	(package-install p))))
+        (package-install p))))
 
 ; C-q C-j to insert a newline in the mini-buffer, I can never remember this.
 
@@ -18,7 +18,7 @@
 (global-set-key "\C-o" 'find-file) ; C-o for find file
 (add-hook 'dired-mode-hook
           (function (lambda ()
-		      (local-unset-key (kbd "<f1>"))
+                      (local-unset-key (kbd "<f1>"))
                       (local-unset-key (kbd "C-o")))))
 
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -190,8 +190,8 @@
   (setq initial-frame-alist '((width . 80) (height . 37)))
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
   (require 'slime)
-  ;(slime-setup '(slime-repl slime-fancy))
-)
+  (set-register ?d '(file . "c:/Users/jfurtney/downloads")))
+                  ;(slime-setup '(slime-repl slime-fancy))
 
  ; vaio Ubuntu virtual machine
  ((equal (system-name) "u64")
@@ -210,9 +210,10 @@
  ; default
  (t (setq initial-frame-alist '((width . 80) (height . 34)))))
 
-;; note on windows $HOME is different in bash and emacs!
-;; cp ~/.gitconfig ~/AppData/Roaming/
-;; to get magit to recognize user.name and user.email
+ ;; note on windows $HOME is different in bash and emacs!
+ ;; cp ~/.gitconfig ~/AppData/Roaming/
+ ;; to get magit to recognize user.name and user.email
+
 
 (load "jkf-sphinx.el")
 (load "jkf-python.el")
@@ -236,8 +237,8 @@
 
 (add-hook 'ein:notebook-multilang-mode-hook
           (function (lambda ()
-		      (local-set-key (kbd "C-s")
-				     'ein:notebook-save-notebook-command))))
+                      (local-set-key (kbd "C-s")
+                                     'ein:notebook-save-notebook-command))))
 
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
@@ -294,6 +295,7 @@
 (require 'paredit)
 (add-hook 'lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
+(add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
 
 (setq edebug-trace nil)
 (setq sentence-end-double-space nil)
@@ -307,7 +309,7 @@
 (require 'recentf)
 (recentf-mode 1)
 (setq recentf-max-menu-items 25)
-(global-set-key (kbd "C-S-o") 'recentf-open-files)
+(global-set-key (kbd "C-S-o") 'helm-recentf)
 
 (define-key global-map (kbd "RET") 'newline-and-indent)
 
@@ -325,4 +327,14 @@
 
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 (yas-reload-all)
+
 (require 'pair-jump-mode)
+
+;(require 'helm-gtags)
+;(setq helm-gtags-ignore-case t)
+
+(require 'ggtags)
+
+(add-hook 'c++-mode-hook 'ggtags-mode)
+(add-hook 'c-mode-hook 'ggtags-mode)
+(add-hook 'fortran-mode-hook 'ggtags-mode)
