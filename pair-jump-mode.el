@@ -33,4 +33,20 @@ space negates this behavior."
 (add-hook 'python-mode-hook 'pair-jump-mode)
 (add-hook 'c++-mode-hook 'pair-jump-mode)
 
+(ert-deftest test-pair-jump ()
+  (with-temp-buffer
+    (pair-jump-mode)
+    (let ((starting-string  ")]}'\"")
+          test-string)
+
+      (insert starting-string)
+      (goto-char (point-min))
+      (pair-jump-function 1)
+      (setq test-string (buffer-substring (point-at-bol) (point-at-eol)))
+      (should (equal test-string (concat " " starting-string)))
+
+      (pair-jump-function 1) ; test that jump occured
+      (setq test-string (buffer-substring (point-at-bol) (point-at-eol)))
+      (should (equal test-string starting-string)))))
+
 (provide 'pair-jump-mode)
