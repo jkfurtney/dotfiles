@@ -1,3 +1,8 @@
+(tool-bar-mode 0)
+(menu-bar-mode 0)
+(scroll-bar-mode 0)
+
+
 (require 'package)
 (add-to-list 'package-archives
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
@@ -24,6 +29,16 @@
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "M-p") 'backward-paragraph)
 (global-set-key (kbd "M-n") 'forward-paragraph)
+(global-set-key (kbd "C-c e e") 'toggle-debug-on-error)
+(global-set-key (kbd "C-c e f") 'emacs-lisp-byte-compile-and-load)
+(global-set-key (kbd "C-c e r") 'eval-region)
+(global-set-key (kbd "C-c e b") 'eval-buffer)
+(global-set-key (kbd "C-c e s") '(lambda ()
+				   (interactive)
+				   (switch-to-buffer "*scratch*")
+				   (insert ";; scratch buffer")
+				   (newline)))
+(global-set-key (kbd "C-c e m") 'macrostep-expand)
 
 ; C-i for search forward
 (define-key input-decode-map (kbd "C-i") (kbd "H-i")); hack needed to unset tab
@@ -190,6 +205,14 @@
   (setq initial-frame-alist '((width . 80) (height . 37)))
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
   (require 'slime)
+
+  ; org mode
+  (setq org-mobile-directory "c:/Users/jfurtney/Dropbox/Apps/MobileOrg")
+  (setq org-directory "c:/Users/jfurtney/Dropbox/org/")
+  (setq org-mobile-inbox-for-pull "c:/Users/jfurtney/Dropbox/org/flagged.org")
+  (setq org-agenda-files '("c:/Users/jfurtney/Dropbox/org/notes.org"))
+  (set-register ?n '(file . "c:/Users/jfurtney/Dropbox/org/notes.org"))
+
   (set-register ?d '(file . "c:/Users/jfurtney/downloads")))
                   ;(slime-setup '(slime-repl slime-fancy))
 
@@ -315,7 +338,7 @@
 
 (set-register ?e '(file . "c:/src/dotfiles/.emacs"))
 (set-register ?s '(file . "c:/src/"))
-(set-register ?n '(file . "c:/src/notes.org"))
+
 
 ; Dont prompt me if I try to kill a buffer with an active process
 ; via http://www.masteringemacs.org/
@@ -338,3 +361,8 @@
 (add-hook 'c++-mode-hook 'ggtags-mode)
 (add-hook 'c-mode-hook 'ggtags-mode)
 (add-hook 'fortran-mode-hook 'ggtags-mode)
+
+(global-set-key (kbd "M-j")
+            (lambda ()
+                  (interactive)
+                  (join-line -1)))
