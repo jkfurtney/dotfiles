@@ -2,13 +2,12 @@
 (menu-bar-mode 0)
 (scroll-bar-mode 0)
 
-
 (require 'package)
 (add-to-list 'package-archives
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smart-operator smex uuid websocket yasnippet)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smex uuid websocket yasnippet)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -140,6 +139,8 @@
 (require 'yasnippet)
 (yas/global-mode 1)
 
+(require 'auto-complete-config)
+(ac-config-default)
 
 ;;;; OS specific setup
 
@@ -175,13 +176,20 @@
 
       (add-to-list 'yas/snippet-dirs "c:/src/itasca-emacs/snippets")
       (add-to-list 'yas/snippet-dirs "c:/src/dotfiles/snippets")
+      (add-to-list 'ac-dictionary-directories "c:/src/itasca-emacs/ac-dict")
 
       (let ((file-name "C:/src/Blo-Up/interpreter/sign.el"))
         (when (file-exists-p file-name)
           (load file-name)))
+
       (add-to-list 'load-path "C:/src/itasca-emacs")
       (require 'itasca)
-
+      (progn
+	(add-to-list 'ac-modes 'itasca-general-mode)
+	(add-to-list 'ac-modes 'itasca-pfc-mode)
+	(add-to-list 'ac-modes 'itasca-flac-mode)
+	(add-to-list 'ac-modes 'itasca-flac3d-mode)
+	(add-to-list 'ac-modes 'itasca-udec-mode))
       ; windows specific magit init
       (defun magit-escape-for-shell (str)
         (if (or (string= str "git")
@@ -250,8 +258,6 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (require 'smart-operator)
-(require 'auto-complete-config)
-(ac-config-default)
 
 (require 'ein)
 (setq ein:use-auto-complete-superpack t)
