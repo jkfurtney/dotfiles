@@ -7,7 +7,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smex uuid websocket yasnippet)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -33,10 +33,10 @@
 (global-set-key (kbd "C-c e r") 'eval-region)
 (global-set-key (kbd "C-c e b") 'eval-buffer)
 (global-set-key (kbd "C-c e s") '(lambda ()
-				   (interactive)
-				   (switch-to-buffer "*scratch*")
-				   (insert ";; scratch buffer")
-				   (newline)))
+                                   (interactive)
+                                   (switch-to-buffer "*scratch*")
+                                   (insert ";; scratch buffer")
+                                   (newline)))
 (global-set-key (kbd "C-c e m") 'macrostep-expand)
 
 ; C-i for search forward
@@ -109,6 +109,8 @@
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
 (show-paren-mode 1)
+(setq show-paren-delay 0)
+
 (when (< 23 emacs-major-version)
   (electric-pair-mode 1))
 (column-number-mode 1)
@@ -185,11 +187,11 @@
       (add-to-list 'load-path "C:/src/itasca-emacs")
       (require 'itasca)
       (progn
-	(add-to-list 'ac-modes 'itasca-general-mode)
-	(add-to-list 'ac-modes 'itasca-pfc-mode)
-	(add-to-list 'ac-modes 'itasca-flac-mode)
-	(add-to-list 'ac-modes 'itasca-flac3d-mode)
-	(add-to-list 'ac-modes 'itasca-udec-mode))
+        (add-to-list 'ac-modes 'itasca-general-mode)
+        (add-to-list 'ac-modes 'itasca-pfc-mode)
+        (add-to-list 'ac-modes 'itasca-flac-mode)
+        (add-to-list 'ac-modes 'itasca-flac3d-mode)
+        (add-to-list 'ac-modes 'itasca-udec-mode))
       ; windows specific magit init
       (defun magit-escape-for-shell (str)
         (if (or (string= str "git")
@@ -372,3 +374,19 @@
             (lambda ()
                   (interactive)
                   (join-line -1)))
+
+(require 'diminish)
+(diminish 'paredit-mode)
+(diminish 'elisp-slime-nav-mode)
+(diminish 'pair-jump-mode)
+(diminish 'yas-minor-mode)
+(diminish 'smart-operator-mode)
+(diminish 'eldoc-mode)
+(diminish 'auto-complete-mode)
+(diminish 'auto-fill-function)
+(diminish 'abbrev-mode)
+
+(diminish 'ggtags-mode)
+
+(define-key ac-completing-map (kbd "C-n") 'ac-next)
+(define-key ac-completing-map (kbd "C-p") 'ac-previous)
