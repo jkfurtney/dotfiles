@@ -7,7 +7,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -237,6 +237,13 @@
   (setq initial-frame-alist '((width . 80) (height . 41)))
   (set-face-attribute 'default nil :height 140)
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
+  ; org mode
+  (setq org-mobile-directory "c:/Users/Itasca/Dropbox/Apps/MobileOrg")
+  (setq org-directory "c:/Users/Itasca/Dropbox/org/")
+  (setq org-mobile-inbox-for-pull "c:/Users/Itasca/Dropbox/org/flagged.org")
+  (setq org-agenda-files '("c:/Users/Itasca/Dropbox/org/notes.org"))
+  (set-register ?n '(file . "c:/Users/Itasca/Dropbox/org/notes.org"))
+
   (require 'slime)
   (slime-setup '(slime-repl slime-fancy)))
 
@@ -375,6 +382,8 @@
                   (interactive)
                   (join-line -1)))
 
+(require 'elisp-slime-nav)
+(require 'eldoc)
 (require 'diminish)
 (diminish 'paredit-mode)
 (diminish 'elisp-slime-nav-mode)
@@ -385,7 +394,6 @@
 (diminish 'auto-complete-mode)
 (diminish 'auto-fill-function)
 (diminish 'abbrev-mode)
-
 (diminish 'ggtags-mode)
 
 (define-key ac-completing-map (kbd "C-n") 'ac-next)
