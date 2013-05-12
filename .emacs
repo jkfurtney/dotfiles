@@ -2,6 +2,7 @@
 (menu-bar-mode 0)
 (scroll-bar-mode 0)
 
+;;;; packages
 (require 'package)
 (add-to-list 'package-archives
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
@@ -15,13 +16,12 @@
     (if (y-or-n-p (format "Package %s is missing. Install it? " p))
         (package-install p))))
 
-; C-q C-j to insert a newline in the mini-buffer, I can never remember this.
-
-; basic key bindings
+;;;; basic key bindings
 (require 'dired+)
 (global-set-key "\C-o" 'find-file) ; C-o for find file
 (add-hook 'dired-mode-hook
           (function (lambda ()
+		      (local-set-key (kbd "<backspace>") 'kill-buffer)
                       (local-unset-key (kbd "<f1>"))
                       (local-unset-key (kbd "C-o")))))
 
@@ -146,14 +146,14 @@
 
 ;;;; OS specific setup
 
-; get load-path first
+     ; get load-path first
 (if (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     (progn
       (add-to-list 'load-path "~/src/dotfiles/"))
   (progn
       (add-to-list 'load-path "c:/src/dotfiles/")))
 
-;; Linux specific setup
+     ;; Linux specific setup
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     ;;; Lisp (SLIME) interaction -- linux only
     (progn
@@ -161,13 +161,13 @@
       (setq x-select-enable-clipboard t)
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")))
 
-;; OS X specific setup
+     ;; OS X specific setup
 (if (eq system-type 'darwin)
     (progn
       (setq x-select-enable-clipboard t)
       (add-to-list 'exec-path "/opt/local/bin/")))
 
-;; windows specific setup
+     ;; windows specific setup
 (if  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
     (progn
       (remove-hook 'find-file-hooks 'vc-find-file-hook)
@@ -208,7 +208,7 @@
       (set-face-attribute 'default nil :height 140)))
 
 
-;; computer specific setup
+;;;; computer specific setup
 (cond
  ; vaio
  ((equal (system-name) "SHOTOVER")
@@ -216,7 +216,8 @@
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
   (require 'slime)
 
-  ; org mode
+  (display-time-mode 1)
+					; org mode
   (setq org-mobile-directory "c:/Users/jfurtney/Dropbox/Apps/MobileOrg")
   (setq org-directory "c:/Users/jfurtney/Dropbox/org/")
   (setq org-mobile-inbox-for-pull "c:/Users/jfurtney/Dropbox/org/flagged.org")
@@ -226,7 +227,7 @@
   (set-register ?d '(file . "c:/Users/jfurtney/downloads")))
                   ;(slime-setup '(slime-repl slime-fancy))
 
- ; vaio Ubuntu virtual machine
+  ; vaio Ubuntu virtual machine
  ((equal (system-name) "u64")
   (setq initial-frame-alist '((width . 80) (height . 40)))
   (setq inferior-lisp-program "ecl")
@@ -247,7 +248,7 @@
   (require 'slime)
   (slime-setup '(slime-repl slime-fancy)))
 
- ; default
+   ; default
  (t (setq initial-frame-alist '((width . 80) (height . 34)))))
 
  ;; note on windows $HOME is different in bash and emacs!
@@ -305,8 +306,8 @@
 (define-key global-map (kbd "C-M-z") 'ace-jump-mode-pop-mark)
 (define-key global-map (kbd "C-z") 'ace-jump-mode)
 
-; Display Visited Files Path in the Frame Title
-; via emacs Redux
+     ; Display Visited Files Path in the Frame Title
+     ; via emacs Redux
 (setq frame-title-format
       '((:eval (if (buffer-file-name)
                    (abbreviate-file-name (buffer-file-name))
@@ -361,12 +362,13 @@
   (remq 'process-kill-buffer-query-function
          kill-buffer-query-functions))
 
-(which-function-mode 1)
+;(which-function-mode 1)
 
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 (yas-reload-all)
 
 (require 'pair-jump-mode)
+(pair-jump-mode 1)
 
 ;(require 'helm-gtags)
 ;(setq helm-gtags-ignore-case t)
@@ -398,3 +400,13 @@
 
 (define-key ac-completing-map (kbd "C-n") 'ac-next)
 (define-key ac-completing-map (kbd "C-p") 'ac-previous)
+
+(setq calendar-week-start-day 1)
+(global-set-key (kbd "C-c `") 'menu-bar-mode)
+
+  ;; .emacs section navigation
+(defun imenu-elisp-sections ()
+  (setq imenu-prev-index-position-function nil)
+  (add-to-list 'imenu-generic-expression '("Sections" "^;;;; \\(.+\\)$" 1) t))
+
+(add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)

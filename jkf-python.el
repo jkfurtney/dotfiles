@@ -1,5 +1,6 @@
 ;; emacs stuff specific to python programming
 
+(require 'cython-mode)
 (setq python-check-command "pep8 -r --ignore=E221")
 (add-to-list 'auto-mode-alist '("\\.pyx\\'" . python-mode))
 (defun p-compile ()

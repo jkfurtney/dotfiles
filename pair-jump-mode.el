@@ -10,19 +10,23 @@ strings in the buffer local variable `pair-jump-list'."
     (if (and (eql (char-before) ?\s)
              (member (string (char-after)) pair-jump-list))
         (progn
-          (message "Jumping over %c" (char-after))
+          (message "pair-jump-mode: jumping over %c" (char-after))
           (backward-delete-char 1)
           (forward-char))
       (insert ?\s))))
 
 ;;;###autoload
 (define-minor-mode pair-jump-mode
-  "When space bar is pressed either insert a space or move the
-point over the closing pair character at point. Closing pair
-characters are jumped over if preceded by a space. The list of
-characters considered for jumping over are given as strings in
-the buffer local variable `pair-jump-list'. A prefix argument to
-space negates this behavior."
+  "Two spaces to jump over closing pair characters like ) or ].
+For the lazy typist; sometimes hitting the space bar twice is
+eaiser than C-f or ). Works well with electric-pair mode.
+
+When space bar is pressed either insert a space or move the point
+over the closing pair character at point. Closing pair characters
+are jumped over if preceded by a space. The list of characters
+considered for jumping over are given as strings in the buffer
+local variable `pair-jump-list'. A prefix argument to space
+negates this behavior."
   :lighter " pj"
   :keymap (let ((map (make-sparse-keymap)))
             (define-key map (kbd "SPC") 'pair-jump-function)
@@ -33,6 +37,7 @@ space negates this behavior."
 (add-hook 'python-mode-hook 'pair-jump-mode)
 (add-hook 'c++-mode-hook 'pair-jump-mode)
 
+(require 'ert)
 (ert-deftest test-pair-jump ()
   (with-temp-buffer
     (pair-jump-mode)
