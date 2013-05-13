@@ -383,11 +383,10 @@
 ;(require 'helm-gtags)
 ;(setq helm-gtags-ignore-case t)
 
-(require 'ggtags)
-
-(add-hook 'c++-mode-hook 'ggtags-mode)
-(add-hook 'c-mode-hook 'ggtags-mode)
-(add-hook 'fortran-mode-hook 'ggtags-mode)
+;; (require 'ggtags)
+;; (add-hook 'c++-mode-hook 'ggtags-mode)
+;; (add-hook 'c-mode-hook 'ggtags-mode)
+;; (add-hook 'fortran-mode-hook 'ggtags-mode)
 
 (global-set-key (kbd "M-j")
             (lambda ()
