@@ -221,8 +221,12 @@
   (setq org-mobile-directory "c:/Users/jfurtney/Dropbox/Apps/MobileOrg")
   (setq org-directory "c:/Users/jfurtney/Dropbox/org/")
   (setq org-mobile-inbox-for-pull "c:/Users/jfurtney/Dropbox/org/flagged.org")
-  (setq org-agenda-files '("c:/Users/jfurtney/Dropbox/org/notes.org"))
-  (set-register ?n '(file . "c:/Users/jfurtney/Dropbox/org/notes.org"))
+
+  (let ((org-note-file
+	 "c:/Users/jfurtney/Dropbox/org/notes.org"))
+    (setq org-default-notes-file org-note-file)
+    (setq org-agenda-files (list org-note-file))
+    (set-register ?n `(file . ,org-note-file)))
 
   (set-register ?d '(file . "c:/Users/jfurtney/downloads")))
                   ;(slime-setup '(slime-repl slime-fancy))
@@ -242,14 +246,20 @@
   (setq org-mobile-directory "c:/Users/Itasca/Dropbox/Apps/MobileOrg")
   (setq org-directory "c:/Users/Itasca/Dropbox/org/")
   (setq org-mobile-inbox-for-pull "c:/Users/Itasca/Dropbox/org/flagged.org")
-  (setq org-agenda-files '("c:/Users/Itasca/Dropbox/org/notes.org"))
-  (set-register ?n '(file . "c:/Users/Itasca/Dropbox/org/notes.org"))
+
+  (let ((org-note-file
+	 "c:/Users/Itasca/Dropbox/org/notes.org"))
+    (setq org-default-notes-file org-note-file)
+    (setq org-agenda-files (list org-note-file))
+    (set-register ?n `(file . ,org-note-file)))
+
+  (set-register ?d '(file . "c:/Users/Itasca/downloads")))
 
   (require 'slime)
-  (slime-setup '(slime-repl slime-fancy)))
+  (slime-setup '(slime-repl slime-fancy))
 
-   ; default
- (t (setq initial-frame-alist '((width . 80) (height . 34)))))
+					; default
+  (t (setq initial-frame-alist '((width . 80) (height . 34)))))
 
  ;; note on windows $HOME is different in bash and emacs!
  ;; cp ~/.gitconfig ~/AppData/Roaming/
@@ -410,3 +420,4 @@
   (add-to-list 'imenu-generic-expression '("Sections" "^;;;; \\(.+\\)$" 1) t))
 
 (add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
+(global-set-key (kbd "C-c a") 'org-agend)
