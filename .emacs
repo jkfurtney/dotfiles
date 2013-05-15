@@ -52,6 +52,7 @@
 (global-set-key (kbd "M-2") 'split-window-below)
 (global-set-key (kbd "<f1>") 'kill-buffer)
 (global-set-key (kbd "<f12>") 'other-window)
+(global-set-key (kbd "<f6>") 'ido-switch-buffer)
 (global-set-key (kbd "M-k") ; kill the entire line
                 '(lambda () (interactive)
                   (move-beginning-of-line nil)
@@ -396,6 +397,7 @@
 (require 'elisp-slime-nav)
 (require 'eldoc)
 (require 'diminish)
+(require 'ggtags)
 (diminish 'paredit-mode)
 (diminish 'elisp-slime-nav-mode)
 (diminish 'pair-jump-mode)
@@ -420,3 +422,48 @@
 
 (add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
 (global-set-key (kbd "C-c a") 'org-agend)
+(global-set-key (kbd "C-M-<return>") 'org-insert-subheading)
+
+(defun jkf-setup-fortran-mode () (interactive)
+  (pair-jump-mode 1)
+  (which-function-mode 1))
+
+(add-hook 'fortran-mode-hook 'jkf-setup-fortran-mode)
+
+(defun udec-string (s)
+  "Prompt for a string and insert it at point as a FORTRAN char
+array literal. A training space character is added, the total
+number of characters is written to the message area."
+  (interactive "Mstring for conversion: ")
+  (dolist (c (string-to-list s))
+    (insert (format "'%c'," c)))
+  (insert "' ',")
+  (message "%i chars " (1+ (length s))))
+
+(defun copy-call-buffer-filename-as-kill ()
+  "Insert the string: 'call file-name' to the clipboard where
+file-name is the full path and filename of the current buffer.
+Useful when editing a datafile in emacs any loading it into an Itasca code."
+  (interactive)
+  (let ((s (format "call \"%s\"" (buffer-file-name))))
+    (kill-new s)
+    (message "Copied: %s to clipboard" s)))
+
+; from http://www.emacswiki.org/emacs/buffer-extension.el
+(defun copy-buffer-file-name-as-kill(choice)
+  "Copy the buffer-file-name to the kill-ring"
+  (interactive "cCopy Buffer Name (F) Full, (D) Directory, (N) Name")
+  (let ((new-kill-string)
+        (name (if (eq major-mode 'dired-mode)
+                  (dired-get-filename)
+                (or (buffer-file-name) ""))))
+    (cond ((eq choice ?f)
+           (setq new-kill-string name))
+          ((eq choice ?d)
+           (setq new-kill-string (file-name-directory name)))
+          ((eq choice ?n)
+           (setq new-kill-string (file-name-nondirectory name)))
+          (t (message "Quit")))
+    (when new-kill-string
+      (message "%s copied" new-kill-string)
+      (kill-new new-kill-string))))
