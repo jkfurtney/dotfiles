@@ -73,6 +73,7 @@
 (global-unset-key [right])
 (global-unset-key [up])
 (global-unset-key [down])
+(global-unset-key (kbd "<insert>"))
 
 (set-background-color "black")
 (set-face-background 'default "black")
