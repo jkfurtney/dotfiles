@@ -12,7 +12,8 @@ strings in the buffer local variable `pair-jump-list'."
         (progn
           (message "pair-jump-mode: jumping over %c" (char-after))
           (backward-delete-char 1)
-          (forward-char))
+          (forward-char)
+	  (insert ?\s))
       (insert ?\s))))
 
 ;;;###autoload

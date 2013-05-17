@@ -8,7 +8,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -21,7 +21,7 @@
 (global-set-key "\C-o" 'find-file) ; C-o for find file
 (add-hook 'dired-mode-hook
           (function (lambda ()
-		      (local-set-key (kbd "<backspace>") 'kill-buffer)
+                      (local-set-key (kbd "<backspace>") 'kill-this-buffer)
                       (local-unset-key (kbd "<f1>"))
                       (local-unset-key (kbd "C-o")))))
 
@@ -50,7 +50,7 @@
 (global-set-key (kbd "M-0") 'delete-window)
 (global-set-key (kbd "M-1") 'delete-other-windows)
 (global-set-key (kbd "M-2") 'split-window-below)
-(global-set-key (kbd "<f1>") 'kill-buffer)
+(global-set-key (kbd "<f1>") 'kill-this-buffer)
 (global-set-key (kbd "<f12>") 'other-window)
 (global-set-key (kbd "<f6>") 'ido-switch-buffer)
 (global-set-key (kbd "M-k") ; kill the entire line
@@ -61,7 +61,7 @@
 
 ; Unset problematic keys
 (global-unset-key (kbd "C-x C-s"))
-(global-unset-key (kbd "C-x k"))
+;(global-unset-key (kbd "C-x k"))
 (global-unset-key (kbd "C-x 0"))
 (global-unset-key (kbd "C-x 1"))
 (global-unset-key (kbd "C-x 2"))
@@ -218,13 +218,13 @@
   (require 'slime)
 
   (display-time-mode 1)
-					; org mode
+                                        ; org mode
   (setq org-mobile-directory "c:/Users/jfurtney/Dropbox/Apps/MobileOrg")
   (setq org-directory "c:/Users/jfurtney/Dropbox/org/")
   (setq org-mobile-inbox-for-pull "c:/Users/jfurtney/Dropbox/org/flagged.org")
 
   (let ((org-note-file
-	 "c:/Users/jfurtney/Dropbox/org/notes.org"))
+         "c:/Users/jfurtney/Dropbox/org/notes.org"))
     (setq org-default-notes-file org-note-file)
     (setq org-agenda-files (list org-note-file))
     (set-register ?n `(file . ,org-note-file)))
@@ -249,7 +249,7 @@
   (setq org-mobile-inbox-for-pull "c:/Users/Itasca/Dropbox/org/flagged.org")
 
   (let ((org-note-file
-	 "c:/Users/Itasca/Dropbox/org/notes.org"))
+         "c:/Users/Itasca/Dropbox/org/notes.org"))
     (setq org-default-notes-file org-note-file)
     (setq org-agenda-files (list org-note-file))
     (set-register ?n `(file . ,org-note-file)))
@@ -259,7 +259,7 @@
   (require 'slime)
   (slime-setup '(slime-repl slime-fancy))
 
-					; default
+                                        ; default
   (t (setq initial-frame-alist '((width . 80) (height . 34)))))
 
  ;; note on windows $HOME is different in bash and emacs!
@@ -353,7 +353,8 @@
 
 (require 'helm-config)
 (require 'helm-descbinds)
-(global-set-key (kbd "C-.") 'helm-imenu)
+(require 'imenu-anywhere)
+(global-set-key (kbd "C-.") 'helm-imenu-anywhere)
 (global-set-key (kbd "C-h b") 'helm-descbinds)
 
 (require 'recentf)
@@ -467,3 +468,12 @@ Useful when editing a datafile in emacs any loading it into an Itasca code."
     (when new-kill-string
       (message "%s copied" new-kill-string)
       (kill-new new-kill-string))))
+
+(global-set-key (kbd "C-c j c") 'goto-last-change)
+(global-set-key (kbd "C-c j b") 'beginning-of-buffer)
+(global-set-key (kbd "C-c j e") 'end-of-buffer)
+(global-set-key (kbd "C-c j f") 'idomenu)
+
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.inc\\'" . fortran-mode))
+(global-set-key (kbd "M-x") 'smex)
