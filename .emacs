@@ -8,7 +8,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -478,3 +478,22 @@ Useful when editing a datafile in emacs any loading it into an Itasca code."
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.inc\\'" . fortran-mode))
 (global-set-key (kbd "M-x") 'smex)
+(setq ido-case-fold t)
+
+(defadvice shell-quote-argument (after windows-nt-special-quote (argument) activate)
+  "Add special quotes to ARGUMENT in case the system type is 'windows-nt."
+  (when
+      (and (eq system-type 'windows-nt) (w32-shell-dos-semantics))
+    (if (string-match "[\\.~]" ad-return-value)
+        (setq ad-return-value
+              (replace-regexp-in-string
+               "\\([\\.~]\\)"
+               "\\\\\\1"
+               ad-return-value)))))
+
+(global-set-key (kbd "<f8>") 'org-tree-slide-mode)
+(global-set-key (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
+(setq org-tree-slide-slide-in-effect nil)
+(setq org-src-fontify-natively t)
+(require 'multiple-cursors)
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
