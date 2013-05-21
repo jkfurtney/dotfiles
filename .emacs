@@ -491,9 +491,11 @@ Useful when editing a datafile in emacs any loading it into an Itasca code."
                "\\\\\\1"
                ad-return-value)))))
 
-(global-set-key (kbd "<f8>") 'org-tree-slide-mode)
-(global-set-key (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
+(require 'org-tree-slide)
+(define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
+(define-key org-mode-map (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
 (setq org-tree-slide-slide-in-effect nil)
 (setq org-src-fontify-natively t)
+
 (require 'multiple-cursors)
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
