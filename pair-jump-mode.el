@@ -13,7 +13,7 @@ strings in the buffer local variable `pair-jump-list'."
           (message "pair-jump-mode: jumping over %c" (char-after))
           (backward-delete-char 1)
           (forward-char)
-	  (insert ?\s))
+          (insert ?\s))
       (insert ?\s))))
 
 ;;;###autoload
@@ -53,6 +53,6 @@ negates this behavior."
 
       (pair-jump-function 1) ; test that jump occured
       (setq test-string (buffer-substring (point-at-bol) (point-at-eol)))
-      (should (equal test-string starting-string)))))
+      (should (equal test-string ") ]}'\"")))))
 
 (provide 'pair-jump-mode)
