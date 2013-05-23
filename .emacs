@@ -1,3 +1,4 @@
+(setq-default inhibit-startup-screen t)
 (tool-bar-mode 0)
 (menu-bar-mode 0)
 (scroll-bar-mode 0)
@@ -106,7 +107,7 @@
 
 (setq-default transient-mark-mode t)
 (setq-default global-font-lock-mode t)
-(setq-default inhibit-startup-screen t)
+
 (setq visible-bell t)
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
@@ -215,10 +216,11 @@
  ; vaio
  ((equal (system-name) "SHOTOVER")
   (setq initial-frame-alist '((width . 80) (height . 37)))
+  (set-face-attribute 'default nil :height 140)
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
-  (require 'slime)
-
-  (display-time-mode 1)
+  ;(require 'slime)
+  ;(slime-setup '(slime-repl slime-fancy))
+  ;(display-time-mode 1)
                                         ; org mode
   (setq org-mobile-directory "c:/Users/jfurtney/Dropbox/Apps/MobileOrg")
   (setq org-directory "c:/Users/jfurtney/Dropbox/org/")
@@ -232,13 +234,6 @@
 
   (set-register ?d '(file . "c:/Users/jfurtney/downloads")))
                   ;(slime-setup '(slime-repl slime-fancy))
-
-  ; vaio Ubuntu virtual machine
- ((equal (system-name) "u64")
-  (setq initial-frame-alist '((width . 80) (height . 40)))
-  (setq inferior-lisp-program "ecl")
-  (require 'slime)
-  (slime-setup '(slime-repl slime-fancy)))
 
  ((equal (system-name) "UNSER")
   (setq initial-frame-alist '((width . 80) (height . 41)))
@@ -257,8 +252,16 @@
 
   (set-register ?d '(file . "c:/Users/Itasca/downloads")))
 
+  ; vaio Ubuntu virtual machine
+ ((equal (system-name) "u64")
+  (setq initial-frame-alist '((width . 80) (height . 40)))
+  (setq inferior-lisp-program "ecl")
   (require 'slime)
-  (slime-setup '(slime-repl slime-fancy))
+  (slime-setup '(slime-repl slime-fancy)))
+
+
+  ;(require 'slime) ;; ? this is broken
+  ;(slime-setup '(slime-repl slime-fancy))
 
                                         ; default
   (t (setq initial-frame-alist '((width . 80) (height . 34)))))
