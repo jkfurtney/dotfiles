@@ -448,9 +448,28 @@ number of characters is written to the message area."
 (defun copy-call-buffer-filename-as-kill ()
   "Insert the string: 'call file-name' to the clipboard where
 file-name is the full path and filename of the current buffer.
-Useful when editing a datafile in emacs any loading it into an Itasca code."
+Useful when editing a datafile in emacs and loading it into an
+Itasca code."
   (interactive)
   (let ((s (format "call \"%s\"" (buffer-file-name))))
+    (kill-new s)
+    (message "Copied: %s to clipboard" s)))
+
+(defun copy-run-buffer-filename-as-kill ()
+  "Insert the string: '%run file-name' to the clipboard where
+file-name is the full path and filename of the current buffer.
+Useful when editing a datafile in emacs and loading it IPython."
+  (interactive)
+  (let ((s (format "%%run %s" (buffer-file-name))))
+    (kill-new s)
+    (message "Copied: %s to clipboard" s)))
+
+(defun copy-load-buffer-filename-as-kill ()
+  "Insert the string: '%run file-name' to the clipboard where
+file-name is the full path and filename of the current buffer.
+Useful when editing a datafile in emacs and loading it a lisp."
+  (interactive)
+  (let ((s (format "(load \"%s\")" (buffer-file-name))))
     (kill-new s)
     (message "Copied: %s to clipboard" s)))
 
@@ -472,6 +491,7 @@ Useful when editing a datafile in emacs any loading it into an Itasca code."
     (when new-kill-string
       (message "%s copied" new-kill-string)
       (kill-new new-kill-string))))
+
 
 (global-set-key (kbd "C-c j c") 'goto-last-change)
 (global-set-key (kbd "C-c j b") 'beginning-of-buffer)
@@ -502,3 +522,5 @@ Useful when editing a datafile in emacs any loading it into an Itasca code."
 
 (require 'multiple-cursors)
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+
+(define-key python-mode-map (kbd "C-c M-c") 'copy-run-buffer-filename-as-kill)
