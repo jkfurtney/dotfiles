@@ -450,16 +450,6 @@ number of characters is written to the message area."
   (insert "' ',")
   (message "%i chars " (1+ (length s))))
 
-(defun copy-call-buffer-filename-as-kill ()
-  "Insert the string: 'call file-name' to the clipboard where
-file-name is the full path and filename of the current buffer.
-Useful when editing a datafile in emacs and loading it into an
-Itasca code."
-  (interactive)
-  (let ((s (format "call \"%s\"" (buffer-file-name))))
-    (kill-new s)
-    (message "Copied: %s to clipboard" s)))
-
 (defun copy-run-buffer-filename-as-kill ()
   "Insert the string: '%run file-name' to the clipboard where
 file-name is the full path and filename of the current buffer.
@@ -479,7 +469,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
     (message "Copied: %s to clipboard" s)))
 
 ; from http://www.emacswiki.org/emacs/buffer-extension.el
-(defun copy-buffer-file-name-as-kill(choice)
+(defun copy-buffer-file-name-as-kill (choice)
   "Copy the buffer-file-name to the kill-ring"
   (interactive "cCopy Buffer Name (F) Full, (D) Directory, (N) Name")
   (let ((new-kill-string)
