@@ -9,7 +9,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -213,14 +213,19 @@
 
 ;;;; computer specific setup
 (cond
- ; vaio
+					; vaio
  ((equal (system-name) "SHOTOVER")
   (setq initial-frame-alist '((width . 80) (height . 37)))
   (set-face-attribute 'default nil :height 140)
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
-  ;(require 'slime)
-  ;(slime-setup '(slime-repl slime-fancy))
-  ;(display-time-mode 1)
+  (require 'slime)
+  (slime-setup '(slime-repl slime-fancy))
+  (add-hook 'slime-mode-hook 'set-up-slime-ac)
+  (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
+  (eval-after-load "auto-complete"
+    '(add-to-list 'ac-modes 'slime-repl-mode))
+
+  (display-time-mode 1)
                                         ; org mode
   (setq org-mobile-directory "c:/Users/jfurtney/Dropbox/Apps/MobileOrg")
   (setq org-directory "c:/Users/jfurtney/Dropbox/org/")
@@ -233,13 +238,13 @@
     (set-register ?n `(file . ,org-note-file)))
 
   (set-register ?d '(file . "c:/Users/jfurtney/downloads")))
-                  ;(slime-setup '(slime-repl slime-fancy))
+					;(slime-setup '(slime-repl slime-fancy))
 
  ((equal (system-name) "UNSER")
   (setq initial-frame-alist '((width . 80) (height . 41)))
   (set-face-attribute 'default nil :height 140)
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
-  ; org mode
+					; org mode
   (setq org-mobile-directory "c:/Users/Itasca/Dropbox/Apps/MobileOrg")
   (setq org-directory "c:/Users/Itasca/Dropbox/org/")
   (setq org-mobile-inbox-for-pull "c:/Users/Itasca/Dropbox/org/flagged.org")
@@ -252,7 +257,7 @@
 
   (set-register ?d '(file . "c:/Users/Itasca/downloads")))
 
-  ; vaio Ubuntu virtual machine
+					; vaio Ubuntu virtual machine
  ((equal (system-name) "u64")
   (setq initial-frame-alist '((width . 80) (height . 40)))
   (setq inferior-lisp-program "ecl")
@@ -260,11 +265,11 @@
   (slime-setup '(slime-repl slime-fancy)))
 
 
-  ;(require 'slime) ;; ? this is broken
-  ;(slime-setup '(slime-repl slime-fancy))
+					;(require 'slime) ;; ? this is broken
+					;(slime-setup '(slime-repl slime-fancy))
 
                                         ; default
-  (t (setq initial-frame-alist '((width . 80) (height . 34)))))
+ (t (setq initial-frame-alist '((width . 80) (height . 34)))))
 
  ;; note on windows $HOME is different in bash and emacs!
  ;; cp ~/.gitconfig ~/AppData/Roaming/
@@ -524,3 +529,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
 
 (define-key python-mode-map (kbd "C-c M-c") 'copy-run-buffer-filename-as-kill)
+
+(add-hook 'python-mode-hook 'jedi:setup)
+(setq jedi:setup-keys t)
+(setq jedi:complete-on-dot t)
