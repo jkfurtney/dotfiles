@@ -53,7 +53,7 @@
 (global-set-key (kbd "M-2") 'split-window-below)
 (global-set-key (kbd "<f1>") 'kill-this-buffer)
 (global-set-key (kbd "<f12>") 'other-window)
-(global-set-key (kbd "<f6>") 'ido-switch-buffer)
+(global-set-key (kbd "<apps> /") 'ido-switch-buffer)
 (global-set-key (kbd "M-k") ; kill the entire line
                 '(lambda () (interactive)
                   (move-beginning-of-line nil)
@@ -523,3 +523,5 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (add-hook 'python-mode-hook 'jedi:setup)
 (setq jedi:setup-keys t)
 (setq jedi:complete-on-dot t)
+
+(add-hook 'org-mode-hook 'pair-jump-mode)
