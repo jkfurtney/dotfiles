@@ -13,7 +13,7 @@ strings in the buffer local variable `pair-jump-list'."
           (message "pair-jump-mode: jumping over %c" (char-after))
           (backward-delete-char 1)
           (forward-char)
-          (insert ?\s))
+          (when pair-jump-keep-trailing-space (insert ?\s)))
       (insert ?\s))))
 
 ;;;###autoload
@@ -32,7 +32,8 @@ negates this behavior."
   :keymap (let ((map (make-sparse-keymap)))
             (define-key map (kbd "SPC") 'pair-jump-function)
             map)
-  (set (make-local-variable 'pair-jump-list) '(")" "]" "'" "\"" "}")))
+  (set (make-local-variable 'pair-jump-list) '(")" "]" "'" "\"" "}"))
+  (set (make-local-variable 'pair-jump-keep-trailing-space) nil))
 
 ;;;###autoload
 (add-hook 'python-mode-hook 'pair-jump-mode)

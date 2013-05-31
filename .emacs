@@ -363,7 +363,7 @@
 (require 'helm-config)
 (require 'helm-descbinds)
 (require 'imenu-anywhere)
-(global-set-key (kbd "C-.") 'helm-imenu-anywhere)
+(global-set-key (kbd "C-.") 'helm-imenu)
 (global-set-key (kbd "C-h b") 'helm-descbinds)
 
 (require 'recentf)
@@ -525,3 +525,10 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (setq jedi:complete-on-dot t)
 
 (add-hook 'org-mode-hook 'pair-jump-mode)
+
+; on windows the magit process hangs constantly
+(fset 'kill-git
+   (lambda (&optional arg)
+     "Keyboard macro."
+     (interactive "p")
+     (kmacro-exec-ring-item (quote ([36 f12 f1 f12] 0 "%d")) arg)))
