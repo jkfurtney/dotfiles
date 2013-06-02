@@ -17,6 +17,13 @@
     (if (y-or-n-p (format "Package %s is missing. Install it? " p))
         (package-install p))))
 
+     ; get load-path first
+(if (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
+    (progn
+      (add-to-list 'load-path "~/src/dotfiles/"))
+  (progn
+      (add-to-list 'load-path "c:/src/dotfiles/")))
+
 ;;;; basic key bindings
 (require 'dired+)
 (global-set-key "\C-o" 'find-file) ; C-o for find file
@@ -88,6 +95,7 @@
 (setq calendar-latitude 44.954109)
 (setq calendar-longitude -93.187408)
 (setq calendar-location-name "Minneapolis/St. Paul")
+(setq calendar-week-start-day 1)
 
 (defun dont-kill-emacs ()
  (interactive)
@@ -105,14 +113,17 @@
 (global-set-key (kbd "M-]") 'next-buffer)
 (global-set-key (kbd "M-[") 'previous-buffer)
 
+(fset 'yes-or-no-p 'y-or-n-p)
 (setq-default transient-mark-mode t)
 (setq-default global-font-lock-mode t)
-
+(setq sentence-end-double-space nil)
+(setq next-line-add-newlines t)
 (setq visible-bell t)
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
 (show-paren-mode 1)
 (setq show-paren-delay 0)
+(setq calendar-week-start-day 1)
 
 (when (< 23 emacs-major-version)
   (electric-pair-mode 1))
@@ -124,6 +135,161 @@
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 (add-hook 'latex-mode-hook 'turn-on-auto-fill)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+;;;; Sphinx reStructuredText Setup
+
+(defun chunk-start ()
+  "move point to begining of white-space seperated chunk"
+  (interactive)
+  (search-backward-regexp "\\s-")
+  (forward-char))
+(defun chunk-end ()
+  "move point to end of white-space separated chunk"
+  (interactive)
+  (search-forward-regexp "\\s-")
+  (backward-char))
+(defun rest-wrap-math ()
+  "wrap :math:`__` around the current word"
+  (interactive)
+  (chunk-start)
+  (insert ":math:`")
+  (chunk-end)
+  (insert "`"))
+
+(defun s-compile-cmd (cmd)
+  "build sphinx documentation. First call prompts for a directory"
+  (interactive)
+  (unless (boundp 'sphinx-build-dir)
+    (setq sphinx-build-dir (read-directory-name "sphinx build dir ")))
+  (let ((default-directory sphinx-build-dir))
+       (compile cmd)))
+(defun s-compile () (interactive) (s-compile-cmd "make html"))
+(defun s-pcompile () (interactive) (s-compile-cmd "make latexpdf"))
+
+(defun sphinx-reset () (interactive) (makunbound 'sphinx-build-dir))
+
+(defun sphinx-open-pdf () (interactive)
+  (when (boundp 'sphinx-build-dir)
+    (w32-browser (car (file-expand-wildcards
+                       (concat sphinx-build-dir "build/latex/*.pdf"))))))
+(require 'rst)
+(define-key rst-mode-map (kbd "C-c p") 'sphinx-open-pdf)
+(define-key rst-mode-map (kbd "C-c C") 's-compile)
+(define-key rst-mode-map (kbd "C-c c") 's-pcompile)
+(define-key rst-mode-map (kbd "C-c m") 'rest-wrap-math)
+
+;;;; FORTRAN Setup
+
+(add-to-list 'auto-mode-alist '("\\.inc\\'" . fortran-mode))
+
+(defun jkf-setup-fortran-mode () (interactive)
+  (pair-jump-mode 1)
+  (which-function-mode 1))
+
+(add-hook 'fortran-mode-hook 'jkf-setup-fortran-mode)
+
+(defun udec-string (s)
+  "Prompt for a string and insert it at point as a FORTRAN char
+array literal. A training space character is added, the total
+number of characters is written to the message area."
+  (interactive "Mstring for conversion: ")
+  (dolist (c (string-to-list s))
+    (insert (format "'%c'," c)))
+  (insert "' ',")
+  (message "%i chars " (1+ (length s))))
+
+;;;; C/C++ Setup
+
+(defun filename-comment ()
+  "Insert filename as c++ comment eg. //filename.h"
+  (interactive)
+  (insert (concat "//" (file-name-nondirectory buffer-file-name))))
+
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+
+(fset 'move-comment-above
+   [?\C-s ?/ ?\C-b ?\C-k ?\C-a ?\C-y return ?\C-n])
+
+(defun move-region-to-file (a b fname)
+  "Text in the region is moved to the given new file"
+ (interactive "r\nFMove region to new file:")
+ (if (file-exists-p fname) (error "File already exists"))
+ (kill-region a b)
+ (find-file fname)
+ (yank))
+
+(defun move-region-to-header-file (a b fname)
+  "Text in the region is moved to the given new file \n #include \"filename.h\" is inserted at the current location"
+ (interactive "r\nFMove region to new header file:")
+ (if (file-exists-p fname) (error "File already exists"))
+ (kill-region a b)
+ (insert (concat "#include \"" (file-name-nondirectory fname) "\"\n"))
+ (find-file fname)
+ (yank))
+
+(add-hook 'c++-mode-hook
+      '(lambda ()
+         (add-hook 'before-save-hook
+                   (lambda ()
+                     (untabify (point-min) (point-max))))))
+
+;;;; Python Setup
+
+(require 'cython-mode)
+(setq python-check-command "pep8 -r --ignore=E221")
+(add-to-list 'auto-mode-alist '("\\.pyx\\'" . cython-mode))
+(defun p-compile ()
+  "build python extension module. First call prompts for a directory"
+  (interactive)
+  (unless (boundp 'python-build-dir)
+    (setq python-build-dir (read-directory-name "python build dir ")))
+  (let ((default-directory python-build-dir))
+       (compile "python setup.py install --user")))
+
+(define-key python-mode-map (kbd "C-c M-c") 'copy-run-buffer-filename-as-kill)
+(add-hook 'python-mode-hook 'jedi:setup)
+(setq jedi:setup-keys t)
+(setq jedi:complete-on-dot t)
+
+(require 'ein)
+(setq ein:use-auto-complete-superpack t)
+(global-set-key [(shift return)] 'ein:worksheet-execute-cell)
+(global-set-key (kbd "C-c n") 'ein:notebooklist-open)
+
+(add-hook 'ein:notebook-multilang-mode-hook
+          (function (lambda ()
+                      (local-set-key (kbd "C-s")
+                                     'ein:notebook-save-notebook-command))))
+
+;;;; Lisp Setup
+
+(require 'paredit)
+(add-hook 'lisp-mode-hook 'enable-paredit-mode)
+(add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
+(add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
+(add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+(add-hook 'emacs-lisp-mode-hook 'pair-jump-mode)
+(setq edebug-trace nil)
+
+;; .emacs section navigation by ;;;; Section name
+(defun imenu-elisp-sections ()
+  (setq imenu-prev-index-position-function nil)
+  (add-to-list 'imenu-generic-expression '("Sections" "^;;;; \\(.+\\)$" 1) t))
+
+(add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
+
+;;;; Org-mode Setup
+
+(global-set-key (kbd "C-c a") 'org-agend)
+(global-set-key (kbd "C-M-<return>") 'org-insert-subheading)
+(require 'org-tree-slide)
+(define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
+(define-key org-mode-map (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
+(setq org-tree-slide-slide-in-effect nil)
+(setq org-src-fontify-natively t)
+(add-hook 'org-mode-hook 'pair-jump-mode)
+
 
 (defun kill-all-buffers ()
   (interactive)
@@ -149,13 +315,6 @@
 
 ;;;; OS specific setup
 
-     ; get load-path first
-(if (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
-    (progn
-      (add-to-list 'load-path "~/src/dotfiles/"))
-  (progn
-      (add-to-list 'load-path "c:/src/dotfiles/")))
-
      ;; Linux specific setup
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     ;;; Lisp (SLIME) interaction -- linux only
@@ -173,15 +332,32 @@
      ;; windows specific setup
 (if  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
     (progn
-      (remove-hook 'find-file-hooks 'vc-find-file-hook)
+
+ ;;; (remove-hook 'find-file-hooks 'vc-find-file-hook)
+
+                                        ; to get grep working?
+      (defadvice shell-quote-argument
+        (after windows-nt-special-quote (argument) activate)
+        "Add special quotes to ARGUMENT in case the system type is 'windows-nt."
+        (when
+            (and (eq system-type 'windows-nt) (w32-shell-dos-semantics))
+          (if (string-match "[\\.~]" ad-return-value)
+              (setq ad-return-value
+                    (replace-regexp-in-string
+                     "\\([\\.~]\\)"
+                     "\\\\\\1"
+                     ad-return-value)))))
 
       (load "./w32-browser.el")
       (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
       (add-to-list 'exec-path "C:/Program Files (x86)/GnuWin32/bin/")
-
+      (add-to-list 'exec-path "c:/Program Files (x86)/Git/bin/")
       (add-to-list 'yas/snippet-dirs "c:/src/itasca-emacs/snippets")
       (add-to-list 'yas/snippet-dirs "c:/src/dotfiles/snippets")
       (add-to-list 'ac-dictionary-directories "c:/src/itasca-emacs/ac-dict")
+
+      (set-register ?e '(file . "c:/src/dotfiles/.emacs"))
+      (set-register ?s '(file . "c:/src/"))
 
       (let ((file-name "C:/src/Blo-Up/interpreter/sign.el"))
         (when (file-exists-p file-name)
@@ -195,7 +371,7 @@
         (add-to-list 'ac-modes 'itasca-flac-mode)
         (add-to-list 'ac-modes 'itasca-flac3d-mode)
         (add-to-list 'ac-modes 'itasca-udec-mode))
-      ; windows specific magit init
+                                        ; windows specific magit init
       (defun magit-escape-for-shell (str)
         (if (or (string= str "git")
                 (string-match "^--" str))
@@ -213,7 +389,7 @@
 
 ;;;; computer specific setup
 (cond
-					; vaio
+                                        ; vaio
  ((equal (system-name) "SHOTOVER")
   (setq initial-frame-alist '((width . 80) (height . 37)))
   (set-face-attribute 'default nil :height 140)
@@ -238,13 +414,13 @@
     (set-register ?n `(file . ,org-note-file)))
 
   (set-register ?d '(file . "c:/Users/jfurtney/downloads")))
-					;(slime-setup '(slime-repl slime-fancy))
+                                        ;(slime-setup '(slime-repl slime-fancy))
 
  ((equal (system-name) "UNSER")
   (setq initial-frame-alist '((width . 80) (height . 41)))
   (set-face-attribute 'default nil :height 140)
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
-					; org mode
+                                        ; org mode
   (setq org-mobile-directory "c:/Users/Itasca/Dropbox/Apps/MobileOrg")
   (setq org-directory "c:/Users/Itasca/Dropbox/org/")
   (setq org-mobile-inbox-for-pull "c:/Users/Itasca/Dropbox/org/flagged.org")
@@ -257,16 +433,15 @@
 
   (set-register ?d '(file . "c:/Users/Itasca/downloads")))
 
-					; vaio Ubuntu virtual machine
+                                        ; vaio Ubuntu virtual machine
  ((equal (system-name) "u64")
   (setq initial-frame-alist '((width . 80) (height . 40)))
   (setq inferior-lisp-program "ecl")
   (require 'slime)
   (slime-setup '(slime-repl slime-fancy)))
 
-
-					;(require 'slime) ;; ? this is broken
-					;(slime-setup '(slime-repl slime-fancy))
+                                        ;(require 'slime) ;; ? this is broken
+                                        ;(slime-setup '(slime-repl slime-fancy))
 
                                         ; default
  (t (setq initial-frame-alist '((width . 80) (height . 34)))))
@@ -275,30 +450,14 @@
  ;; cp ~/.gitconfig ~/AppData/Roaming/
  ;; to get magit to recognize user.name and user.email
 
-
-(load "jkf-sphinx.el")
-(load "jkf-python.el")
-(load "jkf-c.el")
-
 (defun a2ps-file () (interactive)
+  "in dired call this function on a selected file to process the
+file with a2ps"
   (let ((template  "a2ps.exe --columns=2 -o %s.ps -M letter --portrait %s")
         (fn (dired-get-filename)))
     (shell-command (format template fn fn ))))
 
-(fset 'yes-or-no-p 'y-or-n-p)
-
 (require 'smart-operator)
-
-(require 'ein)
-(setq ein:use-auto-complete-superpack t)
-(global-set-key [(shift return)] 'ein:worksheet-execute-cell)
-(global-set-key (kbd "C-c n") 'ein:notebooklist-open)
-
-(add-hook 'ein:notebook-multilang-mode-hook
-          (function (lambda ()
-                      (local-set-key (kbd "C-s")
-                                     'ein:notebook-save-notebook-command))))
-
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
 
@@ -314,6 +473,7 @@
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
 (setq ido-create-new-buffer 'always)
+(setq ido-case-fold t)
 
 (require 'ace-jump-mode)
 (autoload
@@ -351,15 +511,6 @@
 (define-key global-map (kbd "C-S-n") 'move-line-down)
 (define-key global-map (kbd "C-S-p") 'move-line-up)
 
-(require 'paredit)
-(add-hook 'lisp-mode-hook 'enable-paredit-mode)
-(add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
-(add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
-
-(setq edebug-trace nil)
-(setq sentence-end-double-space nil)
-(setq next-line-add-newlines t)
-
 (require 'helm-config)
 (require 'helm-descbinds)
 (require 'imenu-anywhere)
@@ -373,10 +524,6 @@
 
 (define-key global-map (kbd "RET") 'newline-and-indent)
 
-(set-register ?e '(file . "c:/src/dotfiles/.emacs"))
-(set-register ?s '(file . "c:/src/"))
-
-
 ; Dont prompt me if I try to kill a buffer with an active process
 ; via http://www.masteringemacs.org/
 (setq kill-buffer-query-functions
@@ -386,6 +533,7 @@
 ;(which-function-mode 1)
 
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
+
 (yas-reload-all)
 
 (require 'pair-jump-mode)
@@ -421,34 +569,6 @@
 
 (define-key ac-completing-map (kbd "C-n") 'ac-next)
 (define-key ac-completing-map (kbd "C-p") 'ac-previous)
-
-(setq calendar-week-start-day 1)
-(global-set-key (kbd "C-c `") 'menu-bar-mode)
-
-  ;; .emacs section navigation
-(defun imenu-elisp-sections ()
-  (setq imenu-prev-index-position-function nil)
-  (add-to-list 'imenu-generic-expression '("Sections" "^;;;; \\(.+\\)$" 1) t))
-
-(add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
-(global-set-key (kbd "C-c a") 'org-agend)
-(global-set-key (kbd "C-M-<return>") 'org-insert-subheading)
-
-(defun jkf-setup-fortran-mode () (interactive)
-  (pair-jump-mode 1)
-  (which-function-mode 1))
-
-(add-hook 'fortran-mode-hook 'jkf-setup-fortran-mode)
-
-(defun udec-string (s)
-  "Prompt for a string and insert it at point as a FORTRAN char
-array literal. A training space character is added, the total
-number of characters is written to the message area."
-  (interactive "Mstring for conversion: ")
-  (dolist (c (string-to-list s))
-    (insert (format "'%c'," c)))
-  (insert "' ',")
-  (message "%i chars " (1+ (length s))))
 
 (defun copy-run-buffer-filename-as-kill ()
   "Insert the string: '%run file-name' to the clipboard where
@@ -486,7 +606,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
     (when new-kill-string
       (message "%s copied" new-kill-string)
       (kill-new new-kill-string))))
-
+(global-set-key (kbd "C-c M-c") 'copy-buffer-file-name-as-kill)
 
 (global-set-key (kbd "C-c j c") 'goto-last-change)
 (global-set-key (kbd "C-c j b") 'beginning-of-buffer)
@@ -494,41 +614,16 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (global-set-key (kbd "C-c j f") 'idomenu)
 
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.inc\\'" . fortran-mode))
+
 (global-set-key (kbd "M-x") 'smex)
-(setq ido-case-fold t)
 
-(defadvice shell-quote-argument (after windows-nt-special-quote (argument) activate)
-  "Add special quotes to ARGUMENT in case the system type is 'windows-nt."
-  (when
-      (and (eq system-type 'windows-nt) (w32-shell-dos-semantics))
-    (if (string-match "[\\.~]" ad-return-value)
-        (setq ad-return-value
-              (replace-regexp-in-string
-               "\\([\\.~]\\)"
-               "\\\\\\1"
-               ad-return-value)))))
-
-(require 'org-tree-slide)
-(define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
-(define-key org-mode-map (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
-(setq org-tree-slide-slide-in-effect nil)
-(setq org-src-fontify-natively t)
 
 (require 'multiple-cursors)
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
 
-(define-key python-mode-map (kbd "C-c M-c") 'copy-run-buffer-filename-as-kill)
-
-(add-hook 'python-mode-hook 'jedi:setup)
-(setq jedi:setup-keys t)
-(setq jedi:complete-on-dot t)
-
-(add-hook 'org-mode-hook 'pair-jump-mode)
-
 ; on windows the magit process hangs constantly
-(fset 'kill-git
-   (lambda (&optional arg)
-     "Keyboard macro."
-     (interactive "p")
-     (kmacro-exec-ring-item (quote ([36 f12 f1 f12] 0 "%d")) arg)))
+(defun kill-magit ()
+  "Kill the Magit process buffer"
+  (interactive)
+  (with-current-buffer "*magit-process*"
+    (kill-this-buffer)))
