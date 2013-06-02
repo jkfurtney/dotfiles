@@ -357,6 +357,7 @@ number of characters is written to the message area."
       (add-to-list 'yas/snippet-dirs "c:/src/itasca-emacs/snippets")
       (add-to-list 'yas/snippet-dirs "c:/src/dotfiles/snippets")
       (add-to-list 'ac-dictionary-directories "c:/src/itasca-emacs/ac-dict")
+      (setq eshell-rc-script "c:/src/dotfiles/eshellrc")
 
       (set-register ?e '(file . "c:/src/dotfiles/.emacs"))
       (set-register ?s '(file . "c:/src/"))
@@ -629,7 +630,3 @@ Useful when editing a datafile in emacs and loading it a lisp."
   (interactive)
   (with-current-buffer "*magit-process*"
     (kill-this-buffer)))
-
-;;;; eshell
-
-(setq eshell-rc-script "eshellrc")
