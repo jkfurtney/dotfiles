@@ -314,7 +314,6 @@ number of characters is written to the message area."
 (ac-config-default)
 
 ;;;; OS specific setup
-
      ;; Linux specific setup
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     ;;; Lisp (SLIME) interaction -- linux only
@@ -332,8 +331,11 @@ number of characters is written to the message area."
      ;; windows specific setup
 (if  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
     (progn
-
- ;;; (remove-hook 'find-file-hooks 'vc-find-file-hook)
+      (setq explicit-shell-file-name
+	    "C:/Program Files (x86)/Git/bin/bash.exe")
+      (setq shell-file-name explicit-shell-file-name)
+      (add-to-list 'exec-path "C:/Program Files (x86)/Git/bin")
+;;; (remove-hook 'find-file-hooks 'vc-find-file-hook)
 
                                         ; to get grep working?
       (defadvice shell-quote-argument
@@ -627,3 +629,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
   (interactive)
   (with-current-buffer "*magit-process*"
     (kill-this-buffer)))
+
+;;;; eshell
+
+(setq eshell-rc-script "eshellrc")
