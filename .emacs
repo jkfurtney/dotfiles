@@ -453,6 +453,15 @@ number of characters is written to the message area."
  ;; cp ~/.gitconfig ~/AppData/Roaming/
  ;; to get magit to recognize user.name and user.email
 
+(defun a2ps-buffer ()
+  "call a2ps on the file the current buffer is visiting. Opens
+the resulting postscript file"
+  (interactive)
+  (let ((template  "a2ps.exe --columns=2 -o %s.ps -M letter --portrait %s")
+        (fn (buffer-file-name)))
+    (shell-command (format template fn fn ))
+    (w32-browser (format "%s.ps" fn))))
+
 (defun a2ps-file () (interactive)
   "in dired call this function on a selected file to process the
 file with a2ps"
