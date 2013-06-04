@@ -325,6 +325,17 @@ number of characters is written to the message area."
      ;; OS X specific setup
 (if (eq system-type 'darwin)
     (progn
+      (set-face-attribute 'default nil :family "Monaco"
+			  :height 145 :weight 'normal)
+      (setq eshell-rc-script "~/src/dotfiles/eshellrc_osx")
+      (add-to-list 'yas/snippet-dirs "~/src/dotfiles/snippets")
+
+      (let ((org-note-file
+	     "~/Dropbox/org/notes.org"))
+	(setq org-default-notes-file org-note-file)
+	(setq org-agenda-files (list org-note-file))
+	(set-register ?n `(file . ,org-note-file)))
+
       (setq x-select-enable-clipboard t)
       (add-to-list 'exec-path "/opt/local/bin/")))
 
@@ -542,14 +553,6 @@ file with a2ps"
 (require 'pair-jump-mode)
 (pair-jump-mode 1)
 
-;(require 'helm-gtags)
-;(setq helm-gtags-ignore-case t)
-
-;; (require 'ggtags)
-;; (add-hook 'c++-mode-hook 'ggtags-mode)
-;; (add-hook 'c-mode-hook 'ggtags-mode)
-;; (add-hook 'fortran-mode-hook 'ggtags-mode)
-
 (global-set-key (kbd "M-j")
             (lambda ()
                   (interactive)
@@ -558,7 +561,6 @@ file with a2ps"
 (require 'elisp-slime-nav)
 (require 'eldoc)
 (require 'diminish)
-(require 'ggtags)
 (diminish 'paredit-mode)
 (diminish 'elisp-slime-nav-mode)
 (diminish 'pair-jump-mode)
@@ -568,7 +570,6 @@ file with a2ps"
 (diminish 'auto-complete-mode)
 (diminish 'auto-fill-function)
 (diminish 'abbrev-mode)
-(diminish 'ggtags-mode)
 
 (define-key ac-completing-map (kbd "C-n") 'ac-next)
 (define-key ac-completing-map (kbd "C-p") 'ac-previous)
@@ -619,7 +620,6 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
 (global-set-key (kbd "M-x") 'smex)
-
 
 (require 'multiple-cursors)
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)

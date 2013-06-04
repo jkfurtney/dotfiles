@@ -1,0 +1,11 @@
+# init file for emacs eshell
+addpath /opt/local/bin
+
+alias fcpp 'find . -name "*.cpp"'
+
+alias gs 'git status'
+alias gk 'gitk --all'
+alias rm 'rm -i'
+alias mv 'mv -i'
+alias gd 'git diff'
+alias gba 'git branch -a'
