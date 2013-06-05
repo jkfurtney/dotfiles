@@ -17,3 +17,5 @@ alias a2ps='C:\Program Files (x86)\GnuWin32\bin\a2ps.exe -M letter'
 alias gscp='git stash && git svn dcommit && git stash pop'
 alias ipnb='python /c/python27/scripts/ipython-script.py notebook --pylab inline'
 alias ipqt='python /c/python27/scripts/ipython-script.py qtconsole --pylab inline'
+
+alias mencoder='/c/Program\ Files\ \(x86\)/GnuWin32/bin/mencoder "mf://*.png" -mf fps=13 -o aname.avi -ovc lavc -lavcopts vcodec=mpeg4'

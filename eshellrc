@@ -1,5 +1,6 @@
 # init file for emacs eshell
 addpath c:/Program\ Files\ \(x86\)/Git/bin/
+addpath c:/Program\ Files\ \(x86\)/GnuWin32/bin/
 
 alias fcpp 'find . -name "*.cpp"'
 

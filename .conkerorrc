@@ -18,7 +18,10 @@ define_key(default_global_keymap, "C-left", "back");
 define_key(default_global_keymap, "M-]", "buffer-next");
 define_key(default_global_keymap, "M-[", "buffer-previous");
 define_key(default_global_keymap, "C-tab", "buffer-next");
+define_key(default_global_keymap, "C-i", "isearch-forward");
 define_key(content_buffer_normal_keymap, "back_space", "back");
+define_key(content_buffer_normal_keymap, "C-back_space", "forward");
+define_key(content_buffer_normal_keymap, "context_menu-/", "switch-to-buffer");
 
 
 define_browser_object_class(

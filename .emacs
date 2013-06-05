@@ -340,7 +340,6 @@ number of characters is written to the message area."
 	(setq org-default-notes-file org-note-file)
 	(setq org-agenda-files (list org-note-file))
 	(set-register ?n `(file . ,org-note-file)))
-
       (setq x-select-enable-clipboard t)
       (add-to-list 'exec-path "/opt/local/bin/")))
 
@@ -351,6 +350,10 @@ number of characters is written to the message area."
 	    "c:/Program Files (x86)/gs/gs9.02/bin/gswin32c.exe")
       (setq explicit-shell-file-name
 	    "C:/Program Files (x86)/Git/bin/bash.exe")
+      ;; (setq image-dired-cmd-create-thumbnail-program
+      ;; 	    "C:/Program Files (x86)/ImageMagick-6.8.5-Q16/convert")
+      ;; (setq image-dired-cmd-create-standard-thumbnail-command
+      ;; 	    (s-replace "convert" image-dired-cmd-create-thumbnail-program ))
       (setq shell-file-name explicit-shell-file-name)
       (add-to-list 'exec-path "C:/Program Files (x86)/Git/bin")
 
@@ -373,6 +376,8 @@ number of characters is written to the message area."
       (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
       (add-to-list 'exec-path "C:/Program Files (x86)/GnuWin32/bin/")
       (add-to-list 'exec-path "c:/Program Files (x86)/Git/bin/")
+      (add-to-list 'exec-path "C:/Program Files (x86)/ImageMagick-6.8.5-Q16/")
+
       (add-to-list 'yas/snippet-dirs "c:/src/itasca-emacs/snippets")
       (add-to-list 'yas/snippet-dirs "c:/src/dotfiles/snippets")
       (add-to-list 'ac-dictionary-directories "c:/src/itasca-emacs/ac-dict")
@@ -645,3 +650,19 @@ Useful when editing a datafile in emacs and loading it a lisp."
   (interactive)
   (with-current-buffer "*magit-process*"
     (kill-this-buffer)))
+
+(defun chomp (str)
+  "Chomp leading and tailing whitespace from STR."
+  (while (string-match "\\`\n+\\|^\\s-+\\|\\s-+$\\|\n+\\'"
+		       str)
+    (setq str (replace-match "" t t str)))
+  str)
+
+(defun =-transpose ()
+  "Transpose the text before and after the first equals sign"
+  (interactive)
+  (let ((lhs (buffer-substring (point-at-bol) (point)))
+	(rhs (buffer-substring (1+ (point)) (point-at-eol))))
+    (end-of-line)
+    (newline-and-indent)
+    (insert (format "%s = %s" (chomp rhs) (chomp lhs)))))
