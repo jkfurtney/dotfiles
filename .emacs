@@ -238,6 +238,7 @@ number of characters is written to the message area."
 (require 'cython-mode)
 (setq python-check-command "pep8 -r --ignore=E221")
 (add-to-list 'auto-mode-alist '("\\.pyx\\'" . cython-mode))
+
 (defun p-compile ()
   "build python extension module. First call prompts for a directory"
   (interactive)
@@ -261,10 +262,15 @@ number of characters is written to the message area."
                       (local-set-key (kbd "C-s")
                                      'ein:notebook-save-notebook-command))))
 
+(add-hook 'python-mode-hook (function (lambda ()
+					(setq python-indent-offset 4))))
+
 ;;;; Lisp Setup
 
 (require 'paredit)
 (add-hook 'lisp-mode-hook 'enable-paredit-mode)
+(add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'lisp-mode-hook 'pair-jump-mode)
 (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
 (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
@@ -342,6 +348,8 @@ number of characters is written to the message area."
      ;; windows specific setup
 (if  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
     (progn
+      (setq doc-view-ghostscript-program
+	    "c:/Program Files (x86)/gs/gs9.02/bin/gswin32c.exe")
       (setq explicit-shell-file-name
 	    "C:/Program Files (x86)/Git/bin/bash.exe")
       (setq shell-file-name explicit-shell-file-name)
@@ -639,3 +647,8 @@ Useful when editing a datafile in emacs and loading it a lisp."
   (interactive)
   (with-current-buffer "*magit-process*"
     (kill-this-buffer)))
+
+;;;; themes
+
+(add-to-list 'custom-theme-load-path "c:/src/dotfiles/")
+;(load-theme 'zenburn t)
