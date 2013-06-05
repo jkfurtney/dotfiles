@@ -335,7 +335,6 @@ number of characters is written to the message area."
 			  :height 145 :weight 'normal)
       (setq eshell-rc-script "~/src/dotfiles/eshellrc_osx")
       (add-to-list 'yas/snippet-dirs "~/src/dotfiles/snippets")
-
       (let ((org-note-file
 	     "~/Dropbox/org/notes.org"))
 	(setq org-default-notes-file org-note-file)
@@ -354,7 +353,8 @@ number of characters is written to the message area."
 	    "C:/Program Files (x86)/Git/bin/bash.exe")
       (setq shell-file-name explicit-shell-file-name)
       (add-to-list 'exec-path "C:/Program Files (x86)/Git/bin")
-;;; (remove-hook 'find-file-hooks 'vc-find-file-hook)
+
+      (add-to-list 'custom-theme-load-path "c:/src/dotfiles/")
 
                                         ; to get grep working?
       (defadvice shell-quote-argument
@@ -408,11 +408,9 @@ number of characters is written to the message area."
        "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")
       (set-face-attribute 'default nil :height 140)))
 
-
 ;;;; computer specific setup
 (cond
-                                        ; vaio
- ((equal (system-name) "SHOTOVER")
+ ((equal (system-name) "SHOTOVER")                            ; vaio
   (setq initial-frame-alist '((width . 80) (height . 37)))
   (set-face-attribute 'default nil :height 140)
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
@@ -647,8 +645,3 @@ Useful when editing a datafile in emacs and loading it a lisp."
   (interactive)
   (with-current-buffer "*magit-process*"
     (kill-this-buffer)))
-
-;;;; themes
-
-(add-to-list 'custom-theme-load-path "c:/src/dotfiles/")
-;(load-theme 'zenburn t)
