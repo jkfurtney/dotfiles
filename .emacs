@@ -9,7 +9,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -426,6 +426,10 @@ number of characters is written to the message area."
   (eval-after-load "auto-complete"
     '(add-to-list 'ac-modes 'slime-repl-mode))
 
+  (setq doc-view-ghostscript-program
+	"c:/Program Files (x86)/gs/gs9.07/bin/gswin32c.exe")
+
+
   (display-time-mode 1)
                                         ; org mode
   (setq org-mobile-directory "c:/Users/jfurtney/Dropbox/Apps/MobileOrg")
@@ -666,3 +670,5 @@ Useful when editing a datafile in emacs and loading it a lisp."
     (end-of-line)
     (newline-and-indent)
     (insert (format "%s = %s" (chomp rhs) (chomp lhs)))))
+
+(load-theme 'cyberpunk t)
