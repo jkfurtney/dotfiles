@@ -54,6 +54,6 @@ negates this behavior."
 
       (pair-jump-function 1) ; test that jump occured
       (setq test-string (buffer-substring (point-at-bol) (point-at-eol)))
-      (should (equal test-string ") ]}'\"")))))
+      (should (equal test-string ")]}'\"")))))
 
 (provide 'pair-jump-mode)
