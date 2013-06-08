@@ -653,8 +653,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (defun kill-magit ()
   "Kill the Magit process buffer"
   (interactive)
-  (with-current-buffer "*magit-process*"
-    (kill-this-buffer)))
+  (delete-process "*magit-process*"))
 
 (defun chomp (str)
   "Chomp leading and tailing whitespace from STR."
