@@ -61,6 +61,7 @@
 (global-set-key (kbd "<f1>") 'kill-this-buffer)
 (global-set-key (kbd "<f12>") 'other-window)
 (global-set-key (kbd "<apps> /") 'ido-switch-buffer)
+(global-set-key (kbd "<apps> .") 'smex)
 (global-set-key (kbd "C-S-x") 'ido-switch-buffer)
 (global-set-key (kbd "M-k") ; kill the entire line
                 '(lambda () (interactive)
@@ -553,7 +554,8 @@ file with a2ps"
 (require 'helm-config)
 (require 'helm-descbinds)
 (require 'imenu-anywhere)
-(global-set-key (kbd "C-.") 'helm-imenu)
+;(global-set-key (kbd "C-.") 'helm-imenu)
+(global-set-key (kbd "C-M-.") 'helm-imenu)
 (global-set-key (kbd "C-h b") 'helm-descbinds)
 
 (require 'recentf)
