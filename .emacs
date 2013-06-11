@@ -289,12 +289,14 @@ number of characters is written to the message area."
 
 ;;;; Org-mode Setup
 
-(global-set-key (kbd "C-c a") 'org-agend)
+;(global-set-key (kbd "C-c a") 'org-agend)
 (global-set-key (kbd "C-M-<return>") 'org-insert-subheading)
 (require 'org-tree-slide)
 (define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
 (define-key org-mode-map (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
 (setq org-tree-slide-slide-in-effect nil)
+(define-key org-mode-map (kbd "C-M-a") 'backward-sentence)
+(define-key org-mode-map (kbd "C-M-e") 'forward-sentence)
 (setq org-src-fontify-natively t)
 (add-hook 'org-mode-hook 'pair-jump-mode)
 
