@@ -1,3 +1,6 @@
+; use post-self-insert-hook
+; use syntax table to find closing pairs
+;
 
 (defun pair-jump-function (supress)
   "Insert a space or jump over closing pairs eg. ) ] ' \" if
@@ -42,7 +45,7 @@ negates this behavior."
 (require 'ert)
 (ert-deftest test-pair-jump ()
   (with-temp-buffer
-    (pair-jump-mode)
+    (pair-jump-mode 1)
     (let ((starting-string  ")]}'\"")
           test-string)
 
