@@ -471,7 +471,8 @@ number of characters is written to the message area."
   (setq initial-frame-alist '((width . 80) (height . 40)))
   (setq inferior-lisp-program "ecl")
   (require 'slime)
-  (slime-setup '(slime-repl slime-fancy)))
+;  (slime-setup '(slime-repl slime-fancy))
+)
 
                                         ;(require 'slime) ;; ? this is broken
                                         ;(slime-setup '(slime-repl slime-fancy))
