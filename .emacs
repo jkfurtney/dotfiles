@@ -265,7 +265,7 @@ number of characters is written to the message area."
                                      'ein:notebook-save-notebook-command))))
 
 (add-hook 'python-mode-hook (function (lambda ()
-					(setq python-indent-offset 4))))
+                                        (setq python-indent-offset 4))))
 
 ;;;; Lisp Setup
 
@@ -295,8 +295,6 @@ number of characters is written to the message area."
 (define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
 (define-key org-mode-map (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
 (setq org-tree-slide-slide-in-effect nil)
-(define-key org-mode-map (kbd "C-M-a") 'backward-sentence)
-(define-key org-mode-map (kbd "C-M-e") 'forward-sentence)
 (setq org-src-fontify-natively t)
 (add-hook 'org-mode-hook 'pair-jump-mode)
 
@@ -336,14 +334,14 @@ number of characters is written to the message area."
 (if (eq system-type 'darwin)
     (progn
       (set-face-attribute 'default nil :family "Monaco"
-			  :height 145 :weight 'normal)
+                          :height 145 :weight 'normal)
       (setq eshell-rc-script "~/src/dotfiles/eshellrc_osx")
       (add-to-list 'yas/snippet-dirs "~/src/dotfiles/snippets")
       (let ((org-note-file
-	     "~/Dropbox/org/notes.org"))
-	(setq org-default-notes-file org-note-file)
-	(setq org-agenda-files (list org-note-file))
-	(set-register ?n `(file . ,org-note-file)))
+             "~/Dropbox/org/notes.org"))
+        (setq org-default-notes-file org-note-file)
+        (setq org-agenda-files (list org-note-file))
+        (set-register ?n `(file . ,org-note-file)))
       (setq x-select-enable-clipboard t)
       (add-to-list 'exec-path "/opt/local/bin/")))
 
@@ -351,13 +349,13 @@ number of characters is written to the message area."
 (if  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
     (progn
       (setq doc-view-ghostscript-program
-	    "c:/Program Files (x86)/gs/gs9.02/bin/gswin32c.exe")
+            "c:/Program Files (x86)/gs/gs9.02/bin/gswin32c.exe")
       (setq explicit-shell-file-name
-	    "C:/Program Files (x86)/Git/bin/bash.exe")
+            "C:/Program Files (x86)/Git/bin/bash.exe")
       ;; (setq image-dired-cmd-create-thumbnail-program
-      ;; 	    "C:/Program Files (x86)/ImageMagick-6.8.5-Q16/convert")
+      ;;            "C:/Program Files (x86)/ImageMagick-6.8.5-Q16/convert")
       ;; (setq image-dired-cmd-create-standard-thumbnail-command
-      ;; 	    (s-replace "convert" image-dired-cmd-create-thumbnail-program ))
+      ;;            (s-replace "convert" image-dired-cmd-create-thumbnail-program ))
       (setq shell-file-name explicit-shell-file-name)
       (add-to-list 'exec-path "C:/Program Files (x86)/Git/bin")
 
@@ -431,7 +429,7 @@ number of characters is written to the message area."
     '(add-to-list 'ac-modes 'slime-repl-mode))
 
   (setq doc-view-ghostscript-program
-	"c:/Program Files (x86)/gs/gs9.07/bin/gswin32c.exe")
+        "c:/Program Files (x86)/gs/gs9.07/bin/gswin32c.exe")
 
 
   (display-time-mode 1)
@@ -663,7 +661,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (defun chomp (str)
   "Chomp leading and tailing whitespace from STR."
   (while (string-match "\\`\n+\\|^\\s-+\\|\\s-+$\\|\n+\\'"
-		       str)
+                       str)
     (setq str (replace-match "" t t str)))
   str)
 
@@ -671,7 +669,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
   "Transpose the text before and after the first equals sign"
   (interactive)
   (let ((lhs (buffer-substring (point-at-bol) (point)))
-	(rhs (buffer-substring (1+ (point)) (point-at-eol))))
+        (rhs (buffer-substring (1+ (point)) (point-at-eol))))
     (end-of-line)
     (newline-and-indent)
     (insert (format "%s = %s" (chomp rhs) (chomp lhs)))))
