@@ -246,8 +246,10 @@ number of characters is written to the message area."
   (interactive)
   (unless (boundp 'python-build-dir)
     (setq python-build-dir (read-directory-name "python build dir ")))
-  (let ((default-directory python-build-dir))
-       (compile "python setup.py install --user")))
+  (let ((default-directory python-build-dir)
+	(extra-arg (if (eq  system-type 'windows-nt)
+		       " " " --user")))
+    (compile (concat "python setup.py install" extra-arg))))
 
 (define-key python-mode-map (kbd "C-c M-c") 'copy-run-buffer-filename-as-kill)
 (add-hook 'python-mode-hook 'jedi:setup)
