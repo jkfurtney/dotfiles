@@ -275,6 +275,18 @@ number of characters is written to the message area."
 (add-hook 'lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'lisp-mode-hook 'pair-jump-mode)
+
+
+;; (eval-after-load 'slime
+;;   (add-hook 'slime-mode-hook
+;; 	    (progn
+;; 	      (function (lambda ()
+;; 			  (local-set-key
+;; 			   (kbd "M-n" 'backward-paragraph))))
+;; 	      (function (lambda ()
+;; 			  (local-set-key
+;; 			   (kbd "M-p" 'forward-paragraph)))))))
+
 (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
 (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
