@@ -308,6 +308,8 @@ number of characters is written to the message area."
 (require 'org-tree-slide)
 (define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
 (define-key org-mode-map (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
+(define-key org-mode-map (kbd "C-c =") 'calc-eval-line-and-insert)
+
 (setq org-tree-slide-slide-in-effect nil)
 (setq org-src-fontify-natively t)
 (add-hook 'org-mode-hook 'pair-jump-mode)
@@ -689,3 +691,15 @@ Useful when editing a datafile in emacs and loading it a lisp."
     (insert (format "%s = %s" (chomp rhs) (chomp lhs)))))
 
 (load-theme 'cyberpunk t)
+
+(defun calc-eval-and-insert (&optional start end)
+  (interactive "r")
+  (let ((result (calc-eval (buffer-substring-no-properties start end))))
+    (goto-char (point-at-eol))
+    (insert " = " result)))
+
+(defun calc-eval-line-and-insert ()
+  (interactive)
+  (calc-eval-and-insert (point-at-bol) (point-at-eol)))
+
+(global-set-key (kbd "C-c =") 'calc-eval-line-and-insert)
