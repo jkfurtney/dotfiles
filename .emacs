@@ -72,9 +72,9 @@
 ; Unset problematic keys
 (global-unset-key (kbd "C-x C-s"))
 ;(global-unset-key (kbd "C-x k"))
-(global-unset-key (kbd "C-x 0"))
-(global-unset-key (kbd "C-x 1"))
-(global-unset-key (kbd "C-x 2"))
+;(global-unset-key (kbd "C-x 0"))
+;(global-unset-key (kbd "C-x 1"))
+;(global-unset-key (kbd "C-x 2"))
 (global-unset-key (kbd "C-x C-f"))
 (global-unset-key (kbd "C-x u"))
 (global-unset-key [prior])  ; page up
