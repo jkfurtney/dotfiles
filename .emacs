@@ -72,9 +72,9 @@
 ; Unset problematic keys
 (global-unset-key (kbd "C-x C-s"))
 ;(global-unset-key (kbd "C-x k"))
-(global-unset-key (kbd "C-x 0"))
-(global-unset-key (kbd "C-x 1"))
-(global-unset-key (kbd "C-x 2"))
+;(global-unset-key (kbd "C-x 0"))
+;(global-unset-key (kbd "C-x 1"))
+;(global-unset-key (kbd "C-x 2"))
 (global-unset-key (kbd "C-x C-f"))
 (global-unset-key (kbd "C-x u"))
 (global-unset-key [prior])  ; page up
@@ -344,7 +344,12 @@ number of characters is written to the message area."
     (progn
       (add-to-list 'custom-theme-load-path "~/dotfiles/themes/")
       (setq x-select-enable-clipboard t)
-      (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")))
+      (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
+      (set-register ?e '(file . "~/src/dotfiles/.emacs"))
+      (global-set-key (kbd "s-/") 'ido-switch-buffer)
+      (global-set-key (kbd "s-.") 'smex)
+      (add-to-list 'load-path "~/src/clojure-emacs")
+      (require 'clojure-emacs-init)))
 
      ;; OS X specific setup
 (if (eq system-type 'darwin)
