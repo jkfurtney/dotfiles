@@ -9,7 +9,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -127,8 +127,8 @@
 (setq show-paren-delay 0)
 (setq calendar-week-start-day 1)
 
-(when (< 23 emacs-major-version)
-  (electric-pair-mode 1))
+;; (when (< 23 emacs-major-version)
+;;   (electric-pair-mode 1))
 (column-number-mode 1)
 (tool-bar-mode 0)
 (menu-bar-mode 0)
@@ -271,8 +271,8 @@ number of characters is written to the message area."
 
 ;;;; Lisp Setup
 
-(require 'paredit)
-(add-hook 'lisp-mode-hook 'enable-paredit-mode)
+;; (require 'paredit)
+;; (add-hook 'lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'lisp-mode-hook 'pair-jump-mode)
 
@@ -287,7 +287,7 @@ number of characters is written to the message area."
 ;; 			  (local-set-key
 ;; 			   (kbd "M-p" 'forward-paragraph)))))))
 
-(add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
+;(add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
 (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
@@ -460,6 +460,7 @@ number of characters is written to the message area."
     (setq org-agenda-files (list org-note-file))
     (set-register ?n `(file . ,org-note-file)))
 
+  (set-register ?b '(file . "c:/Users/jfurtney/dropbox"))
   (set-register ?d '(file . "c:/Users/jfurtney/downloads")))
                                         ;(slime-setup '(slime-repl slime-fancy))
 
@@ -605,7 +606,7 @@ file with a2ps"
 (require 'elisp-slime-nav)
 (require 'eldoc)
 (require 'diminish)
-(diminish 'paredit-mode)
+;(diminish 'paredit-mode)
 (diminish 'elisp-slime-nav-mode)
 (diminish 'pair-jump-mode)
 (diminish 'yas-minor-mode)
@@ -703,3 +704,11 @@ Useful when editing a datafile in emacs and loading it a lisp."
   (calc-eval-and-insert (point-at-bol) (point-at-eol)))
 
 (global-set-key (kbd "C-c =") 'calc-eval-line-and-insert)
+
+(require 'smartparens-config)
+(smartparens-global-mode t)
+
+(global-set-key (kbd "C-}") 'sp-forward-slurp-sexp)
+(global-set-key (kbd "C-{") 'sp-backward-slurp-sexp)
+(global-set-key (kbd "M-}") 'sp-forward-barf-sexp)
+(global-set-key (kbd "M-{") 'sp-backward-barf-sexp)
