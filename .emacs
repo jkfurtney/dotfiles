@@ -9,7 +9,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode nrepl)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -58,6 +58,7 @@
 (global-set-key (kbd "M-0") 'delete-window)
 (global-set-key (kbd "M-1") 'delete-other-windows)
 (global-set-key (kbd "M-2") 'split-window-below)
+(global-set-key (kbd "M-3") 'split-window-right)
 (global-set-key (kbd "<f1>") 'kill-this-buffer)
 (global-set-key (kbd "<f12>") 'other-window)
 (global-set-key (kbd "<apps> /") 'ido-switch-buffer)
@@ -342,14 +343,25 @@ number of characters is written to the message area."
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     ;;; Lisp (SLIME) interaction -- linux only
     (progn
-      (add-to-list 'custom-theme-load-path "~/dotfiles/themes/")
       (setq x-select-enable-clipboard t)
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
       (set-register ?e '(file . "~/src/dotfiles/.emacs"))
       (global-set-key (kbd "s-/") 'ido-switch-buffer)
       (global-set-key (kbd "s-.") 'smex)
-      (add-to-list 'load-path "~/src/clojure-emacs")
-      (require 'clojure-emacs-init)))
+
+					; clojure
+      (progn
+	(defadvice nrepl-eval-last-expression (after nrepl-flash-last activate)
+	  (if (fboundp 'slime-flash-region)
+	      (slime-flash-region (save-excursion (backward-sexp) (point)) (point))))
+
+	(defadvice nrepl-eval-expression-at-point (after nrepl-flash-at activate)
+	  (if (fboundp 'slime-flash-region)
+	      (apply #'slime-flash-region (nrepl-region-for-expression-at-point))))
+
+	(defadvice nrepl-default-err-handler (after nrepl-focus-errors activate)
+	  "Focus the error buffer after errors, like Emacs normally does."
+	  (select-window (get-buffer-window "*nrepl-error*"))))))
 
      ;; OS X specific setup
 (if (eq system-type 'darwin)
