@@ -510,6 +510,11 @@ number of characters is written to the message area."
                                         ;(slime-setup '(slime-repl slime-fancy))
 
                                         ; default
+ ((equal (system-name) "uvb64") ; work virtual machine
+  (set-face-attribute 'default nil :height 140)
+  ;(set-default-font "-*-terminus-medium-r-*-*-*-140-75-75-*-*-iso8859-15")
+  ;(set-default-font "-raster-Fixedsys-normal-r-normal-normal-12-90-96-96-c-*-*-*")
+  )
  (t (setq initial-frame-alist '((width . 80) (height . 34)))))
 
  ;; note on windows $HOME is different in bash and emacs!
