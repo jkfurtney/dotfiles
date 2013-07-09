@@ -230,11 +230,12 @@ number of characters is written to the message area."
  (find-file fname)
  (yank))
 
-(add-hook 'c++-mode-hook
-      '(lambda ()
-         (add-hook 'before-save-hook
+;(setq before-save-hook nil)
+(add-hook 'before-save-hook
                    (lambda ()
-                     (untabify (point-min) (point-max))))))
+                     (unless
+                         (string= "Makefile" (buffer-name))
+                       (untabify (point-min) (point-max)))))
 
 ;;;; Python Setup
 
@@ -248,8 +249,8 @@ number of characters is written to the message area."
   (unless (boundp 'python-build-dir)
     (setq python-build-dir (read-directory-name "python build dir ")))
   (let ((default-directory python-build-dir)
-	(extra-arg (if (eq  system-type 'windows-nt)
-		       " " " --user")))
+        (extra-arg (if (eq  system-type 'windows-nt)
+                       " " " --user")))
     (compile (concat "python setup.py install" extra-arg))))
 
 (define-key python-mode-map (kbd "C-c M-c") 'copy-run-buffer-filename-as-kill)
@@ -280,13 +281,13 @@ number of characters is written to the message area."
 
 ;; (eval-after-load 'slime
 ;;   (add-hook 'slime-mode-hook
-;; 	    (progn
-;; 	      (function (lambda ()
-;; 			  (local-set-key
-;; 			   (kbd "M-n" 'backward-paragraph))))
-;; 	      (function (lambda ()
-;; 			  (local-set-key
-;; 			   (kbd "M-p" 'forward-paragraph)))))))
+;;          (progn
+;;            (function (lambda ()
+;;                        (local-set-key
+;;                         (kbd "M-n" 'backward-paragraph))))
+;;            (function (lambda ()
+;;                        (local-set-key
+;;                         (kbd "M-p" 'forward-paragraph)))))))
 
 ;(add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
@@ -355,19 +356,34 @@ number of characters is written to the message area."
       (global-set-key (kbd "s-/") 'ido-switch-buffer)
       (global-set-key (kbd "s-.") 'smex)
 
-					; clojure
+
+      (add-to-list 'yas/snippet-dirs "~/src/itasca-emacs/snippets")
+      (add-to-list 'yas/snippet-dirs "~/src/dotfiles/snippets")
+      (add-to-list 'ac-dictionary-directories "~/src/itasca-emacs/ac-dict")
+      (setq eshell-rc-script "~/src/dotfiles/eshellrc")
+
+      (add-to-list 'load-path "~/src/itasca-emacs" )
+      (require 'itasca)
       (progn
-	(defadvice nrepl-eval-last-expression (after nrepl-flash-last activate)
-	  (if (fboundp 'slime-flash-region)
-	      (slime-flash-region (save-excursion (backward-sexp) (point)) (point))))
+        (add-to-list 'ac-modes 'itasca-general-mode)
+        (add-to-list 'ac-modes 'itasca-pfc-mode)
+        (add-to-list 'ac-modes 'itasca-flac-mode)
+        (add-to-list 'ac-modes 'itasca-flac3d-mode)
+        (add-to-list 'ac-modes 'itasca-udec-mode))
 
-	(defadvice nrepl-eval-expression-at-point (after nrepl-flash-at activate)
-	  (if (fboundp 'slime-flash-region)
-	      (apply #'slime-flash-region (nrepl-region-for-expression-at-point))))
+                                        ; clojure
+      (progn
+        (defadvice nrepl-eval-last-expression (after nrepl-flash-last activate)
+          (if (fboundp 'slime-flash-region)
+              (slime-flash-region (save-excursion (backward-sexp) (point)) (point))))
 
-	(defadvice nrepl-default-err-handler (after nrepl-focus-errors activate)
-	  "Focus the error buffer after errors, like Emacs normally does."
-	  (select-window (get-buffer-window "*nrepl-error*"))))))
+        (defadvice nrepl-eval-expression-at-point (after nrepl-flash-at activate)
+          (if (fboundp 'slime-flash-region)
+              (apply #'slime-flash-region (nrepl-region-for-expression-at-point))))
+
+        (defadvice nrepl-default-err-handler (after nrepl-focus-errors activate)
+          "Focus the error buffer after errors, like Emacs normally does."
+          (select-window (get-buffer-window "*nrepl-error*"))))))
 
      ;; OS X specific setup
 (if (eq system-type 'darwin)
