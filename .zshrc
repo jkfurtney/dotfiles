@@ -51,6 +51,8 @@ setopt IGNORE_EOF
 
 source $ZSH/oh-my-zsh.sh
 
+unsetopt correct
+
 # Customize to your needs...
 export PATH=$PATH:/opt/ThirdParty-2.2.0/platforms/linux64Gcc/gperftools-svn/bin:/home/jkf/OpenFOAM/jkf-2.2.0/platforms/linux64GccDPOpt/bin:/opt/site/2.2.0/platforms/linux64GccDPOpt/bin:/opt/openfoam220/platforms/linux64GccDPOpt/bin:/opt/openfoam220/bin:/opt/openfoam220/wmake:.:/home/jkf/bin/:/home/jkf/.local/bin/:/home/jkf/bin:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
 
