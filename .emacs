@@ -347,6 +347,7 @@ number of characters is written to the message area."
       (setq x-select-enable-clipboard t)
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
       (set-register ?e '(file . "~/src/dotfiles/.emacs"))
+      (set-register ?n '(file . "~/src/orgfile/notes.org"))
 
       (global-unset-key (kbd "<menu>"))
       (global-set-key (kbd "<menu> /") 'ido-switch-buffer)
