@@ -9,7 +9,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa paredit popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode nrepl)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -58,6 +58,7 @@
 (global-set-key (kbd "M-0") 'delete-window)
 (global-set-key (kbd "M-1") 'delete-other-windows)
 (global-set-key (kbd "M-2") 'split-window-below)
+(global-set-key (kbd "M-3") 'split-window-right)
 (global-set-key (kbd "<f1>") 'kill-this-buffer)
 (global-set-key (kbd "<f12>") 'other-window)
 (global-set-key (kbd "<apps> /") 'ido-switch-buffer)
@@ -127,8 +128,8 @@
 (setq show-paren-delay 0)
 (setq calendar-week-start-day 1)
 
-(when (< 23 emacs-major-version)
-  (electric-pair-mode 1))
+;; (when (< 23 emacs-major-version)
+;;   (electric-pair-mode 1))
 (column-number-mode 1)
 (tool-bar-mode 0)
 (menu-bar-mode 0)
@@ -229,11 +230,12 @@ number of characters is written to the message area."
  (find-file fname)
  (yank))
 
-(add-hook 'c++-mode-hook
-      '(lambda ()
-         (add-hook 'before-save-hook
+;(setq before-save-hook nil)
+(add-hook 'before-save-hook
                    (lambda ()
-                     (untabify (point-min) (point-max))))))
+                     (unless
+                         (string= "Makefile" (buffer-name))
+                       (untabify (point-min) (point-max)))))
 
 ;;;; Python Setup
 
@@ -247,8 +249,8 @@ number of characters is written to the message area."
   (unless (boundp 'python-build-dir)
     (setq python-build-dir (read-directory-name "python build dir ")))
   (let ((default-directory python-build-dir)
-	(extra-arg (if (eq  system-type 'windows-nt)
-		       " " " --user")))
+        (extra-arg (if (eq  system-type 'windows-nt)
+                       " " " --user")))
     (compile (concat "python setup.py install" extra-arg))))
 
 (define-key python-mode-map (kbd "C-c M-c") 'copy-run-buffer-filename-as-kill)
@@ -271,23 +273,23 @@ number of characters is written to the message area."
 
 ;;;; Lisp Setup
 
-(require 'paredit)
-(add-hook 'lisp-mode-hook 'enable-paredit-mode)
+;; (require 'paredit)
+;; (add-hook 'lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'lisp-mode-hook 'pair-jump-mode)
 
 
 ;; (eval-after-load 'slime
 ;;   (add-hook 'slime-mode-hook
-;; 	    (progn
-;; 	      (function (lambda ()
-;; 			  (local-set-key
-;; 			   (kbd "M-n" 'backward-paragraph))))
-;; 	      (function (lambda ()
-;; 			  (local-set-key
-;; 			   (kbd "M-p" 'forward-paragraph)))))))
+;;          (progn
+;;            (function (lambda ()
+;;                        (local-set-key
+;;                         (kbd "M-n" 'backward-paragraph))))
+;;            (function (lambda ()
+;;                        (local-set-key
+;;                         (kbd "M-p" 'forward-paragraph)))))))
 
-(add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
+;(add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
 (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
@@ -342,14 +344,46 @@ number of characters is written to the message area."
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     ;;; Lisp (SLIME) interaction -- linux only
     (progn
-      (add-to-list 'custom-theme-load-path "~/dotfiles/themes/")
       (setq x-select-enable-clipboard t)
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
       (set-register ?e '(file . "~/src/dotfiles/.emacs"))
+
+      (global-unset-key (kbd "<menu>"))
+      (global-set-key (kbd "<menu> /") 'ido-switch-buffer)
+      (global-set-key (kbd "<menu> .") 'smex)
+
+      ; this is OK when you remap menu....
       (global-set-key (kbd "s-/") 'ido-switch-buffer)
       (global-set-key (kbd "s-.") 'smex)
-      (add-to-list 'load-path "~/src/clojure-emacs")
-      (require 'clojure-emacs-init)))
+
+
+      (add-to-list 'yas/snippet-dirs "~/src/itasca-emacs/snippets")
+      (add-to-list 'yas/snippet-dirs "~/src/dotfiles/snippets")
+      (add-to-list 'ac-dictionary-directories "~/src/itasca-emacs/ac-dict")
+      (setq eshell-rc-script "~/src/dotfiles/eshellrc")
+
+      (add-to-list 'load-path "~/src/itasca-emacs" )
+      (require 'itasca)
+      (progn
+        (add-to-list 'ac-modes 'itasca-general-mode)
+        (add-to-list 'ac-modes 'itasca-pfc-mode)
+        (add-to-list 'ac-modes 'itasca-flac-mode)
+        (add-to-list 'ac-modes 'itasca-flac3d-mode)
+        (add-to-list 'ac-modes 'itasca-udec-mode))
+
+                                        ; clojure
+      (progn
+        (defadvice nrepl-eval-last-expression (after nrepl-flash-last activate)
+          (if (fboundp 'slime-flash-region)
+              (slime-flash-region (save-excursion (backward-sexp) (point)) (point))))
+
+        (defadvice nrepl-eval-expression-at-point (after nrepl-flash-at activate)
+          (if (fboundp 'slime-flash-region)
+              (apply #'slime-flash-region (nrepl-region-for-expression-at-point))))
+
+        (defadvice nrepl-default-err-handler (after nrepl-focus-errors activate)
+          "Focus the error buffer after errors, like Emacs normally does."
+          (select-window (get-buffer-window "*nrepl-error*"))))))
 
      ;; OS X specific setup
 (if (eq system-type 'darwin)
@@ -465,6 +499,7 @@ number of characters is written to the message area."
     (setq org-agenda-files (list org-note-file))
     (set-register ?n `(file . ,org-note-file)))
 
+  (set-register ?b '(file . "c:/Users/jfurtney/dropbox"))
   (set-register ?d '(file . "c:/Users/jfurtney/downloads")))
                                         ;(slime-setup '(slime-repl slime-fancy))
 
@@ -497,6 +532,11 @@ number of characters is written to the message area."
                                         ;(slime-setup '(slime-repl slime-fancy))
 
                                         ; default
+ ((equal (system-name) "uvb64") ; work virtual machine
+  (set-face-attribute 'default nil :height 140)
+  ;(set-default-font "-*-terminus-medium-r-*-*-*-140-75-75-*-*-iso8859-15")
+  ;(set-default-font "-raster-Fixedsys-normal-r-normal-normal-12-90-96-96-c-*-*-*")
+  )
  (t (setq initial-frame-alist '((width . 80) (height . 34)))))
 
  ;; note on windows $HOME is different in bash and emacs!
@@ -610,7 +650,7 @@ file with a2ps"
 (require 'elisp-slime-nav)
 (require 'eldoc)
 (require 'diminish)
-(diminish 'paredit-mode)
+;(diminish 'paredit-mode)
 (diminish 'elisp-slime-nav-mode)
 (diminish 'pair-jump-mode)
 (diminish 'yas-minor-mode)
@@ -708,3 +748,11 @@ Useful when editing a datafile in emacs and loading it a lisp."
   (calc-eval-and-insert (point-at-bol) (point-at-eol)))
 
 (global-set-key (kbd "C-c =") 'calc-eval-line-and-insert)
+
+(require 'smartparens-config)
+(smartparens-global-mode t)
+
+(global-set-key (kbd "C-}") 'sp-forward-slurp-sexp)
+(global-set-key (kbd "C-{") 'sp-backward-slurp-sexp)
+(global-set-key (kbd "M-}") 'sp-forward-barf-sexp)
+(global-set-key (kbd "M-{") 'sp-backward-barf-sexp)
