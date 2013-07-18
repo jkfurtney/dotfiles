@@ -342,11 +342,11 @@ number of characters is written to the message area."
 ;;;; OS specific setup
      ;; Linux specific setup
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
-    ;;; Lisp (SLIME) interaction -- linux only
     (progn
       (setq x-select-enable-clipboard t)
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
       (set-register ?e '(file . "~/src/dotfiles/.emacs"))
+      (set-register ?n '(file . "~/src/orgfile/notes.org"))
 
       (global-unset-key (kbd "<menu>"))
       (global-set-key (kbd "<menu> /") 'ido-switch-buffer)
@@ -534,8 +534,10 @@ number of characters is written to the message area."
                                         ; default
  ((equal (system-name) "uvb64") ; work virtual machine
   (set-face-attribute 'default nil :height 140)
-  ;(set-default-font "-*-terminus-medium-r-*-*-*-140-75-75-*-*-iso8859-15")
-  ;(set-default-font "-raster-Fixedsys-normal-r-normal-normal-12-90-96-96-c-*-*-*")
+  (require 'slime)
+  (slime-setup '(slime-repl slime-fancy))
+  (setq inferior-lisp-program "sbcl")
+
   )
  (t (setq initial-frame-alist '((width . 80) (height . 34)))))
 
