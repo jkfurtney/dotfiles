@@ -311,6 +311,7 @@ number of characters is written to the message area."
 (define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
 (define-key org-mode-map (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
 (define-key org-mode-map (kbd "C-c =") 'calc-eval-line-and-insert)
+(define-key org-mode-map (kbd "C-M-k") 'kill-sentence)
 
 (setq org-tree-slide-slide-in-effect nil)
 (setq org-src-fontify-natively t)
@@ -339,8 +340,8 @@ number of characters is written to the message area."
 (require 'auto-complete-config)
 (ac-config-default)
 
-;;;; OS specific setup
-     ;; Linux specific setup
+
+;;;; Linux specific setup
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     (progn
       (setq x-select-enable-clipboard t)
@@ -385,7 +386,7 @@ number of characters is written to the message area."
           "Focus the error buffer after errors, like Emacs normally does."
           (select-window (get-buffer-window "*nrepl-error*"))))))
 
-     ;; OS X specific setup
+;;;; OS X specific setup
 (if (eq system-type 'darwin)
     (progn
       (set-face-attribute 'default nil :family "Monaco"
@@ -400,7 +401,7 @@ number of characters is written to the message area."
       (setq x-select-enable-clipboard t)
       (add-to-list 'exec-path "/opt/local/bin/")))
 
-     ;; windows specific setup
+;;;; windows specific setup
 (if  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
     (progn
       (setq doc-view-ghostscript-program
@@ -517,6 +518,8 @@ number of characters is written to the message area."
     (setq org-default-notes-file org-note-file)
     (setq org-agenda-files (list org-note-file))
     (set-register ?n `(file . ,org-note-file)))
+
+
 
   (set-register ?d '(file . "c:/Users/Itasca/downloads")))
 
