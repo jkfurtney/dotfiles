@@ -316,7 +316,7 @@ number of characters is written to the message area."
 (setq org-tree-slide-slide-in-effect nil)
 (setq org-src-fontify-natively t)
 (add-hook 'org-mode-hook 'pair-jump-mode)
-
+(setq org-startup-truncated nil)
 
 (defun kill-all-buffers ()
   (interactive)
@@ -761,3 +761,9 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (global-set-key (kbd "C-{") 'sp-backward-slurp-sexp)
 (global-set-key (kbd "M-}") 'sp-forward-barf-sexp)
 (global-set-key (kbd "M-{") 'sp-backward-barf-sexp)
+
+(global-set-key (kbd "<backspace>") 'sp-backward-delete-char)
+(global-set-key (kbd "<delete>") 'sp-delete-char)
+
+(setq sp-autoinsert-if-followed-by-same 3) ; this is the default
+(setq sp-autoinsert-if-followed-by-word t)
