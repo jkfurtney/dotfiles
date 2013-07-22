@@ -764,6 +764,9 @@ Useful when editing a datafile in emacs and loading it a lisp."
 
 (global-set-key (kbd "<backspace>") 'sp-backward-delete-char)
 (global-set-key (kbd "<delete>") 'sp-delete-char)
+(global-set-key (kbd "C-c <delete>") 'delete-char)
+(global-set-key (kbd "C-c <backspace>") 'backward-delete-char)
 
 (setq sp-autoinsert-if-followed-by-same 3) ; this is the default
 (setq sp-autoinsert-if-followed-by-word t)
+(sp-local-pair 'org-mode "$" "$")
