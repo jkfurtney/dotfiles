@@ -1,0 +1,3 @@
+plt.plot($0)
+plt.gca().set_aspect(1.0)
+plt.show()
