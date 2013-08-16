@@ -770,3 +770,31 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (setq sp-autoinsert-if-followed-by-same 3) ; this is the default
 (setq sp-autoinsert-if-followed-by-word t)
 (sp-local-pair 'org-mode "$" "$")
+
+(setq ido-file-extension-order '(".py" ".dat" ".f3dat"))
+
+(defun jkf/insert-basename ()
+  "insert the string of the buffername with out extension"
+  (interactive)
+  (insert "\"")
+  (insert (file-name-sans-extension (buffer-name)))
+  (insert "\""))
+
+(defun jkf/increment-buffer ()
+  "create a new buffer in the same location with the number in
+the base file name incrimented. Also replace the basefile name
+with the new base filename in the new buffer"
+  (interactive)
+  (save-match-data
+    (let* ((old-casename (file-name-sans-extension (buffer-name)))
+           (tmp (string-match "\\([0-9]+\\)" old-casename))
+           (old-number (match-string 1 old-casename))
+           (new-number (number-to-string (1+ (string-to-int old-number))))
+           (new-casename
+            (replace-regexp-in-string old-number new-number old-casename))
+           (new-filename
+            (replace-regexp-in-string old-number new-number (buffer-name))))
+      (when (y-or-n-p new-filename)
+        (write-file new-filename))
+      (when (y-or-n-p (format "replace %s with %s" old-casename new-casename))
+        (replace-string old-casename new-casename nil (point-min) (point-max))))))
