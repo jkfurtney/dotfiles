@@ -774,27 +774,31 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (setq ido-file-extension-order '(".py" ".dat" ".f3dat"))
 
 (defun jkf/insert-basename ()
-  "insert the string of the buffername with out extension"
+  "insert the string of the buffername without extension"
   (interactive)
   (insert "\"")
   (insert (file-name-sans-extension (buffer-name)))
   (insert "\""))
 
 (defun jkf/increment-buffer ()
-  "create a new buffer in the same location with the number in
-the base file name incrimented. Also replace the basefile name
-with the new base filename in the new buffer"
+  "Write the current buffer with an incremented filename. The
+  (first) integer portion in the filename is incremented to
+  create the new filename. Also queries to call replace the old
+  base filename with the new base filename in the new buffer.
+
+  e.g. case3.dat becomes case4.dat and the string case3 is
+  replaced with case4"
   (interactive)
   (save-match-data
     (let* ((old-casename (file-name-sans-extension (buffer-name)))
            (tmp (string-match "\\([0-9]+\\)" old-casename))
            (old-number (match-string 1 old-casename))
-           (new-number (number-to-string (1+ (string-to-int old-number))))
+           (new-number
+            (read-from-minibuffer "new case number: "
+                                  (number-to-string (1+ (string-to-int old-number)))))
            (new-casename
             (replace-regexp-in-string old-number new-number old-casename))
            (new-filename
             (replace-regexp-in-string old-number new-number (buffer-name))))
-      (when (y-or-n-p new-filename)
-        (write-file new-filename))
-      (when (y-or-n-p (format "replace %s with %s" old-casename new-casename))
-        (replace-string old-casename new-casename nil (point-min) (point-max))))))
+      (write-file new-filename 1)
+      (replace-string old-casename new-casename nil (point-min) (point-max)))))
