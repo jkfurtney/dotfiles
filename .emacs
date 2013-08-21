@@ -478,7 +478,7 @@ number of characters is written to the message area."
   (set-face-attribute 'default nil :height 140)
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
   (require 'slime)
-  (slime-setup '(slime-repl slime-fancy))
+  ;(slime-setup '(slime-repl slime-fancy))
   (add-hook 'slime-mode-hook 'set-up-slime-ac)
   (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
   (eval-after-load "auto-complete"
@@ -486,7 +486,6 @@ number of characters is written to the message area."
 
   (setq doc-view-ghostscript-program
         "c:/Program Files (x86)/gs/gs9.07/bin/gswin32c.exe")
-
 
   (display-time-mode 1)
                                         ; org mode
