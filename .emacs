@@ -799,6 +799,6 @@ Useful when editing a datafile in emacs and loading it a lisp."
            (new-casename
             (replace-regexp-in-string old-number new-number old-casename))
            (new-filename
-            (replace-regexp-in-string old-number new-number (buffer-name))))
+            (replace-regexp-in-string old-casename new-casename (buffer-name))))
       (write-file new-filename 1)
       (replace-string old-casename new-casename nil (point-min) (point-max)))))
