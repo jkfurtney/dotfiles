@@ -77,3 +77,4 @@ alias pbuild='python setup.py install --user --record install.log && ptest'
 alias nt='nosetests -v'
 LD_LIBRARY_PATH="~/dist/lib"
 alias open="xdg-open"
+alias p=ipp
