@@ -9,7 +9,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode nrepl)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode nrepl fold-dwim)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -100,18 +100,18 @@
 (setq calendar-location-name "Minneapolis/St. Paul")
 (setq calendar-week-start-day 1)
 
-(defun dont-kill-emacs ()
+(defun jkf/dont-kill-emacs ()
  (interactive)
  (error (substitute-command-keys "To exit emacs: \\[kill-emacs]")))
-(global-set-key "\C-x\C-c" 'dont-kill-emacs)
+(global-set-key "\C-x\C-c" 'jkf/dont-kill-emacs)
 
-(defun remove-hard-wrap ()
+(defun jkf/remove-hard-wrap ()
   "Make several lines into a single long line."
   (interactive)
   (let ((fill-column 90002000))
     (fill-paragraph nil)))
 
-(global-set-key (kbd "C-x M-q") 'remove-hard-wrap)
+(global-set-key (kbd "C-x M-q") 'jkf/remove-hard-wrap)
 (global-set-key (kbd "C-c ;") 'comment-region)
 (global-set-key (kbd "M-]") 'next-buffer)
 (global-set-key (kbd "M-[") 'previous-buffer)
@@ -141,57 +141,59 @@
 
 ;;;; Sphinx reStructuredText Setup
 
-(defun chunk-start ()
+(defun jkf/chunk--start ()
   "move point to begining of white-space seperated chunk"
   (interactive)
   (search-backward-regexp "\\s-")
   (forward-char))
-(defun chunk-end ()
+(defun jkf/chunk--end ()
   "move point to end of white-space separated chunk"
   (interactive)
   (search-forward-regexp "\\s-")
   (backward-char))
-(defun rest-wrap-math ()
+(defun jkf/rest-wrap-math ()
   "wrap :math:`__` around the current word"
   (interactive)
-  (chunk-start)
+  (jkf/chunk--start)
   (insert ":math:`")
-  (chunk-end)
+  (jkf/chunk--end)
   (insert "`"))
 
-(defun s-compile-cmd (cmd)
+(defun jkf/sphinx--compile-cmd (cmd)
   "build sphinx documentation. First call prompts for a directory"
   (interactive)
   (unless (boundp 'sphinx-build-dir)
     (setq sphinx-build-dir (read-directory-name "sphinx build dir ")))
   (let ((default-directory sphinx-build-dir))
        (compile cmd)))
-(defun s-compile () (interactive) (s-compile-cmd "make html"))
-(defun s-pcompile () (interactive) (s-compile-cmd "make latexpdf"))
+(defun jkf/sphinx-html-compile () (interactive)
+  (jkf/sphinx--compile-cmd "make html"))
+(defun jkf/sphinx-pdf-compile () (interactive)
+  (jkf/sphinx--compile-cmd "make latexpdf"))
 
-(defun sphinx-reset () (interactive) (makunbound 'sphinx-build-dir))
+(defun jkf/sphinx-reset () (interactive) (makunbound 'sphinx-build-dir))
 
-(defun sphinx-open-pdf () (interactive)
+(defun jkf/sphinx-open-pdf-windows () (interactive)
   (when (boundp 'sphinx-build-dir)
     (w32-browser (car (file-expand-wildcards
                        (concat sphinx-build-dir "build/latex/*.pdf"))))))
 (require 'rst)
-(define-key rst-mode-map (kbd "C-c p") 'sphinx-open-pdf)
-(define-key rst-mode-map (kbd "C-c C") 's-compile)
-(define-key rst-mode-map (kbd "C-c c") 's-pcompile)
-(define-key rst-mode-map (kbd "C-c m") 'rest-wrap-math)
+(define-key rst-mode-map (kbd "C-c p") 'jkf/sphinx-open-pdf-windows)
+(define-key rst-mode-map (kbd "C-c C") 'jkf/sphinx-html-compile)
+(define-key rst-mode-map (kbd "C-c c") 'jkf/sphinx-pdf-compile)
+(define-key rst-mode-map (kbd "C-c m") 'jkf/rest-wrap-math)
 
 ;;;; FORTRAN Setup
 
 (add-to-list 'auto-mode-alist '("\\.inc\\'" . fortran-mode))
 
-(defun jkf-setup-fortran-mode () (interactive)
+(defun jkf/setup-fortran-mode () (interactive)
   (pair-jump-mode 1)
   (which-function-mode 1))
 
-(add-hook 'fortran-mode-hook 'jkf-setup-fortran-mode)
+(add-hook 'fortran-mode-hook 'jkf/setup-fortran-mode)
 
-(defun udec-string (s)
+(defun jkf/udec-string (s)
   "Prompt for a string and insert it at point as a FORTRAN char
 array literal. A training space character is added, the total
 number of characters is written to the message area."
@@ -203,7 +205,7 @@ number of characters is written to the message area."
 
 ;;;; C/C++ Setup
 
-(defun filename-comment ()
+(defun jkf/filename-comment ()
   "Insert filename as c++ comment eg. //filename.h"
   (interactive)
   (insert (concat "//" (file-name-nondirectory buffer-file-name))))
@@ -213,7 +215,7 @@ number of characters is written to the message area."
 (fset 'move-comment-above
    [?\C-s ?/ ?\C-b ?\C-k ?\C-a ?\C-y return ?\C-n])
 
-(defun move-region-to-file (a b fname)
+(defun jkf/move-region-to-file (a b fname)
   "Text in the region is moved to the given new file"
  (interactive "r\nFMove region to new file:")
  (if (file-exists-p fname) (error "File already exists"))
@@ -221,7 +223,7 @@ number of characters is written to the message area."
  (find-file fname)
  (yank))
 
-(defun move-region-to-header-file (a b fname)
+(defun jkf/move-region-to-header-file (a b fname)
   "Text in the region is moved to the given new file \n #include \"filename.h\" is inserted at the current location"
  (interactive "r\nFMove region to new header file:")
  (if (file-exists-p fname) (error "File already exists"))
@@ -243,7 +245,7 @@ number of characters is written to the message area."
 (setq python-check-command "pep8 -r --ignore=E221")
 (add-to-list 'auto-mode-alist '("\\.pyx\\'" . cython-mode))
 
-(defun p-compile ()
+(defun jkf/python-extension-compile ()
   "build python extension module. First call prompts for a directory"
   (interactive)
   (unless (boundp 'python-build-dir)
@@ -255,6 +257,8 @@ number of characters is written to the message area."
 
 (define-key python-mode-map (kbd "C-c M-c") 'copy-run-buffer-filename-as-kill)
 (add-hook 'python-mode-hook 'jedi:setup)
+(add-hook 'python-mode-hook 'hs-minor-mode)
+
 (setq jedi:setup-keys t)
 (setq jedi:complete-on-dot t)
 
@@ -277,7 +281,7 @@ number of characters is written to the message area."
 ;; (add-hook 'lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'lisp-mode-hook 'pair-jump-mode)
-
+(add-hook 'lisp-mode-hook 'hs-minor-mode)
 
 ;; (eval-after-load 'slime
 ;;   (add-hook 'slime-mode-hook
@@ -294,14 +298,15 @@ number of characters is written to the message area."
 (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 (add-hook 'emacs-lisp-mode-hook 'pair-jump-mode)
+(add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
 (setq edebug-trace nil)
 
 ;; .emacs section navigation by ;;;; Section name
-(defun imenu-elisp-sections ()
+(defun jkf/imenu-elisp-sections ()
   (setq imenu-prev-index-position-function nil)
   (add-to-list 'imenu-generic-expression '("Sections" "^;;;; \\(.+\\)$" 1) t))
 
-(add-hook 'emacs-lisp-mode-hook 'imenu-elisp-sections)
+(add-hook 'emacs-lisp-mode-hook 'jkf/imenu-elisp-sections)
 
 ;;;; Org-mode Setup
 
@@ -318,21 +323,21 @@ number of characters is written to the message area."
 (add-hook 'org-mode-hook 'pair-jump-mode)
 (setq org-startup-truncated nil)
 
-(defun kill-all-buffers ()
+(defun jkf/kill-all-buffers ()
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
 
-(global-set-key (kbd "C-c k") 'kill-all-buffers)
-(global-set-key (kbd "C-c K") 'kill-other-buffers)
+(global-set-key (kbd "C-c k") 'jkf/kill-all-buffers)
+(global-set-key (kbd "C-c K") 'jkf/kill-other-buffers)
 
 ;; Helper for compilation. Close the compilation window if
 ;; there was no error at all.
-(defun compilation-exit-autoclose (status code msg)
+(defun jkf/compilation-exit-autoclose (status code msg)
   (when (and (eq status 'exit) (zerop code))
     (bury-buffer)
     (delete-window (get-buffer-window (get-buffer "*compilation*"))))
     (cons msg code))
-(setq compilation-exit-message-function 'compilation-exit-autoclose)
+(setq compilation-exit-message-function 'jkf/compilation-exit-autoclose)
 
 (require 'yasnippet)
 (yas/global-mode 1)
@@ -547,7 +552,7 @@ number of characters is written to the message area."
  ;; cp ~/.gitconfig ~/AppData/Roaming/
  ;; to get magit to recognize user.name and user.email
 
-(defun a2ps-buffer ()
+(defun jkf/a2ps-buffer ()
   "call a2ps on the file the current buffer is visiting. Opens
 the resulting postscript file"
   (interactive)
@@ -556,7 +561,7 @@ the resulting postscript file"
     (shell-command (format template fn fn ))
     (w32-browser (format "%s.ps" fn))))
 
-(defun a2ps-file () (interactive)
+(defun jkf/a2ps-file () (interactive)
   "in dired call this function on a selected file to process the
 file with a2ps"
   (let ((template  "a2ps.exe --columns=2 -o %s.ps -M letter --portrait %s")
@@ -568,7 +573,7 @@ file with a2ps"
 (global-set-key (kbd "C-=") 'er/expand-region)
 
 (require 'magit)
-(require 'magit-svn)
+;(require 'magit-svn)
 (global-set-key (kbd "C-c s") 'magit-status)
 
 (require 'ido)
@@ -599,14 +604,14 @@ file with a2ps"
                    (abbreviate-file-name (buffer-file-name))
                  "%b"))))
 
-(defun move-line-up ()
+(defun jkf/move-line-up ()
   "Move up the current line."
   (interactive)
   (transpose-lines 1)
   (forward-line -2)
   (indent-according-to-mode))
 
-(defun move-line-down ()
+(defun jkf/move-line-down ()
   "Move down the current line."
   (interactive)
   (forward-line 1)
@@ -614,8 +619,8 @@ file with a2ps"
   (forward-line -1)
   (indent-according-to-mode))
 
-(define-key global-map (kbd "C-S-n") 'move-line-down)
-(define-key global-map (kbd "C-S-p") 'move-line-up)
+(define-key global-map (kbd "C-S-n") 'jkf/move-line-down)
+(define-key global-map (kbd "C-S-p") 'jkf/move-line-up)
 
 (require 'helm-config)
 (require 'helm-descbinds)
@@ -667,7 +672,7 @@ file with a2ps"
 (define-key ac-completing-map (kbd "C-n") 'ac-next)
 (define-key ac-completing-map (kbd "C-p") 'ac-previous)
 
-(defun copy-run-buffer-filename-as-kill ()
+(defun jkf/copy-run-buffer-filename-as-kill ()
   "Insert the string: '%run file-name' to the clipboard where
 file-name is the full path and filename of the current buffer.
 Useful when editing a datafile in emacs and loading it IPython."
@@ -676,7 +681,7 @@ Useful when editing a datafile in emacs and loading it IPython."
     (kill-new s)
     (message "Copied: %s to clipboard" s)))
 
-(defun copy-load-buffer-filename-as-kill ()
+(defun jkf/copy-load-buffer-filename-as-kill ()
   "Insert the string: '%run file-name' to the clipboard where
 file-name is the full path and filename of the current buffer.
 Useful when editing a datafile in emacs and loading it a lisp."
@@ -686,9 +691,9 @@ Useful when editing a datafile in emacs and loading it a lisp."
     (message "Copied: %s to clipboard" s)))
 
 ; from http://www.emacswiki.org/emacs/buffer-extension.el
-(defun copy-buffer-file-name-as-kill (choice)
+(defun jkf/copy-buffer-file-name-as-kill (choice)
   "Copy the buffer-file-name to the kill-ring"
-  (interactive "cCopy Buffer Name (F) Full, (D) Directory, (N) Name")
+  (interactive "cCopy Buffer Name (f) Full, (d) Directory, (n) Name")
   (let ((new-kill-string)
         (name (if (eq major-mode 'dired-mode)
                   (dired-get-filename)
@@ -718,19 +723,19 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
 
 ; on windows the magit process hangs constantly
-(defun kill-magit ()
+(defun jkf/kill-magit ()
   "Kill the Magit process buffer"
   (interactive)
   (delete-process "*magit-process*"))
 
-(defun chomp (str)
+(defun jkf/chomp (str)
   "Chomp leading and tailing whitespace from STR."
   (while (string-match "\\`\n+\\|^\\s-+\\|\\s-+$\\|\n+\\'"
                        str)
     (setq str (replace-match "" t t str)))
   str)
 
-(defun =-transpose ()
+(defun jkf/=-transpose ()
   "Transpose the text before and after the first equals sign"
   (interactive)
   (let ((lhs (buffer-substring (point-at-bol) (point)))
@@ -741,13 +746,13 @@ Useful when editing a datafile in emacs and loading it a lisp."
 
 (load-theme 'cyberpunk t)
 
-(defun calc-eval-and-insert (&optional start end)
+(defun jkf/calc-eval-and-insert (&optional start end)
   (interactive "r")
   (let ((result (calc-eval (buffer-substring-no-properties start end))))
     (goto-char (point-at-eol))
     (insert " = " result)))
 
-(defun calc-eval-line-and-insert ()
+(defun jkf/calc-eval-line-and-insert ()
   (interactive)
   (calc-eval-and-insert (point-at-bol) (point-at-eol)))
 
@@ -801,3 +806,18 @@ Useful when editing a datafile in emacs and loading it a lisp."
             (replace-regexp-in-string old-casename new-casename (buffer-name))))
       (write-file new-filename 1)
       (replace-string old-casename new-casename nil (point-min) (point-max)))))
+
+
+(require 'fold-dwim)
+(global-set-key (kbd "C-c f") 'fold-dwim-toggle)
+(global-set-key (kbd "C-c C-f") 'fold-dwim-toggle)
+(global-set-key (kbd "C-c M-f") 'fold-dwim-hide-all)
+(global-set-key (kbd "C-c M-F") 'fold-dwim-show-all)
+
+(defun jkf/copy-current-defun ()
+  "copy current defun to kill ring"
+  (interactive)
+  (save-excursion
+    (beginning-of-defun)
+    (mark-sexp)
+    (kill-ring-save (region-beginning) (region-end))))
