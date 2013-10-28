@@ -821,3 +821,19 @@ Useful when editing a datafile in emacs and loading it a lisp."
     (beginning-of-defun)
     (mark-sexp)
     (kill-ring-save (region-beginning) (region-end))))
+
+(global-set-key (kbd "M-<apps>") 'ido-switch-buffer)
+
+(defun jkf/wrap-sexp ()
+  "insert a pair of parenthesis and forward slurp the next sexp. Remove any space."
+  (interactive)
+  (insert "()")
+  (backward-char 1)
+  (sp-forward-slurp-sexp)
+  (if (looking-at " ") (delete-char 1)))
+(global-set-key (kbd "M-(") 'jkf/wrap-sexp)
+
+(defadvice sp-forward-slurp-sexp (after jkf/slurp-remove-whitespace)
+  "Removes the whitespace inserted after a sp-forward-slurp-sexp"
+  (if (looking-at " ") (delete-char 1)))
+(ad-activate 'sp-forward-slurp-sexp)
