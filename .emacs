@@ -9,7 +9,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode nrepl fold-dwim)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode nrepl fold-dwim diff-hl)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -62,6 +62,7 @@
 (global-set-key (kbd "<f1>") 'kill-this-buffer)
 (global-set-key (kbd "<f12>") 'other-window)
 (global-set-key (kbd "<apps> /") 'ido-switch-buffer)
+(global-set-key (kbd "M-<apps>") 'ido-switch-buffer)
 (global-set-key (kbd "<apps> .") 'smex)
 (global-set-key (kbd "C-S-x") 'ido-switch-buffer)
 (global-set-key (kbd "M-k") ; kill the entire line
@@ -568,7 +569,7 @@ file with a2ps"
         (fn (dired-get-filename)))
     (shell-command (format template fn fn ))))
 
-(require 'smart-operator)
+;(require 'smart-operator)
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
 
@@ -663,7 +664,7 @@ file with a2ps"
 (diminish 'elisp-slime-nav-mode)
 (diminish 'pair-jump-mode)
 (diminish 'yas-minor-mode)
-(diminish 'smart-operator-mode)
+;(diminish 'smart-operator-mode)
 (diminish 'eldoc-mode)
 (diminish 'auto-complete-mode)
 (diminish 'auto-fill-function)
@@ -775,6 +776,28 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (setq sp-autoinsert-if-followed-by-word t)
 (sp-local-pair 'org-mode "$" "$")
 
+(defun jkf/copy-current-defun ()
+  "copy current defun to kill ring"
+  (interactive)
+  (save-excursion
+    (beginning-of-defun)
+    (mark-sexp)
+    (kill-ring-save (region-beginning) (region-end))))
+
+(defun jkf/wrap-sexp ()
+  "insert a pair of parenthesis and forward slurp the next sexp. Remove any space."
+  (interactive)
+  (insert "()")
+  (backward-char 1)
+  (sp-forward-slurp-sexp)
+  (if (looking-at " ") (delete-char 1)))
+(global-set-key (kbd "M-(") 'jkf/wrap-sexp)
+
+(defadvice sp-forward-slurp-sexp (after jkf/slurp-remove-whitespace)
+  "Removes the whitespace inserted after a sp-forward-slurp-sexp"
+  (if (looking-at " ") (delete-char 1)))
+(ad-activate 'sp-forward-slurp-sexp)
+
 (setq ido-file-extension-order '(".py" ".dat" ".f3dat"))
 
 (defun jkf/insert-basename ()
@@ -813,27 +836,3 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (global-set-key (kbd "C-c C-f") 'fold-dwim-toggle)
 (global-set-key (kbd "C-c M-f") 'fold-dwim-hide-all)
 (global-set-key (kbd "C-c M-F") 'fold-dwim-show-all)
-
-(defun jkf/copy-current-defun ()
-  "copy current defun to kill ring"
-  (interactive)
-  (save-excursion
-    (beginning-of-defun)
-    (mark-sexp)
-    (kill-ring-save (region-beginning) (region-end))))
-
-(global-set-key (kbd "M-<apps>") 'ido-switch-buffer)
-
-(defun jkf/wrap-sexp ()
-  "insert a pair of parenthesis and forward slurp the next sexp. Remove any space."
-  (interactive)
-  (insert "()")
-  (backward-char 1)
-  (sp-forward-slurp-sexp)
-  (if (looking-at " ") (delete-char 1)))
-(global-set-key (kbd "M-(") 'jkf/wrap-sexp)
-
-(defadvice sp-forward-slurp-sexp (after jkf/slurp-remove-whitespace)
-  "Removes the whitespace inserted after a sp-forward-slurp-sexp"
-  (if (looking-at " ") (delete-char 1)))
-(ad-activate 'sp-forward-slurp-sexp)
