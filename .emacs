@@ -445,6 +445,7 @@ number of characters is written to the message area."
       (add-to-list 'yas/snippet-dirs "c:/src/itasca-emacs/snippets")
       (add-to-list 'yas/snippet-dirs "c:/src/dotfiles/snippets")
       (add-to-list 'ac-dictionary-directories "c:/src/itasca-emacs/ac-dict")
+      (add-to-list 'ac-dictionary-directories "c:/src/dotfiles/ac-dict")
       (setq eshell-rc-script "c:/src/dotfiles/eshellrc")
 
       (set-register ?e '(file . "c:/src/dotfiles/.emacs"))
@@ -836,3 +837,15 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (global-set-key (kbd "C-c C-f") 'fold-dwim-toggle)
 (global-set-key (kbd "C-c M-f") 'fold-dwim-hide-all)
 (global-set-key (kbd "C-c M-F") 'fold-dwim-show-all)
+
+; search for a defun, copy the name of it, wrap it in the timing macro
+(fset 'jkf/wtdef
+   [?\C-i ?d ?e ?f ?u ?n ?\C-f ?\C-\M-  ?\M-w ?\C-a ?\( ?w ?i ?t ?h ?- ?t ?i ?m ?i ?n ?g ?  ?\" ?\C-y ?\C-f ?  ?\C-\} return ?\C-\M-e ?\C-a])
+
+(defun extract-bu-ac () (interactive)
+  "paste blo-up lisp documentation dump in a buffer and call this
+function to make an autocomplete list"
+  (keep-lines "^\.\. func.*")
+  (replace-regexp "(.*$" "")
+  (beginning-of-buffer)
+  (replace-regexp ".. function:: " ""))
