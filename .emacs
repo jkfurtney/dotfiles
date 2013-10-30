@@ -454,6 +454,9 @@ number of characters is written to the message area."
       (let ((file-name "C:/src/Blo-Up/interpreter/sign.el"))
         (when (file-exists-p file-name)
           (load file-name)))
+      (let ((file-name "C:/src/svn_bu/interpreter/sign.el"))
+        (when (file-exists-p file-name)
+          (load file-name)))
 
       (add-to-list 'load-path "C:/src/itasca-emacs")
       (require 'itasca)
