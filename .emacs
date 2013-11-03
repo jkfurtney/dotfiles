@@ -278,8 +278,6 @@ number of characters is written to the message area."
 
 ;;;; Lisp Setup
 
-;; (require 'paredit)
-;; (add-hook 'lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'lisp-mode-hook 'pair-jump-mode)
 (add-hook 'lisp-mode-hook 'hs-minor-mode)
@@ -487,13 +485,12 @@ number of characters is written to the message area."
   (setq initial-frame-alist '((width . 80) (height . 37)))
   (set-face-attribute 'default nil :height 140)
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
-  (require 'slime)
-  ;(slime-setup '(slime-repl slime-fancy))
+  (require 'slime-autoloads)
+  (slime-setup '(slime-fancy slime-banner slime-autodoc))
   (add-hook 'slime-mode-hook 'set-up-slime-ac)
   (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
-  (eval-after-load "auto-complete"
-    '(add-to-list 'ac-modes 'slime-repl-mode))
-
+  (add-to-list 'ac-modes 'slime-repl-mode)
+  (add-to-list 'ac-modes 'slime-mode)
   (setq doc-view-ghostscript-program
         "c:/Program Files (x86)/gs/gs9.07/bin/gswin32c.exe")
 
@@ -511,46 +508,48 @@ number of characters is written to the message area."
 
   (set-register ?b '(file . "c:/Users/jfurtney/dropbox"))
   (set-register ?d '(file . "c:/Users/jfurtney/downloads")))
-                                        ;(slime-setup '(slime-repl slime-fancy))
 
- ((equal (system-name) "UNSER")
+ ((equal (system-name) "UNSER")        ; work computer
   (setq initial-frame-alist '((width . 80) (height . 41)))
   (set-face-attribute 'default nil :height 140)
-  (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
                                         ; org mode
   (setq org-mobile-directory "c:/Users/Itasca/Dropbox/Apps/MobileOrg")
   (setq org-directory "c:/Users/Itasca/Dropbox/org/")
+
   (setq org-mobile-inbox-for-pull "c:/Users/Itasca/Dropbox/org/flagged.org")
+
+  (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
+  (require 'slime-autoloads)
+  (slime-setup '(slime-fancy slime-banner slime-autodoc))
+  (add-hook 'slime-mode-hook 'set-up-slime-ac)
+  (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
+  (add-to-list 'ac-modes 'slime-repl-mode)
+  (add-to-list 'ac-modes 'slime-mode)
 
   (let ((org-note-file
          "c:/Users/Itasca/Dropbox/org/notes.org"))
     (setq org-default-notes-file org-note-file)
     (setq org-agenda-files (list org-note-file))
     (set-register ?n `(file . ,org-note-file)))
-
-
-
   (set-register ?d '(file . "c:/Users/Itasca/downloads")))
 
                                         ; vaio Ubuntu virtual machine
  ((equal (system-name) "u64")
   (setq initial-frame-alist '((width . 80) (height . 40)))
   (setq inferior-lisp-program "ecl")
-  (require 'slime)
-;  (slime-setup '(slime-repl slime-fancy))
-)
+  (require 'slime-autoloads)
+  (slime-setup '(slime-fancy slime-banner slime-autodoc))
+  (add-hook 'slime-mode-hook 'set-up-slime-ac)
+  (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
+  (add-to-list 'ac-modes 'slime-repl-mode)
+  (add-to-list 'ac-modes 'slime-mode))
 
-                                        ;(require 'slime) ;; ? this is broken
-                                        ;(slime-setup '(slime-repl slime-fancy))
-
-                                        ; default
  ((equal (system-name) "uvb64") ; work virtual machine
   (set-face-attribute 'default nil :height 140)
-  (require 'slime)
-  (slime-setup '(slime-repl slime-fancy))
-  (setq inferior-lisp-program "sbcl")
+  (require 'slime-autoloads)
+  (slime-setup '(slime-fancy slime-banner slime-autodoc))
+  (setq inferior-lisp-program "sbcl"))
 
-  )
  (t (setq initial-frame-alist '((width . 80) (height . 34)))))
 
  ;; note on windows $HOME is different in bash and emacs!
