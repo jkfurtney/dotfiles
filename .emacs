@@ -114,8 +114,8 @@
 
 (global-set-key (kbd "C-x M-q") 'jkf/remove-hard-wrap)
 (global-set-key (kbd "C-c ;") 'comment-region)
-(global-set-key (kbd "M-]") 'next-buffer)
-(global-set-key (kbd "M-[") 'previous-buffer)
+;(global-set-key (kbd "M-]") 'next-buffer)
+;(global-set-key (kbd "M-[") 'previous-buffer)
 
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq-default transient-mark-mode t)
@@ -314,7 +314,7 @@ number of characters is written to the message area."
 (require 'org-tree-slide)
 (define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
 (define-key org-mode-map (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
-(define-key org-mode-map (kbd "C-c =") 'calc-eval-line-and-insert)
+(define-key org-mode-map (kbd "C-c =") 'jkf/calc-eval-line-and-insert)
 (define-key org-mode-map (kbd "C-M-k") 'kill-sentence)
 
 (setq org-tree-slide-slide-in-effect nil)
@@ -758,9 +758,9 @@ Useful when editing a datafile in emacs and loading it a lisp."
 
 (defun jkf/calc-eval-line-and-insert ()
   (interactive)
-  (calc-eval-and-insert (point-at-bol) (point-at-eol)))
+  (jkf/calc-eval-and-insert (point-at-bol) (point-at-eol)))
 
-(global-set-key (kbd "C-c =") 'calc-eval-line-and-insert)
+(global-set-key (kbd "C-c =") 'jkf/calc-eval-line-and-insert)
 
 (require 'smartparens-config)
 (smartparens-global-mode t)
