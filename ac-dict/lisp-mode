@@ -17,6 +17,17 @@ bu:cycling-hooks-off
 bu:cycling-hooks
 bu:step-count
 bu:v3-distance
+bu:line-segment-to-point-vector
+bu:line-segment-to-point-distance
+bu:v3-normal
+bu:v3-mag
+bu:v3-scale
+bu:v3+
+bu:v3*
+bu:v3-
+bu:v3/
+bu:v3-dot
+bu:v3-cross
 bu:wmbg-pressure
 bu:node-velocity
 bu:node-rvelocity
@@ -44,6 +55,7 @@ bu:node-gas-stemming
 bu:node-gas-bottom
 bu:find-node-near
 bu:node-slave
+bu:node-contact-list
 bu:intact-spring-head
 bu:broken-spring-head
 bu:spring-next
@@ -53,6 +65,7 @@ bu:spring-node-two
 bu:spring-force
 bu:spring-force-mag
 bu:find-intact-spring-near
+bu:spring-location
 bu:contact-head
 bu:contact-next
 bu:contact-node-one
@@ -60,6 +73,9 @@ bu:contact-node-two
 bu:contact-force
 bu:contact-force-mag
 bu:find-contact-near
+bu:contact-node1-next
+bu:contact-node2-next
+bu:contact-location
 bu:group-head
 bu:group-next
 bu:group-count

@@ -844,7 +844,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (fset 'jkf/wtdef
    [?\C-i ?d ?e ?f ?u ?n ?\C-f ?\C-\M-  ?\M-w ?\C-a ?\( ?w ?i ?t ?h ?- ?t ?i ?m ?i ?n ?g ?  ?\" ?\C-y ?\C-f ?  ?\C-\} return ?\C-\M-e ?\C-a])
 
-(defun extract-bu-ac () (interactive)
+(defun jkf/extract-bu-ac () (interactive)
   "paste blo-up lisp documentation dump in a buffer and call this
 function to make an autocomplete list"
   (keep-lines "^\.\. func.*")
