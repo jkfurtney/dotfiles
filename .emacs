@@ -63,6 +63,7 @@
 (global-set-key (kbd "<f12>") 'other-window)
 (global-set-key (kbd "<apps> /") 'ido-switch-buffer)
 (global-set-key (kbd "M-<apps>") 'ido-switch-buffer)
+(global-set-key (kbd "C-<apps>") 'other-window)
 (global-set-key (kbd "<apps> .") 'smex)
 (global-set-key (kbd "C-S-x") 'ido-switch-buffer)
 (global-set-key (kbd "M-k") ; kill the entire line
