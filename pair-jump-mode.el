@@ -1,23 +1,22 @@
-; use post-self-insert-hook
 ; use syntax table to find closing pairs
 ;
 
-(defun pair-jump-function (supress)
+(defun pair-jump-function ()
   "Insert a space or jump over closing pairs eg. ) ] ' \" if
 proceeded by a space. A prefix argument negates this behavior.
 The list of characters considered for jumping over are given as
 strings in the buffer local variable `pair-jump-list'."
-  (interactive "p")
-  (if (not (equal 1 supress))
-      (insert ?\s)
-    (if (and (eql (char-before) ?\s)
+  (interactive)
+  (when (and (eql (char-before) ?\s)
+             (eql (char-before (1- (point))) ?\s)
+             (not (eobp))
              (member (string (char-after)) pair-jump-list))
-        (progn
-          (message "pair-jump-mode: jumping over %c" (char-after))
-          (backward-delete-char 1)
-          (forward-char)
-          (when pair-jump-keep-trailing-space (insert ?\s)))
-      (insert ?\s))))
+    (progn
+      (message "pair-jump-mode: Jumping over %c" (char-after))
+      (backward-delete-char 1)
+      (backward-delete-char 1)
+      (forward-char)
+      (when pair-jump-keep-trailing-space (insert ?\s)))))
 
 ;;;###autoload
 (define-minor-mode pair-jump-mode
@@ -29,14 +28,13 @@ When space bar is pressed either insert a space or move the point
 over the closing pair character at point. Closing pair characters
 are jumped over if preceded by a space. The list of characters
 considered for jumping over are given as strings in the buffer
-local variable `pair-jump-list'. A prefix argument to space
-negates this behavior."
+local variable `pair-jump-list'."
   :lighter " pj"
-  :keymap (let ((map (make-sparse-keymap)))
-            (define-key map (kbd "SPC") 'pair-jump-function)
-            map)
   (set (make-local-variable 'pair-jump-list) '(")" "]" "'" "\"" "}"))
-  (set (make-local-variable 'pair-jump-keep-trailing-space) nil))
+  (set (make-local-variable 'pair-jump-keep-trailing-space) nil)
+  (if pair-jump-mode
+      (add-hook 'post-self-insert-hook #'pair-jump-function)
+    (remove-hook 'post-self-insert-hook #'pair-jump-function)))
 
 ;;;###autoload
 (add-hook 'python-mode-hook 'pair-jump-mode)
@@ -51,11 +49,13 @@ negates this behavior."
 
       (insert starting-string)
       (goto-char (point-min))
-      (pair-jump-function 1)
+      (pair-jump-function)
+      (insert ?\s)
       (setq test-string (buffer-substring (point-at-bol) (point-at-eol)))
       (should (equal test-string (concat " " starting-string)))
 
-      (pair-jump-function 1) ; test that jump occured
+      (insert ?\s)
+      (pair-jump-function) ; test that jump occured
       (setq test-string (buffer-substring (point-at-bol) (point-at-eol)))
       (should (equal test-string ")]}'\"")))))
 
