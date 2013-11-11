@@ -64,8 +64,10 @@
 (global-set-key (kbd "<apps> /") 'ido-switch-buffer)
 (global-set-key (kbd "M-<apps>") 'ido-switch-buffer)
 (global-set-key (kbd "C-<apps>") 'other-window)
+(global-set-key (kbd "C-<lwindow>") 'smex)
+(global-set-key (kbd "M-<lwindow>") 'other-window)
 (global-set-key (kbd "<apps> .") 'smex)
-(global-set-key (kbd "C-S-x") 'ido-switch-buffer)
+;(global-set-key (kbd "C-S-x") 'ido-switch-buffer)
 (global-set-key (kbd "M-k") ; kill the entire line
                 '(lambda () (interactive)
                   (move-beginning-of-line nil)
@@ -87,6 +89,7 @@
 (global-unset-key [up])
 (global-unset-key [down])
 (global-unset-key (kbd "<insert>"))
+(global-set-key (kbd "C-x r q") 'kill-emacs)
 
 (set-background-color "black")
 (set-face-background 'default "black")
@@ -115,8 +118,6 @@
 
 (global-set-key (kbd "C-x M-q") 'jkf/remove-hard-wrap)
 (global-set-key (kbd "C-c ;") 'comment-region)
-;(global-set-key (kbd "M-]") 'next-buffer)
-;(global-set-key (kbd "M-[") 'previous-buffer)
 
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq-default transient-mark-mode t)
@@ -283,17 +284,6 @@ number of characters is written to the message area."
 (add-hook 'lisp-mode-hook 'pair-jump-mode)
 (add-hook 'lisp-mode-hook 'hs-minor-mode)
 
-;; (eval-after-load 'slime
-;;   (add-hook 'slime-mode-hook
-;;          (progn
-;;            (function (lambda ()
-;;                        (local-set-key
-;;                         (kbd "M-n" 'backward-paragraph))))
-;;            (function (lambda ()
-;;                        (local-set-key
-;;                         (kbd "M-p" 'forward-paragraph)))))))
-
-;(add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
 (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
@@ -486,6 +476,7 @@ number of characters is written to the message area."
   (setq initial-frame-alist '((width . 80) (height . 37)))
   (set-face-attribute 'default nil :height 140)
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
+  (require 'ac-slime)
   (require 'slime-autoloads)
   (slime-setup '(slime-fancy slime-banner slime-autodoc))
   (add-hook 'slime-mode-hook 'set-up-slime-ac)
@@ -520,6 +511,7 @@ number of characters is written to the message area."
   (setq org-mobile-inbox-for-pull "c:/Users/Itasca/Dropbox/org/flagged.org")
 
   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
+  (require 'ac-slime)
   (require 'slime-autoloads)
   (slime-setup '(slime-fancy slime-banner slime-autodoc))
   (add-hook 'slime-mode-hook 'set-up-slime-ac)
@@ -538,6 +530,7 @@ number of characters is written to the message area."
  ((equal (system-name) "u64")
   (setq initial-frame-alist '((width . 80) (height . 40)))
   (setq inferior-lisp-program "ecl")
+  (require 'ac-slime)
   (require 'slime-autoloads)
   (slime-setup '(slime-fancy slime-banner slime-autodoc))
   (add-hook 'slime-mode-hook 'set-up-slime-ac)
@@ -666,7 +659,7 @@ file with a2ps"
 (require 'diminish)
 ;(diminish 'paredit-mode)
 (diminish 'elisp-slime-nav-mode)
-(diminish 'pair-jump-mode)
+(diminish 'pair-jump-mode " pj")
 (diminish 'yas-minor-mode)
 ;(diminish 'smart-operator-mode)
 (diminish 'eldoc-mode)
@@ -852,3 +845,14 @@ function to make an autocomplete list"
   (replace-regexp "(.*$" "")
   (beginning-of-buffer)
   (replace-regexp ".. function:: " ""))
+
+(defun jkf/setup-slime ()
+     (interactive)
+     (rainbow-delimiters-mode 1)
+     (pair-jump-mode 1)
+     (define-key slime-mode-map (kbd "M-n") nil)
+     (define-key slime-mode-map (kbd "M-p") nil)
+     (define-key slime-mode-map (kbd "C-M-.") nil)
+     (diminish 'slime-mode " SL"))
+
+(add-hook 'slime-mode-hook 'jkf/setup-slime)
