@@ -924,3 +924,19 @@ function to make an autocomplete list"
       (slime-disconnect)
     (slime-connect "127.0.0.1" 4005)))
 (global-set-key (kbd "C-c l") 'jkf/toggle-slime)
+
+(global-set-key (kbd "C-c L") 'jkf/launch-blo-up-swank)
+
+
+(defun jkf/launch-blo-up-swank ()
+  (interactive)
+  (let* ((exe-name "c:/src/svn_bu/dist/Blo-Up_2.7/exe64/bloup206_64.exe")
+         (swank-wrapper "c:/src/bu-lisp/ecl-swank.lisp"))
+    (start-process "Blo-Up" "bub"
+                   exe-name
+                   "-test"
+                   "-script"
+                   swank-wrapper))
+   ; need to poll here with idle timer
+  (sleep-for 2)
+  (jkf/toggle-slime))
