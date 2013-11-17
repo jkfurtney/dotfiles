@@ -795,7 +795,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
   (if (looking-at " ") (delete-char 1)))
 (ad-activate 'sp-forward-slurp-sexp)
 
-(setq ido-file-extension-order '(".py" ".dat" ".f3dat"))
+(setq ido-file-extension-order '(".py" ".dat" ".f3dat" ".lisp"))
 
 (defun jkf/insert-basename ()
   "insert the string of the buffername without extension"
@@ -926,17 +926,31 @@ function to make an autocomplete list"
 (global-set-key (kbd "C-c l") 'jkf/toggle-slime)
 
 (global-set-key (kbd "C-c L") 'jkf/launch-blo-up-swank)
+(global-set-key (kbd "C-c M-l") 'jkf/launch-blo-up)
 
+
+(setf blo-up-exe-name "c:/src/svn_bu/binaries/x64Release/bloup206_64.exe")
+(setf blo-up-swank-location "c:/src/bu-lisp/ecl-swank.lisp")
 
 (defun jkf/launch-blo-up-swank ()
   (interactive)
-  (let* ((exe-name "c:/src/svn_bu/dist/Blo-Up_2.7/exe64/bloup206_64.exe")
-         (swank-wrapper "c:/src/bu-lisp/ecl-swank.lisp"))
-    (start-process "Blo-Up" "bub"
-                   exe-name
-                   "-test"
-                   "-script"
-                   swank-wrapper))
+  (start-process "Blo-Up" "bub"
+                 blo-up-exe-name
+                 "-test"
+                 "-swank"
+                 "-script"
+                 blo-up-swank-location)
+   ; need to poll here with idle timer
+  (sleep-for 2)
+  (jkf/toggle-slime))
+
+(defun jkf/launch-blo-up ()
+  (interactive)
+  (start-process "Blo-Up" "bub"
+                 blo-up-exe-name
+                 "-test"
+                 "-script"
+                 blo-up-swank-location)
    ; need to poll here with idle timer
   (sleep-for 2)
   (jkf/toggle-slime))
