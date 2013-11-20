@@ -141,8 +141,8 @@
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 (add-hook 'latex-mode-hook 'turn-on-auto-fill)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
-(add-hook 'text-mode-hook 'refill-mode)
-(add-hook 'latex-mode-hook 'refill-mode)
+;(add-hook 'text-mode-hook 'refill-mode)
+;(add-hook 'latex-mode-hook 'refill-mode)
 
 ;;;; Sphinx reStructuredText Setup
 
@@ -187,7 +187,7 @@
 (define-key rst-mode-map (kbd "C-c C") 'jkf/sphinx-html-compile)
 (define-key rst-mode-map (kbd "C-c c") 'jkf/sphinx-pdf-compile)
 (define-key rst-mode-map (kbd "C-c m") 'jkf/rest-wrap-math)
-(add-hook 'rst-mode-hook 'refill-mode)
+;(add-hook 'rst-mode-hook 'refill-mode)
 
 ;;;; FORTRAN Setup
 
@@ -314,7 +314,7 @@ number of characters is written to the message area."
 (setq org-tree-slide-slide-in-effect nil)
 (setq org-src-fontify-natively t)
 (add-hook 'org-mode-hook 'pair-jump-mode)
-(add-hook 'org-mode-hook 'refill-mode)
+;(add-hook 'org-mode-hook 'refill-mode)
 (setq org-startup-truncated nil)
 
 
@@ -936,7 +936,6 @@ function to make an autocomplete list"
                  blo-up-exe-name
                  "-test"
                  "-script"
-                 blo-up-swank-location)
-   ; need to poll here with idle timer
-  (sleep-for 2)
-  (jkf/toggle-slime))
+                 blo-up-swank-location))
+
+(add-hook 'slime-repl-mode-hook 'pair-jump-mode)
