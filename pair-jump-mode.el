@@ -30,8 +30,9 @@ are jumped over if preceded by a space. The list of characters
 considered for jumping over are given as strings in the buffer
 local variable `pair-jump-list'."
   :lighter " pj"
-  (set (make-local-variable 'pair-jump-list) '(")" "]" "'" "\"" "}" "`"))
-  (set (make-local-variable 'pair-jump-keep-trailing-space) nil)
+  :global t
+  (setq pair-jump-list '(")" "]" "'" "\"" "}" "`"))
+  (setq  pair-jump-keep-trailing-space nil)
   (if pair-jump-mode
       (add-hook 'post-self-insert-hook #'pair-jump-function)
     (remove-hook 'post-self-insert-hook #'pair-jump-function)))

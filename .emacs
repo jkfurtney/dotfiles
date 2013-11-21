@@ -194,7 +194,7 @@
 (add-to-list 'auto-mode-alist '("\\.inc\\'" . fortran-mode))
 
 (defun jkf/setup-fortran-mode () (interactive)
-  (pair-jump-mode 1)
+  ;(pair-jump-mode 1)
   (which-function-mode 1))
 
 (add-hook 'fortran-mode-hook 'jkf/setup-fortran-mode)
@@ -284,13 +284,13 @@ number of characters is written to the message area."
 ;;;; Lisp Setup
 
 (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'lisp-mode-hook 'pair-jump-mode)
+;(add-hook 'lisp-mode-hook 'pair-jump-mode)
 (add-hook 'lisp-mode-hook 'hs-minor-mode)
 
 (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
 (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
-(add-hook 'emacs-lisp-mode-hook 'pair-jump-mode)
+;(add-hook 'emacs-lisp-mode-hook 'pair-jump-mode)
 (add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
 (setq edebug-trace nil)
 
@@ -313,7 +313,7 @@ number of characters is written to the message area."
 
 (setq org-tree-slide-slide-in-effect nil)
 (setq org-src-fontify-natively t)
-(add-hook 'org-mode-hook 'pair-jump-mode)
+;(add-hook 'org-mode-hook 'pair-jump-mode)
 ;(add-hook 'org-mode-hook 'refill-mode)
 (setq org-startup-truncated nil)
 
@@ -856,7 +856,7 @@ function to make an autocomplete list"
 (defun jkf/setup-slime ()
      (interactive)
      (rainbow-delimiters-mode 1)
-     (pair-jump-mode 1)
+     ;(pair-jump-mode 1)
      (define-key slime-mode-map (kbd "M-n") nil)
      (define-key slime-mode-map (kbd "M-p") nil)
      (define-key slime-mode-map (kbd "C-M-.") nil)
@@ -938,4 +938,4 @@ function to make an autocomplete list"
                  "-script"
                  blo-up-swank-location))
 
-(add-hook 'slime-repl-mode-hook 'pair-jump-mode)
+;(add-hook 'slime-repl-mode-hook 'pair-jump-mode)
