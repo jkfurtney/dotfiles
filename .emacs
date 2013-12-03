@@ -811,6 +811,36 @@ Useful when editing a datafile in emacs and loading it a lisp."
   (insert (file-name-sans-extension (buffer-name)))
   (insert "\""))
 
+(defun jkf/line-incriment ()
+  "look at the current line, find the first numerical part,
+incriment it and write on a new line below. Leave the origional inplace"
+  (interactive)
+  (save-match-data
+    (let* ((current-line  (buffer-substring
+                           (point-at-bol)
+                           (point-at-eol)))
+           (tmp (string-match "\\([0-9]+\\)"current-line))
+           (old-number (match-string 1 current-line))
+           (new-number (number-to-string (1+ (string-to-int old-number))))
+           (new-line (replace-regexp-in-string old-number new-number current-line))
+           )
+      (move-end-of-line nil)
+      (newline-and-indent )
+      (insert new-line))))
+
+(defun jkf/open-next ()
+  "try to incriment current filename and open"
+  (interactive)
+  (save-match-data
+    (let* ((old-casename (file-name-sans-extension (buffer-name)))
+           (tmp (string-match "\\([0-9]+\\)" old-casename))
+           (old-number (match-string 1 old-casename))
+           (new-number
+            (number-to-string (1+ (string-to-int old-number))))
+           (new-filename
+            (replace-regexp-in-string old-number new-number (buffer-name))))
+      (find-file new-filename))))
+
 (defun jkf/increment-buffer ()
   "Write the current buffer with an incremented filename. The
   (first) integer portion in the filename is incremented to
