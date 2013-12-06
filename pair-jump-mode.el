@@ -13,10 +13,10 @@ strings in the buffer local variable `pair-jump-list'."
              (member (string (char-after)) pair-jump-list))
     (progn
       (message "pair-jump-mode: Jumping over %c" (char-after))
-      (backward-delete-char 1)
-      (backward-delete-char 1)
-      (forward-char)
-      (when pair-jump-keep-trailing-space (insert ?\s)))))
+      (backward-char 2)
+      (delete-forward-char 2)
+      (forward-char 1)
+      )))
 
 ;;;###autoload
 (define-minor-mode pair-jump-mode
@@ -32,7 +32,6 @@ local variable `pair-jump-list'."
   :lighter " pj"
   :global t
   (setq pair-jump-list '(")" "]" "'" "\"" "}" "`"))
-  (setq  pair-jump-keep-trailing-space nil)
   (if pair-jump-mode
       (add-hook 'post-self-insert-hook #'pair-jump-function)
     (remove-hook 'post-self-insert-hook #'pair-jump-function)))

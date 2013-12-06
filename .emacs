@@ -778,7 +778,15 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (setq sp-autoinsert-if-followed-by-word t)
 (sp-local-pair 'org-mode "$" "$")
 (sp-local-pair 'rst-mode "`" "`")
+(sp-local-pair 'lisp-mode "#|" "|#") ; does not work with slurp/barf?
+(setq sp-autoescape-string-quote nil) ;; fix for using pair jump mode
 
+(defun jkf/comment-sexp ()
+  "wrap a common lisp sexp in #| |# style comments"
+  (interactive)
+  (insert "#|")
+  (sp-forward-sexp)
+  (insert "|#"))
 
 (defun jkf/copy-current-defun ()
   "copy current defun to kill ring"
