@@ -977,3 +977,15 @@ function to make an autocomplete list"
                  blo-up-swank-location))
 
 ;(add-hook 'slime-repl-mode-hook 'pair-jump-mode)
+
+(defun jkf/increment-number-at-point ()
+  "incriment integer at point"
+  (interactive)
+  (save-match-data
+   (save-excursion
+     (skip-chars-backward "0123456789")
+     (or (looking-at "[0123456789]+")
+         (error "no number at point"))
+     (replace-match (number-to-string
+                     (1+ (string-to-number (match-string 0))))))))
+(global-set-key (kbd "C-c +") 'jkf/increment-number-at-point)
