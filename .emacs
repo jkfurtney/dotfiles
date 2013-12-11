@@ -350,12 +350,12 @@ number of characters is written to the message area."
       (set-register ?n '(file . "~/src/orgfile/notes.org"))
 
       (global-unset-key (kbd "<menu>"))
-      (global-set-key (kbd "<menu> /") 'ido-switch-buffer)
-      (global-set-key (kbd "<menu> .") 'smex)
+      (global-set-key (kbd "M-<menu>") 'ido-switch-buffer)
+      (global-set-key (kbd "<menu> /") 'smex)
 
       ; this is OK when you remap menu....
-      (global-set-key (kbd "s-/") 'ido-switch-buffer)
-      (global-set-key (kbd "s-.") 'smex)
+      ;(global-set-key (kbd "s-/") 'ido-switch-buffer)
+      ;(global-set-key (kbd "s-.") 'smex)
 
 
       (add-to-list 'yas/snippet-dirs "~/src/itasca-emacs/snippets")
