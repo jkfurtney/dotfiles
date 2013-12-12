@@ -1,0 +1,13 @@
+# name: fun
+# expand-env: ((yas-indent-line 'fixed))
+# --
+.. function:: f:FLT = ccfd_$1()
+
+   :module: ccfd
+   :class: intrinsic
+
+   $0
+
+   :Returns: :FLT:\`f\` - the fluid element porosity.
+   :Accepts: :FLT:\`f\` - the fluid element porosity.
+   :Arguments: :INT:\`i\` - the fluid element index.

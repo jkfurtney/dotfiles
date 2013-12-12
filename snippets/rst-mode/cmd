@@ -1,0 +1,9 @@
+# name: cmd
+# expand-env: ((yas-indent-line 'fixed))
+# --
+
+.. command:: $1
+   :module: ccfd
+   :kwlist:
+
+   $0

@@ -731,21 +731,18 @@ Useful when editing a datafile in emacs and loading it a lisp."
   (interactive)
   (delete-process "*magit-process*"))
 
-(defun jkf/chomp (str)
-  "Chomp leading and tailing whitespace from STR."
-  (while (string-match "\\`\n+\\|^\\s-+\\|\\s-+$\\|\n+\\'"
-                       str)
-    (setq str (replace-match "" t t str)))
-  str)
-
 (defun jkf/=-transpose ()
   "Transpose the text before and after the first equals sign"
   (interactive)
-  (let ((lhs (buffer-substring (point-at-bol) (point)))
-        (rhs (buffer-substring (1+ (point)) (point-at-eol))))
-    (end-of-line)
-    (newline-and-indent)
-    (insert (format "%s = %s" (chomp rhs) (chomp lhs)))))
+  (flet ((chomp (str)
+                (while (string-match "\\`\n+\\|^\\s-+\\|\\s-+$\\|\n+\\'" str)
+                  (setq str (replace-match "" t t str)))
+                str))
+    (let ((lhs (buffer-substring (point-at-bol) (point)))
+          (rhs (buffer-substring (1+ (point)) (point-at-eol))))
+      (end-of-line)
+      (newline-and-indent)
+      (insert (format "%s = %s" (chomp rhs) (chomp lhs))))))
 
 (load-theme 'cyberpunk t)
 
