@@ -986,3 +986,9 @@ function to make an autocomplete list"
      (replace-match (number-to-string
                      (1+ (string-to-number (match-string 0))))))))
 (global-set-key (kbd "C-c +") 'jkf/increment-number-at-point)
+
+(defun jkf/eval-replace-last-sexp ()
+  (interactive)
+  (let ((value (eval (preceding-sexp))))
+    (kill-sexp -1)
+    (insert (format "%s" value))))
