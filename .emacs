@@ -561,10 +561,10 @@ number of characters is written to the message area."
   "call a2ps on the file the current buffer is visiting. Opens
 the resulting postscript file"
   (interactive)
-  (let ((template  "a2ps.exe --columns=2 -o %s.ps -M letter --portrait %s")
+  (let ((template  "a2ps --columns=2 -o %s.ps -M letter --portrait %s")
         (fn (buffer-file-name)))
     (shell-command (format template fn fn ))
-    (w32-browser (format "%s.ps" fn))))
+    ))
 
 (defun jkf/a2ps-file () (interactive)
   "in dired call this function on a selected file to process the
@@ -994,6 +994,11 @@ function to make an autocomplete list"
   (let ((value (eval (preceding-sexp))))
     (kill-sexp -1)
     (insert (format "%s" value))))
+
 ; column-enforce-mode
 (require 'ox-reveal)
 (require 'ob-python)
+
+
+(global-set-key (kbd "C-<down>") 'shrink-window)
+(global-set-key (kbd "C-<up>") 'enlarge-window)
