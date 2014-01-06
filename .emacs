@@ -9,7 +9,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode nrepl fold-dwim diff-hl)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode nrepl fold-dwim diff-hl htmlize)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -17,7 +17,9 @@
     (if (y-or-n-p (format "Package %s is missing. Install it? " p))
         (package-install p))))
 
-     ; get load-path first
+                                        ; install org and org-plus-extras from here:
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+
 (if (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     (progn
       (add-to-list 'load-path "~/src/dotfiles/"))
@@ -992,3 +994,6 @@ function to make an autocomplete list"
   (let ((value (eval (preceding-sexp))))
     (kill-sexp -1)
     (insert (format "%s" value))))
+; column-enforce-mode
+(require 'ox-reveal)
+(require 'ob-python)
