@@ -1,0 +1,4 @@
+#+REVEAL: split
+#+BEGIN_SRC python :session :exports both :results output pp
+$0
+#+END_SRC

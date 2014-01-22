@@ -370,6 +370,7 @@ number of characters is written to the message area."
       (progn
         (add-to-list 'ac-modes 'itasca-general-mode)
         (add-to-list 'ac-modes 'itasca-pfc-mode)
+        (add-to-list 'ac-modes 'itasca-pfc5-mode)
         (add-to-list 'ac-modes 'itasca-flac-mode)
         (add-to-list 'ac-modes 'itasca-flac3d-mode)
         (add-to-list 'ac-modes 'itasca-udec-mode))
@@ -459,6 +460,7 @@ number of characters is written to the message area."
       (progn
         (add-to-list 'ac-modes 'itasca-general-mode)
         (add-to-list 'ac-modes 'itasca-pfc-mode)
+        (add-to-list 'ac-modes 'itasca-pfc5-mode)
         (add-to-list 'ac-modes 'itasca-flac-mode)
         (add-to-list 'ac-modes 'itasca-flac3d-mode)
         (add-to-list 'ac-modes 'itasca-udec-mode))
@@ -584,12 +586,13 @@ file with a2ps"
 (require 'ido)
 (require 'ido-ubiquitous)
 (require 'ido-vertical-mode)
-(ido-vertical-mode t)
+; (ido-vertical-mode t)
 (ido-mode t)
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
 (setq ido-create-new-buffer 'always)
 (setq ido-case-fold t)
+
 
 (require 'ace-jump-mode)
 (autoload
@@ -1002,3 +1005,14 @@ function to make an autocomplete list"
 
 (global-set-key (kbd "C-<down>") 'shrink-window)
 (global-set-key (kbd "C-<up>") 'enlarge-window)
+(setq org-confirm-babel-evaluate nil)
+
+(defun jkf/wrap-code-org ()
+  "wrap the current word in =word="
+  (interactive)
+  (insert "=")
+  (forward-word)
+  (insert "="))
+
+(define-key rst-mode-map (kbd "C-c C-c") 'rst-adjust)
+(global-set-key (kbd "C-x r v") 'helm-register)
