@@ -780,6 +780,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (setq sp-autoinsert-if-followed-by-word t)
 (sp-local-pair 'org-mode "$" "$")
 (sp-local-pair 'rst-mode "`" "`")
+(sp-local-pair 'rst-mode ":" ":")
 (sp-local-pair 'lisp-mode "#|" "|#") ; does not work with slurp/barf?
 (setq sp-autoescape-string-quote nil) ;; fix for using pair jump mode
 
