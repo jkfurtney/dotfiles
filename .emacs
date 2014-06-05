@@ -286,6 +286,7 @@ number of characters is written to the message area."
 ;;;; Lisp Setup
 
 (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'scheme-mode-hook 'rainbow-delimiters-mode)
 ;(add-hook 'lisp-mode-hook 'pair-jump-mode)
 (add-hook 'lisp-mode-hook 'hs-minor-mode)
 
@@ -1003,7 +1004,6 @@ function to make an autocomplete list"
 (require 'ox-reveal)
 (require 'ob-python)
 
-
 (global-set-key (kbd "C-<down>") 'shrink-window)
 (global-set-key (kbd "C-<up>") 'enlarge-window)
 (setq org-confirm-babel-evaluate nil)
@@ -1017,3 +1017,10 @@ function to make an autocomplete list"
 
 (define-key rst-mode-map (kbd "C-c C-c") 'rst-adjust)
 (global-set-key (kbd "C-x r v") 'helm-register)
+
+(defun jkf/svn-get-ids ()
+  (interactive)
+  (beginning-of-buffer)
+  (keep-lines "^Revision: ")
+  (replace-regexp "^Revision: " "")
+  )
