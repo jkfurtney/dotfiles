@@ -9,7 +9,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode nrepl fold-dwim diff-hl htmlize connection)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode nrepl fold-dwim diff-hl htmlize god-mode connection)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -1032,12 +1032,33 @@ function to make an autocomplete list"
 (define-key rst-mode-map (kbd "C-c C-c") 'rst-adjust)
 (global-set-key (kbd "C-x r v") 'helm-register)
 
+
+(require 'god-mode)
+(global-set-key (kbd "<home>") 'god-mode-all)
+(defun my-update-cursor ()
+  (setq cursor-type (if (or god-local-mode buffer-read-only)
+                        'hbox
+                      'box)))
+(add-hook 'god-mode-enabled-hook 'my-update-cursor)
+(add-hook 'god-mode-disabled-hook 'my-update-cursor)
+(define-key god-local-mode-map (kbd "i") 'god-local-mode)
+(define-key god-local-mode-map (kbd "C-<tab>") 'god-local-mode)
+(global-set-key (kbd "C-<tab>") 'god-local-mode)
+(setq c-default-style "linux"
+          c-basic-offset 4)
+;(c++-set-offset 'substatement-open 0)
+
+(defun my-c++-mode-hook ()
+  (setq c-basic-offset 2)
+  (c-set-offset 'substatement-open 0))
+(add-hook 'c++-mode-hook 'my-c++-mode-hook)
+
 (defun jkf/svn-get-ids ()
   (interactive)
   (beginning-of-buffer)
   (keep-lines "^Revision: ")
-  (replace-regexp "^Revision: " "")
-  )
+  (replace-regexp "^Revision: " ""))
+
 (setq org-latex-table-scientific-notation "%s\\times10^{%s}")
 
 
