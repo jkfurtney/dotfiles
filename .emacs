@@ -9,7 +9,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode nrepl fold-dwim diff-hl htmlize)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode nrepl fold-dwim diff-hl htmlize connection)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -439,7 +439,11 @@ number of characters is written to the message area."
       (add-to-list 'exec-path "C:/Program Files (x86)/GnuWin32/bin/")
       (add-to-list 'exec-path "c:/Program Files (x86)/Git/bin/")
       (add-to-list 'exec-path "C:/Program Files (x86)/ImageMagick-6.8.5-Q16/")
+      (add-to-list 'exec-path "C:/Program Files (x86)/ImageMagick-6.8.5-Q16/")
 
+      (setenv "PATH" (concat (getenv "PATH")
+                             ";"
+                             "C:/Program Files (x86)/GnuWin32/bin/"))
       (add-to-list 'yas/snippet-dirs "c:/src/itasca-emacs/snippets")
       (add-to-list 'yas/snippet-dirs "c:/src/dotfiles/snippets")
       (add-to-list 'ac-dictionary-directories "c:/src/itasca-emacs/ac-dict")
@@ -568,6 +572,16 @@ the resulting postscript file"
         (fn (buffer-file-name)))
     (shell-command (format template fn fn ))
     ))
+
+(defun jkf/a2ps-buffer-legal ()
+  "call a2ps on the file the current buffer is visiting. Opens
+the resulting postscript file"
+  (interactive)
+  (let ((template  "a2ps --columns=2 -o %s.ps -M legal --portrait %s")
+        (fn (buffer-file-name)))
+    (shell-command (format template fn fn ))
+    ))
+
 
 (defun jkf/a2ps-file () (interactive)
   "in dired call this function on a selected file to process the
@@ -1024,3 +1038,17 @@ function to make an autocomplete list"
   (keep-lines "^Revision: ")
   (replace-regexp "^Revision: " "")
   )
+(setq org-latex-table-scientific-notation "%s\\times10^{%s}")
+
+
+(define-key python-mode-map (kbd "C-c M-c") 'itasca-python-copy-as-execfile)
+
+(defun jkf/unix-file ()
+      "Change the current buffer to Latin 1 with Unix line-ends."
+      (interactive)
+      (set-buffer-file-coding-system 'iso-latin-1-unix t))
+
+(defun jkf/dos-file ()
+      "Change the current buffer to Latin 1 with DOS line-ends."
+      (interactive)
+      (set-buffer-file-coding-system 'iso-latin-1-dos t))
