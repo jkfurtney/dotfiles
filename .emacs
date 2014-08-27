@@ -9,7 +9,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode nrepl fold-dwim diff-hl htmlize god-mode connection)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode fold-dwim diff-hl htmlize god-mode connection ox-reveal)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
