@@ -1073,3 +1073,13 @@ function to make an autocomplete list"
       "Change the current buffer to Latin 1 with DOS line-ends."
       (interactive)
       (set-buffer-file-coding-system 'iso-latin-1-dos t))
+
+(defun jkf/atest () (interactive) "mental arithmetic trainer"
+  (let* ((n1 (random 100))
+         (n2 (random 100))
+         (res (+ n1 n2))
+         (trial (string-to-int (read-from-minibuffer (format "%d + %d " n1 n2)))))
+    (if (= trial res)
+        (read-from-minibuffer "yes")
+      (read-from-minibuffer (format "no %d + %d = %d" n1 n2 res))))
+  (jkf/atest))
