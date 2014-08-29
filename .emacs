@@ -1075,40 +1075,76 @@ function to make an autocomplete list"
       (interactive)
       (set-buffer-file-coding-system 'iso-latin-1-dos t))
 
-(defun jkf/atest () (interactive) "addition mental arithmetic trainer"
-  (let* ((n1 (random 100))
-         (n2 (random 100))
-         (res (+ n1 n2))
-         (trial (string-to-int (read-from-minibuffer (format "%d + %d " n1 n2)))))
-    (if (= trial res)
-        (read-from-minibuffer "yes")
-      (read-from-minibuffer (format "no %d + %d = %d" n1 n2 res))))
-  (jkf/atest))
-
 (defun jkf/mtest () (interactive) "multiplication mental arithmetic trainer"
-  (let* ((n1 (+ 2 (random 11)))
-         (n2 (+ 2 (random 11)))
-         (res (* n1 n2))
-         (trial (string-to-int (read-from-minibuffer (format "%d * %d " n1 n2)))))
-    (if (= trial res)
-        (read-from-minibuffer "yes")
-      (read-from-minibuffer (format "no %d * %d = %d" n1 n2 res))))
-  (jkf/mtest))
+  (loop
+   (let ((t0 (float-time)))
+     (let* ((n1 (+ 2 (random 11)))
+            (n2 (+ 2 (random 11)))
+            (res (* n1 n2))
+            (trial (string-to-int (read-from-minibuffer
+                                   (format "%d * %d " n1 n2)))))
+       (while (not  (= trial res))
+         (setq trial (string-to-int (read-from-minibuffer
+                                     (format "no: %d * %d " n1 n2)))))
+       (read-from-minibuffer (format "yes: %d ms "
+                                     (truncate (* 1e3 (- (float-time) t0)))))))))
+
 ; http://en.wikipedia.org/wiki/Spaced_repetition
 ; http://en.wikipedia.org/wiki/Leitner_system
 
-(defun jkf/atest2 ()
+(defun jkf/atest ()
   (interactive)
   "addition mental arithmetic trainer"
-  (loop
-   (let ((t0 (float-time)))
-     (let* ((n1 (random 100))
-            (n2 (random 100))
-            (res (+ n1 n2))
-            (trial (string-to-int (read-from-minibuffer
-                                   (format "%d + %d " n1 n2)))))
-       (while (not  (= trial res))
-         (setq trial (string-to-int (read-from-minibuffer
-                                     (format "no: %d + %d " n1 n2)))))
-       (read-from-minibuffer (format "yes: %d ms "
-                                     (truncate (* 1e3 (- (float-time) t0)))))))))
+  (flet ((io (text) (speech-read-from-minibuffer text) ))
+    (loop
+     (let ((t0 (float-time)))
+       (let* ((n1 (random 100))
+              (n2 (random 100))
+              (res (+ n1 n2))
+              (trial (string-to-int (io
+                                     (format "%d + %d " n1 n2)))))
+         (while (not  (= trial res))
+           (setq trial (string-to-int (io
+                                       (format "no: %d + %d " n1 n2)))))
+         ;(io (format "yes: %d ms "
+         ;(truncate (* 1e3 (- (float-time) t0)))))
+         (io "yes"))))))
+
+(defvar tts nil "text to speech process")
+
+(defun tts-up ()
+  (interactive)
+  (and (not (null tts))
+       (eq (process-status tts) 'run)))
+
+(defun tts-start ()
+  (interactive)
+  (if (not (tts-up))
+      (setq tts
+            (start-process "tts-python"
+                           "*tts-python*"
+                           "python" "c:/src/dotfiles/speak.py"))))
+
+(defun tts-end ()
+  (interactive)
+  (delete-process tts)
+  (setq tts nil))
+
+(defun tts-say (text)
+  (interactive)
+  (tts-start)
+  (process-send-string tts (concat text "\n")))
+
+(defun speech-read-from-minibuffer (text)
+  (interactive)
+  "say the message and read from the minibuffer"
+  (tts-say text)
+  (read-from-minibuffer "<speech>"))
+
+(defun voice-atest ()
+  (interactive)
+  (let ((old-io #'read-from-minibuffer)
+        (read-from-minibuffer #'speech-read))
+    (jkf/atest)
+    )
+  )
