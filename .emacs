@@ -395,6 +395,7 @@ number of characters is written to the message area."
     (progn
       (set-face-attribute 'default nil :family "Monaco"
                           :height 145 :weight 'normal)
+      (setq initial-frame-alist '((width . 80) (height . 52)))
       (setq eshell-rc-script "~/src/dotfiles/eshellrc_osx")
       (add-to-list 'yas/snippet-dirs "~/src/dotfiles/snippets")
       (let ((org-note-file
@@ -557,6 +558,9 @@ number of characters is written to the message area."
   (require 'slime-autoloads)
   (slime-setup '(slime-fancy slime-banner slime-autodoc))
   (setq inferior-lisp-program "sbcl"))
+
+ ((equal (system-name) "jason-furtneys-imac.local")
+  (setq initial-frame-alist '((width . 80) (height . 52))))
 
  (t (setq initial-frame-alist '((width . 80) (height . 34)))))
 
@@ -1078,7 +1082,8 @@ function to make an autocomplete list"
   (let* ((n1 (random 100))
          (n2 (random 100))
          (res (+ n1 n2))
-         (trial (string-to-int (read-from-minibuffer (format "%d + %d " n1 n2)))))
+         (trial (string-to-int (read-from-minibuffer
+                                (format "%d + %d " n1 n2)))))
     (if (= trial res)
         (read-from-minibuffer "yes")
       (read-from-minibuffer (format "no %d + %d = %d" n1 n2 res))))
