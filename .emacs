@@ -1079,59 +1079,61 @@ function to make an autocomplete list"
       (interactive)
       (set-buffer-file-coding-system 'iso-latin-1-dos t))
 
-(defun jkf/mtest () (interactive) "multiplication mental arithmetic trainer"
-  (loop
-   (let ((t0 (float-time)))
-     (let* ((n1 (+ 2 (random 11)))
-            (n2 (+ 2 (random 11)))
-            (res (* n1 n2))
-            (trial (string-to-int (read-from-minibuffer
-                                   (format "%d * %d " n1 n2)))))
-       (while (not  (= trial res))
-         (setq trial (string-to-int (read-from-minibuffer
-                                     (format "no: %d * %d " n1 n2)))))
-       (read-from-minibuffer (format "yes: %d ms "
-                                     (truncate (* 1e3 (- (float-time) t0)))))))))
-
 ; http://en.wikipedia.org/wiki/Spaced_repetition
 ; http://en.wikipedia.org/wiki/Leitner_system
+
+(defvar jkf/atest-data nil "store results of training")
 
 (defun jkf/atest ()
   (interactive)
   "addition mental arithmetic trainer"
-  (let (io op op-name range)
-    (if (equal "voice" (ido-completing-read
-                          "text or voice:" '("text" "voice")))
-        (fset 'io (function speech-read-from-minibuffer))
-      (fset 'io (function read-from-minibuffer)))
-    (if (equal "addition" (ido-completing-read
-                           "operator: "
-                           '("addition" "multiplication")))
+  (setq jkf/atest-data nil)
+  (unwind-protect
       (progn
-        (fset 'op (function +))
-        (setq op-name "plus")
-        (fset 'rand (lambda () (random 100))))
-      (progn
-        (fset 'op (function *) )
-        (setq op-name "times")
-        (fset 'rand (lambda () (+ 2 (random 11))))))
+        (let (io op op-name range)
+          (if (equal "voice" (ido-completing-read
+                              "text or voice:" '("text" "voice")))
+              (fset 'io (function speech-read-from-minibuffer))
+            (fset 'io (function read-from-minibuffer)))
+          (if (equal "addition" (ido-completing-read
+                                 "operator: "
+                                 '("addition" "multiplication")))
+              (progn
+                (fset 'op (function +))
+                (setq op-name "plus")
+                (fset 'rand (lambda () (random 100))))
+            (progn
+              (fset 'op (function *) )
+              (setq op-name "times")
+              (fset 'rand (lambda () (+ 2 (random 11))))))
 
-    (loop
-     (let ((t0 (float-time)))
-       (let* ((n1 (rand))
-              (n2 (rand))
-              (res (op n1 n2))
-              (trial (string-to-int
-                      (io (format "%d %s %d " n1 op-name n2)))))
-         (while (not  (= trial res))
-           (setq trial (string-to-int
-                        (io (format "no: %d %s %d " n1 op-name n2)))))
-         (with-current-buffer "*tts-python*"
-           (insert
-            (format "%d %s %d: %d ms " n1 op-name n2
-                    (truncate
-                     (* 1e3 (- (float-time) t0))))))
-         (io "yes"))))))
+          (loop
+           (let ((t0 (float-time)) solve-time)
+             (let* ((n1 (rand))
+                    (n2 (rand))
+                    (res (op n1 n2))
+                    (problem (format "%d %s %d " n1 op-name n2))
+                    (trial (string-to-int (io problem))))
+               (while (not  (= trial res))
+                 (setq trial (string-to-int
+                              (io (format "no: %s " problem)))))
+
+               (setq solve-time (truncate (* 1e3 (- (float-time) t0))))
+
+               (with-current-buffer (get-buffer-create "*atest*")
+                 (insert
+                  (format "%s: %d ms \n" problem solve-time)))
+
+               (push (cons solve-time problem) jkf/atest-data)
+               (io "yes"))))))
+
+    ;; clean up
+    (progn
+      (message "saving data...")
+      (with-temp-file
+          (concat
+           (replace-regexp-in-string " " "_" (current-time-string)) ".atest")
+        (print jkf/atest-data (current-buffer))))))
 
 (defvar tts nil "text to speech process")
 
@@ -1163,10 +1165,3 @@ function to make an autocomplete list"
   "say the message and read from the minibuffer"
   (tts-say text)
   (read-from-minibuffer "<speech>"))
-
-(defun my-func () (interactive) (message "hi"))
-
-(defun testf () (interactive)
-  (let (f)
-    (fset 'f  (lambda () 2))
-    (f)))
