@@ -20,12 +20,12 @@
                                         ; install org and org-plus-extras from here:
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
-(if (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
-    (progn
-      (add-to-list 'load-path "~/src/dotfiles/"))
-  (progn
-      (add-to-list 'load-path "c:/src/dotfiles/")))
+(defvar dotfile-dir nil "location of .emacs and other stuff")
 
+(if (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
+    (setq dotfile-dir "c:/src/dotfiles/")
+  (setq dotfile-dir (expand-file-name "~/src/dotfiles/")))
+(add-to-list 'load-path dotfile-dir)
 ;;;; basic key bindings
 (require 'dired+)
 (global-set-key "\C-o" 'find-file) ; C-o for find file
@@ -393,6 +393,7 @@ number of characters is written to the message area."
 ;;;; OS X specific setup
 (if (eq system-type 'darwin)
     (progn
+      (global-set-key (kbd "<M-268632080>") 'ido-switch-buffer)
       (set-face-attribute 'default nil :family "Monaco"
                           :height 145 :weight 'normal)
       (setq initial-frame-alist '((width . 80) (height . 52)))
@@ -1131,10 +1132,11 @@ function to make an autocomplete list"
     (progn
       (message "saving data...")
       (with-temp-file
-          (concat
+          (concat dotfile-dir
            (replace-regexp-in-string " " "_" (current-time-string)) ".atest")
-        (print jkf/atest-data (current-buffer))))))
-
+        (dolist (datum jkf/atest-data)
+          (insert (format "%d, %s\n" (car datum) (cdr datum))))))))
+;(print jkf/atest-data (current-buffer))
 (defvar tts nil "text to speech process")
 
 (defun tts-up ()
@@ -1148,7 +1150,7 @@ function to make an autocomplete list"
       (setq tts
             (start-process "tts-python"
                            "*tts-python*"
-                           "python" "./speak.py"))))
+                           "python" (concat dotfile-dir "speak.py")))))
 
 (defun tts-end ()
   (interactive)
