@@ -23,8 +23,8 @@
 (defvar dotfile-dir nil "location of .emacs and other stuff")
 
 (if (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
-    (setq dotfile-dir "c:/src/dotfiles/")
-  (setq dotfile-dir (expand-file-name "~/src/dotfiles/")))
+    (setq dotfile-dir (expand-file-name "~/src/dotfiles/"))
+  (setq dotfile-dir "c:/src/dotfiles/"))
 (add-to-list 'load-path dotfile-dir)
 ;;;; basic key bindings
 (require 'dired+)
@@ -1087,7 +1087,7 @@ function to make an autocomplete list"
 
 (defun jkf/atest ()
   (interactive)
-  "addition mental arithmetic trainer"
+  "mental arithmetic trainer"
   (setq jkf/atest-data nil)
   (unwind-protect
       (progn
