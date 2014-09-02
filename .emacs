@@ -9,7 +9,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode nrepl fold-dwim diff-hl htmlize god-mode connection)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode fold-dwim diff-hl htmlize god-mode connection ox-reveal)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -20,12 +20,12 @@
                                         ; install org and org-plus-extras from here:
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
-(if (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
-    (progn
-      (add-to-list 'load-path "~/src/dotfiles/"))
-  (progn
-      (add-to-list 'load-path "c:/src/dotfiles/")))
+(defvar dotfile-dir nil "location of .emacs and other stuff")
 
+(if (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
+    (setq dotfile-dir (expand-file-name "~/src/dotfiles/"))
+  (setq dotfile-dir "c:/src/dotfiles/"))
+(add-to-list 'load-path dotfile-dir)
 ;;;; basic key bindings
 (require 'dired+)
 (global-set-key "\C-o" 'find-file) ; C-o for find file
@@ -393,8 +393,10 @@ number of characters is written to the message area."
 ;;;; OS X specific setup
 (if (eq system-type 'darwin)
     (progn
+      (global-set-key (kbd "<M-268632080>") 'ido-switch-buffer)
       (set-face-attribute 'default nil :family "Monaco"
                           :height 145 :weight 'normal)
+      (setq initial-frame-alist '((width . 80) (height . 52)))
       (setq eshell-rc-script "~/src/dotfiles/eshellrc_osx")
       (add-to-list 'yas/snippet-dirs "~/src/dotfiles/snippets")
       (let ((org-note-file
@@ -557,6 +559,9 @@ number of characters is written to the message area."
   (require 'slime-autoloads)
   (slime-setup '(slime-fancy slime-banner slime-autodoc))
   (setq inferior-lisp-program "sbcl"))
+
+ ((equal (system-name) "jason-furtneys-imac.local")
+  (setq initial-frame-alist '((width . 80) (height . 52))))
 
  (t (setq initial-frame-alist '((width . 80) (height . 34)))))
 
@@ -1075,41 +1080,63 @@ function to make an autocomplete list"
       (interactive)
       (set-buffer-file-coding-system 'iso-latin-1-dos t))
 
-(defun jkf/mtest () (interactive) "multiplication mental arithmetic trainer"
-  (loop
-   (let ((t0 (float-time)))
-     (let* ((n1 (+ 2 (random 11)))
-            (n2 (+ 2 (random 11)))
-            (res (* n1 n2))
-            (trial (string-to-int (read-from-minibuffer
-                                   (format "%d * %d " n1 n2)))))
-       (while (not  (= trial res))
-         (setq trial (string-to-int (read-from-minibuffer
-                                     (format "no: %d * %d " n1 n2)))))
-       (read-from-minibuffer (format "yes: %d ms "
-                                     (truncate (* 1e3 (- (float-time) t0)))))))))
-
 ; http://en.wikipedia.org/wiki/Spaced_repetition
 ; http://en.wikipedia.org/wiki/Leitner_system
 
+(defvar jkf/atest-data nil "store results of training")
+
 (defun jkf/atest ()
   (interactive)
-  "addition mental arithmetic trainer"
-  (flet ((io (text) (speech-read-from-minibuffer text) ))
-    (loop
-     (let ((t0 (float-time)))
-       (let* ((n1 (random 100))
-              (n2 (random 100))
-              (res (+ n1 n2))
-              (trial (string-to-int (io
-                                     (format "%d + %d " n1 n2)))))
-         (while (not  (= trial res))
-           (setq trial (string-to-int (io
-                                       (format "no: %d + %d " n1 n2)))))
-         ;(io (format "yes: %d ms "
-         ;(truncate (* 1e3 (- (float-time) t0)))))
-         (io "yes"))))))
+  "mental arithmetic trainer"
+  (setq jkf/atest-data nil)
+  (unwind-protect
+      (progn
+        (let (io op op-name range)
+          (if (equal "voice" (ido-completing-read
+                              "text or voice:" '("text" "voice")))
+              (fset 'io (function speech-read-from-minibuffer))
+            (fset 'io (function read-from-minibuffer)))
+          (if (equal "addition" (ido-completing-read
+                                 "operator: "
+                                 '("addition" "multiplication")))
+              (progn
+                (fset 'op (function +))
+                (setq op-name "plus")
+                (fset 'rand (lambda () (random 100))))
+            (progn
+              (fset 'op (function *) )
+              (setq op-name "times")
+              (fset 'rand (lambda () (+ 2 (random 11))))))
 
+          (loop
+           (let ((t0 (float-time)) solve-time)
+             (let* ((n1 (rand))
+                    (n2 (rand))
+                    (res (op n1 n2))
+                    (problem (format "%d %s %d " n1 op-name n2))
+                    (trial (string-to-int (io problem))))
+               (while (not  (= trial res))
+                 (setq trial (string-to-int
+                              (io (format "no: %s " problem)))))
+
+               (setq solve-time (truncate (* 1e3 (- (float-time) t0))))
+
+               (with-current-buffer (get-buffer-create "*atest*")
+                 (insert
+                  (format "%s: %d ms \n" problem solve-time)))
+
+               (push (cons solve-time problem) jkf/atest-data)
+               (io "yes"))))))
+
+    ;; clean up
+    (progn
+      (message "saving data...")
+      (with-temp-file
+          (concat dotfile-dir
+           (replace-regexp-in-string " " "_" (current-time-string)) ".atest")
+        (dolist (datum jkf/atest-data)
+          (insert (format "%d, %s\n" (car datum) (cdr datum))))))))
+;(print jkf/atest-data (current-buffer))
 (defvar tts nil "text to speech process")
 
 (defun tts-up ()
@@ -1123,7 +1150,7 @@ function to make an autocomplete list"
       (setq tts
             (start-process "tts-python"
                            "*tts-python*"
-                           "python" "c:/src/dotfiles/speak.py"))))
+                           "python" (concat dotfile-dir "speak.py")))))
 
 (defun tts-end ()
   (interactive)
@@ -1140,11 +1167,3 @@ function to make an autocomplete list"
   "say the message and read from the minibuffer"
   (tts-say text)
   (read-from-minibuffer "<speech>"))
-
-(defun voice-atest ()
-  (interactive)
-  (let ((old-io #'read-from-minibuffer)
-        (read-from-minibuffer #'speech-read))
-    (jkf/atest)
-    )
-  )
