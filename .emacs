@@ -419,7 +419,6 @@ number of characters is written to the message area."
       ;; (setq image-dired-cmd-create-standard-thumbnail-command
       ;;            (s-replace "convert" image-dired-cmd-create-thumbnail-program ))
       (setq shell-file-name explicit-shell-file-name)
-      (add-to-list 'exec-path "C:/Program Files (x86)/Git/bin")
 
       (add-to-list 'custom-theme-load-path "c:/src/dotfiles/")
 
@@ -442,10 +441,15 @@ number of characters is written to the message area."
       (add-to-list 'exec-path "c:/Program Files (x86)/Git/bin/")
       (add-to-list 'exec-path "C:/Program Files (x86)/ImageMagick-6.8.5-Q16/")
       (add-to-list 'exec-path "C:/Program Files (x86)/ImageMagick-6.8.5-Q16/")
+      (add-to-list 'exec-path "C:/Program Files (x86)/MiKTeX 2.9/miktex/bin/")
 
-      (setenv "PATH" (concat (getenv "PATH")
-                             ";"
-                             "C:/Program Files (x86)/GnuWin32/bin/"))
+      (defun jkf/add-to-path (path-str)
+        (setenv "PATH" (concat (getenv "PATH")
+                               ";" path-str)))
+
+      (jkf/add-to-path "C:/Program Files (x86)/GnuWin32/bin/")
+      (jkf/add-to-path "C:/Program Files (x86)/MiKTeX 2.9/miktex/bin/")
+
       (add-to-list 'yas/snippet-dirs "c:/src/itasca-emacs/snippets")
       (add-to-list 'yas/snippet-dirs "c:/src/dotfiles/snippets")
       (add-to-list 'ac-dictionary-directories "c:/src/itasca-emacs/ac-dict")
@@ -736,7 +740,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
     (when new-kill-string
       (message "%s copied" new-kill-string)
       (kill-new new-kill-string))))
-(global-set-key (kbd "C-c M-c") 'copy-buffer-file-name-as-kill)
+(global-set-key (kbd "C-c M-c") 'jkf/copy-buffer-file-name-as-kill)
 
 (global-set-key (kbd "C-c j c") 'goto-last-change)
 (global-set-key (kbd "C-c j b") 'beginning-of-buffer)
@@ -1133,18 +1137,21 @@ function to make an autocomplete list"
       (message "saving data...")
       (with-temp-file
           (concat dotfile-dir
-           (replace-regexp-in-string " " "_" (current-time-string)) ".atest")
+                  (replace-regexp-in-string ":" "_" (replace-regexp-in-string " " "_" (current-time-string))) ".atest")
         (dolist (datum jkf/atest-data)
           (insert (format "%d, %s\n" (car datum) (cdr datum))))))))
-;(print jkf/atest-data (current-buffer))
+
+;; text to speech pacakage. requires python, pyttsx and speak.py
 (defvar tts nil "text to speech process")
 
 (defun tts-up ()
+  "true if the tts process us up"
   (interactive)
   (and (not (null tts))
        (eq (process-status tts) 'run)))
 
 (defun tts-start ()
+  "start the tts process if it is not already up"
   (interactive)
   (if (not (tts-up))
       (setq tts
@@ -1153,16 +1160,19 @@ function to make an autocomplete list"
                            "python" (concat dotfile-dir "speak.py")))))
 
 (defun tts-end ()
+  "close the tts process."
   (interactive)
   (delete-process tts)
   (setq tts nil))
 
 (defun tts-say (text)
+  "speak the given string."
   (interactive)
   (tts-start)
   (process-send-string tts (concat text "\n")))
 
 (defun speech-read-from-minibuffer (text)
+  "speak the given string and read from the minibuffer"
   (interactive)
   "say the message and read from the minibuffer"
   (tts-say text)
