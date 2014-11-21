@@ -375,7 +375,8 @@ number of characters is written to the message area."
         (add-to-list 'ac-modes 'itasca-pfc5-mode)
         (add-to-list 'ac-modes 'itasca-flac-mode)
         (add-to-list 'ac-modes 'itasca-flac3d-mode)
-        (add-to-list 'ac-modes 'itasca-udec-mode))
+        (add-to-list 'ac-modes 'itasca-udec-mode)
+        (add-to-list 'ac-modes 'itasca-3dec-mode))
 
                                         ; clojure
       ;; (progn
@@ -476,6 +477,7 @@ number of characters is written to the message area."
         (add-to-list 'ac-modes 'itasca-pfc5-mode)
         (add-to-list 'ac-modes 'itasca-flac-mode)
         (add-to-list 'ac-modes 'itasca-flac3d-mode)
+        (add-to-list 'ac-modes 'itasca-3dec-mode)
         (add-to-list 'ac-modes 'itasca-udec-mode))
                                         ; windows specific magit init
       (defun magit-escape-for-shell (str)
@@ -501,6 +503,16 @@ number of characters is written to the message area."
      (setq initial-frame-alist '((width . 80) (height . 44)))
      (setq org-default-notes-file org-note-file)
      (setq org-agenda-files (list org-note-file))
+     (progn
+       (require 'ac-slime)
+       (require 'slime-autoloads)
+       (slime-setup '(slime-fancy slime-banner slime-autodoc))
+       (add-hook 'slime-mode-hook 'set-up-slime-ac)
+       (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
+       (add-to-list 'ac-modes 'slime-repl-mode)
+       (add-to-list 'ac-modes 'slime-mode))
+
+
      (set-register ?n `(file . ,org-note-file)))
  ;;;;; hack because we use Anaconda which does not have virtual env
    (setq jedi:server-command '("python" "c:/Users/jfurtney/AppData/Roaming/.emacs.d/elpa/jedi-20140321.1323/jediepcserver.py")))
@@ -994,7 +1006,10 @@ function to make an autocomplete list"
 (global-set-key (kbd "C-c M-l") 'jkf/launch-blo-up)
 
 
-(setf blo-up-exe-name "c:/src/svn_bu/binaries/x64Release/bloup206_64.exe")
+;(setf blo-up-exe-name "c:/src/svn_bu/binaries/x64Release/bloup206_64.exe")
+
+(setf blo-up-exe-name "c:/Program Files/HSBM/Blo-Up_2.7/exe64/bloup206_64.exe")
+;(setf blo-up-swank-location "c:/Users/jfurtney/AppData/Roaming/.emacs.d/elpa/slime-20141024.937/swank-loader.lisp")
 (setf blo-up-swank-location "c:/src/bu-lisp/ecl-swank.lisp")
 
 (defun jkf/launch-blo-up-swank ()
@@ -1189,3 +1204,26 @@ function to make an autocomplete list"
   "say the message and read from the minibuffer"
   (tts-say text)
   (read-from-minibuffer "<speech>"))
+
+(defun jkf/tuple-pack-refactor ()
+  "a,b = c,d into a=c newline b=d "
+  (interactive)
+  (save-excursion
+    (flet ((chomp (str)
+                  (while (string-match "\\`\n+\\|^\\s-+\\|\\s-+$\\|\n+\\'" str)
+                    (setq str (replace-match "" t t str)))
+                  str))
+      (let* ((line (buffer-substring (point-at-bol) (point-at-eol)))
+                ;;; find number of leading whitespace chars
+             (nindent (loop for c in (string-to-list line)
+                           sum (if (char-equal c ?\ ) 1 0) into count do
+                           (when (not (char-equal c ?\ )) (return count))))
+             (lhs-rhs (split-string line "=" t))
+             (lhs (split-string (first lhs-rhs) "," t))
+             (rhs (split-string (second lhs-rhs) "," t)))
+        (move-beginning-of-line nil)
+        (kill-line)
+        (loop for l in lhs for r in rhs do
+              (dotimes (n nindent) (insert " "))
+              (insert (format "%s = %s\n" (chomp l) (chomp r))))
+        (backward-delete-char 1)))))
