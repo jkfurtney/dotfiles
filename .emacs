@@ -592,6 +592,10 @@ number of characters is written to the message area."
   ("jason-furtneys-imac.local"
    (setq initial-frame-alist '((width . 80) (height . 52))))
 
+  ("LAKEMAIDEN" ; build server
+   (setq initial-frame-alist '((width . 80) (height . 28)))
+   (set-face-attribute 'default nil :height 140))
+
   (_ (setq initial-frame-alist '((width . 80) (height . 34)))))
 
  ;; note on windows $HOME is different in bash and emacs!
