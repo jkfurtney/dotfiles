@@ -2,6 +2,7 @@
 (tool-bar-mode 0)
 (menu-bar-mode 0)
 (scroll-bar-mode 0)
+(setq magit-last-seen-setup-instructions "1.4.0")
 
 ;;;; packages
 (require 'package)
@@ -497,6 +498,7 @@ number of characters is written to the message area."
 ;;;; computer specific setup
 
 (pcase system-name
+
   ("ABITA" ; 6 core i7
    (let ((org-note-file
           "c:/Users/jfurtney/Dropbox/org/notes.org"))
@@ -594,7 +596,20 @@ number of characters is written to the message area."
 
   ("LAKEMAIDEN" ; build server
    (setq initial-frame-alist '((width . 80) (height . 28)))
-   (set-face-attribute 'default nil :height 140))
+   (set-face-attribute 'default nil :height 140)
+   (let ((org-note-file
+          "c:\\Users\\Jason\\Documents\\My Dropbox\\org\\notes.org"))
+     (setq org-default-notes-file org-note-file)
+     (setq org-agenda-files (list org-note-file))
+     (progn
+       (require 'ac-slime)
+       (require 'slime-autoloads)
+       (slime-setup '(slime-fancy slime-banner slime-autodoc))
+       (add-hook 'slime-mode-hook 'set-up-slime-ac)
+       (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
+       (add-to-list 'ac-modes 'slime-repl-mode)
+       (add-to-list 'ac-modes 'slime-mode))
+     (set-register ?n `(file . ,org-note-file))))
 
   (_ (setq initial-frame-alist '((width . 80) (height . 34)))))
 
