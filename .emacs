@@ -959,30 +959,31 @@ function to make an autocomplete list"
             t)
         nil))))
 
+;; this was a hack used when debugging the ecl compiler
 (defun jkf--find-last-modified-temporary-c-file ()
   (interactive)
   (first (sort
           (directory-files temporary-file-directory t "\\.c$")
           'jkf--sort-file-modification-times)))
-
 (defun jkf/show-ecl-defun-c-code ()
   (interactive)
   (find-file
    (jkf--find-last-modified-temporary-c-file)))
+
+;; functions to launch Blo-Up and connect to it via Slime
+
+(setf blo-up-exe-name "c:/src/svn_bu/binaries/x64Release/bloup206_64.exe")
+(setf blo-up-swank-location "c:/src/bu-lisp/ecl-swank.lisp")
 
 (defun jkf/toggle-slime ()
   (interactive)
   (if (slime-connected-p)
       (slime-disconnect)
     (slime-connect "127.0.0.1" 4005)))
-(global-set-key (kbd "C-c l") 'jkf/toggle-slime)
 
+(global-set-key (kbd "C-c l") 'jkf/toggle-slime)
 (global-set-key (kbd "C-c L") 'jkf/launch-blo-up-swank)
 (global-set-key (kbd "C-c M-l") 'jkf/launch-blo-up)
-
-
-(setf blo-up-exe-name "c:/src/svn_bu/binaries/x64Release/bloup206_64.exe")
-(setf blo-up-swank-location "c:/src/bu-lisp/ecl-swank.lisp")
 
 (defun jkf/launch-blo-up-swank ()
   (interactive)
@@ -1019,6 +1020,7 @@ function to make an autocomplete list"
 (global-set-key (kbd "C-c +") 'jkf/increment-number-at-point)
 
 (defun jkf/eval-replace-last-sexp ()
+  "Evaluate the previous sexp, remove it and insert the result into the buffer"
   (interactive)
   (let ((value (eval (preceding-sexp))))
     (kill-sexp -1)
@@ -1041,7 +1043,6 @@ function to make an autocomplete list"
 
 (define-key rst-mode-map (kbd "C-c C-c") 'rst-adjust)
 (global-set-key (kbd "C-x r v") 'helm-register)
-
 
 (require 'god-mode)
 (global-set-key (kbd "<home>") 'god-mode-all)
@@ -1070,7 +1071,6 @@ function to make an autocomplete list"
   (replace-regexp "^Revision: " ""))
 
 (setq org-latex-table-scientific-notation "%s\\times10^{%s}")
-
 
 (define-key python-mode-map (kbd "C-c M-c") 'itasca-python-copy-as-execfile)
 
@@ -1137,11 +1137,15 @@ function to make an autocomplete list"
       (message "saving data...")
       (with-temp-file
           (concat dotfile-dir
-                  (replace-regexp-in-string ":" "_" (replace-regexp-in-string " " "_" (current-time-string))) ".atest")
+                  (replace-regexp-in-string ":" "_"
+                                            (replace-regexp-in-string
+                                             " " "_" (current-time-string))) ".atest")
         (dolist (datum jkf/atest-data)
           (insert (format "%d, %s\n" (car datum) (cdr datum))))))))
 
-;; text to speech pacakage. requires python, pyttsx and speak.py
+;; text to speech pacakage. requires python, the pyttsx python module
+;; and speak.py.
+
 (defvar tts nil "text to speech process")
 
 (defun tts-up ()
