@@ -2,6 +2,7 @@
 (tool-bar-mode 0)
 (menu-bar-mode 0)
 (scroll-bar-mode 0)
+(setq magit-last-seen-setup-instructions "1.4.0")
 
 ;;;; packages
 (require 'package)
@@ -9,7 +10,8 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list ein auto-complete expand-region helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit melpa smartparens popup projectile dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav goto-last-change idomenu multiple-cursors ac-slime jedi cyberpunk-theme clojure-mode fold-dwim diff-hl htmlize god-mode connection ox-reveal)
+; ein expand-region projectile goto-last-change clojure-mode diff-hl
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete  helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit smartparens popup dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav idomenu multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection ox-reveal)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -270,15 +272,15 @@ number of characters is written to the message area."
 (setq jedi:setup-keys t)
 (setq jedi:complete-on-dot t)
 
-(require 'ein)
-(setq ein:use-auto-complete-superpack t)
-(global-set-key [(shift return)] 'ein:worksheet-execute-cell)
-(global-set-key (kbd "C-c n") 'ein:notebooklist-open)
+;(require 'ein)
+;(setq ein:use-auto-complete-superpack t)
+;(global-set-key [(shift return)] 'ein:worksheet-execute-cell)
+;(global-set-key (kbd "C-c n") 'ein:notebooklist-open)
 
-(add-hook 'ein:notebook-multilang-mode-hook
-          (function (lambda ()
-                      (local-set-key (kbd "C-s")
-                                     'ein:notebook-save-notebook-command))))
+;; (add-hook 'ein:notebook-multilang-mode-hook
+;;           (function (lambda ()
+;;                       (local-set-key (kbd "C-s")
+;;                                      'ein:notebook-save-notebook-command))))
 
 (add-hook 'python-mode-hook (function (lambda ()
                                         (setq python-indent-offset 4))))
@@ -374,21 +376,23 @@ number of characters is written to the message area."
         (add-to-list 'ac-modes 'itasca-pfc5-mode)
         (add-to-list 'ac-modes 'itasca-flac-mode)
         (add-to-list 'ac-modes 'itasca-flac3d-mode)
-        (add-to-list 'ac-modes 'itasca-udec-mode))
+        (add-to-list 'ac-modes 'itasca-udec-mode)
+        (add-to-list 'ac-modes 'itasca-3dec-mode))
 
                                         ; clojure
-      (progn
-        (defadvice nrepl-eval-last-expression (after nrepl-flash-last activate)
-          (if (fboundp 'slime-flash-region)
-              (slime-flash-region (save-excursion (backward-sexp) (point)) (point))))
+      ;; (progn
+      ;;   (defadvice nrepl-eval-last-expression (after nrepl-flash-last activate)
+      ;;     (if (fboundp 'slime-flash-region)
+      ;;         (slime-flash-region (save-excursion (backward-sexp) (point)) (point))))
 
-        (defadvice nrepl-eval-expression-at-point (after nrepl-flash-at activate)
-          (if (fboundp 'slime-flash-region)
-              (apply #'slime-flash-region (nrepl-region-for-expression-at-point))))
+      ;;   (defadvice nrepl-eval-expression-at-point (after nrepl-flash-at activate)
+      ;;     (if (fboundp 'slime-flash-region)
+      ;;         (apply #'slime-flash-region (nrepl-region-for-expression-at-point))))
 
-        (defadvice nrepl-default-err-handler (after nrepl-focus-errors activate)
-          "Focus the error buffer after errors, like Emacs normally does."
-          (select-window (get-buffer-window "*nrepl-error*"))))))
+      ;;   (defadvice nrepl-default-err-handler (after nrepl-focus-errors activate)
+      ;;     "Focus the error buffer after errors, like Emacs normally does."
+      ;;     (select-window (get-buffer-window "*nrepl-error*"))))
+      ))
 
 ;;;; OS X specific setup
 (if (eq system-type 'darwin)
@@ -474,6 +478,7 @@ number of characters is written to the message area."
         (add-to-list 'ac-modes 'itasca-pfc5-mode)
         (add-to-list 'ac-modes 'itasca-flac-mode)
         (add-to-list 'ac-modes 'itasca-flac3d-mode)
+        (add-to-list 'ac-modes 'itasca-3dec-mode)
         (add-to-list 'ac-modes 'itasca-udec-mode))
                                         ; windows specific magit init
       (defun magit-escape-for-shell (str)
@@ -491,83 +496,122 @@ number of characters is written to the message area."
       (set-face-attribute 'default nil :height 140)))
 
 ;;;; computer specific setup
-(cond
- ((equal (system-name) "SHOTOVER")                            ; vaio
-  (setq initial-frame-alist '((width . 80) (height . 37)))
-  (set-face-attribute 'default nil :height 140)
-  (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
-  (require 'ac-slime)
-  (require 'slime-autoloads)
-  (slime-setup '(slime-fancy slime-banner slime-autodoc))
-  (add-hook 'slime-mode-hook 'set-up-slime-ac)
-  (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
-  (add-to-list 'ac-modes 'slime-repl-mode)
-  (add-to-list 'ac-modes 'slime-mode)
-  (setq doc-view-ghostscript-program
-        "c:/Program Files (x86)/gs/gs9.07/bin/gswin32c.exe")
 
-  (display-time-mode 1)
+(pcase system-name
+
+  ("ABITA" ; 6 core i7
+   (let ((org-note-file
+          "c:/Users/jfurtney/Dropbox/org/notes.org"))
+     (setq initial-frame-alist '((width . 80) (height . 44)))
+     (setq org-default-notes-file org-note-file)
+     (setq org-agenda-files (list org-note-file))
+     (progn
+       (require 'ac-slime)
+       (require 'slime-autoloads)
+       (slime-setup '(slime-fancy slime-banner slime-autodoc))
+       (add-hook 'slime-mode-hook 'set-up-slime-ac)
+       (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
+       (add-to-list 'ac-modes 'slime-repl-mode)
+       (add-to-list 'ac-modes 'slime-mode))
+
+
+     (set-register ?n `(file . ,org-note-file)))
+ ;;;;; hack because we use Anaconda which does not have virtual env
+   (setq jedi:server-command '("python" "c:/Users/jfurtney/AppData/Roaming/.emacs.d/elpa/jedi-20140321.1323/jediepcserver.py")))
+
+  ("SHOTOVER"                            ; vaio
+   (setq initial-frame-alist '((width . 80) (height . 37)))
+   (set-face-attribute 'default nil :height 140)
+   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
+   (require 'ac-slime)
+   (require 'slime-autoloads)
+   (slime-setup '(slime-fancy slime-banner slime-autodoc))
+   (add-hook 'slime-mode-hook 'set-up-slime-ac)
+   (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
+   (add-to-list 'ac-modes 'slime-repl-mode)
+   (add-to-list 'ac-modes 'slime-mode)
+   (setq doc-view-ghostscript-program
+         "c:/Program Files (x86)/gs/gs9.07/bin/gswin32c.exe")
+
+   (display-time-mode 1)
                                         ; org mode
-  (setq org-mobile-directory "c:/Users/jfurtney/Dropbox/Apps/MobileOrg")
-  (setq org-directory "c:/Users/jfurtney/Dropbox/org/")
-  (setq org-mobile-inbox-for-pull "c:/Users/jfurtney/Dropbox/org/flagged.org")
+   (setq org-mobile-directory "c:/Users/jfurtney/Dropbox/Apps/MobileOrg")
+   (setq org-directory "c:/Users/jfurtney/Dropbox/org/")
+   (setq org-mobile-inbox-for-pull "c:/Users/jfurtney/Dropbox/org/flagged.org")
 
-  (let ((org-note-file
-         "c:/Users/jfurtney/Dropbox/org/notes.org"))
-    (setq org-default-notes-file org-note-file)
-    (setq org-agenda-files (list org-note-file))
-    (set-register ?n `(file . ,org-note-file)))
+   (let ((org-note-file
+          "c:/Users/jfurtney/Dropbox/org/notes.org"))
+     (setq org-default-notes-file org-note-file)
+     (setq org-agenda-files (list org-note-file))
+     (set-register ?n `(file . ,org-note-file)))
 
-  (set-register ?b '(file . "c:/Users/jfurtney/dropbox"))
-  (set-register ?d '(file . "c:/Users/jfurtney/downloads")))
+   (set-register ?b '(file . "c:/Users/jfurtney/dropbox"))
+   (set-register ?d '(file . "c:/Users/jfurtney/downloads")))
 
- ((equal (system-name) "UNSER")        ; work computer
-  (setq initial-frame-alist '((width . 80) (height . 41)))
-  (set-face-attribute 'default nil :height 140)
+  ("UNSER"        ; old work computer
+   (setq initial-frame-alist '((width . 80) (height . 41)))
+   (set-face-attribute 'default nil :height 140)
                                         ; org mode
-  (setq org-mobile-directory "c:/Users/Itasca/Dropbox/Apps/MobileOrg")
-  (setq org-directory "c:/Users/Itasca/Dropbox/org/")
+   (setq org-mobile-directory "c:/Users/Itasca/Dropbox/Apps/MobileOrg")
+   (setq org-directory "c:/Users/Itasca/Dropbox/org/")
 
-  (setq org-mobile-inbox-for-pull "c:/Users/Itasca/Dropbox/org/flagged.org")
+   (setq org-mobile-inbox-for-pull "c:/Users/Itasca/Dropbox/org/flagged.org")
 
-  (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
-  (require 'ac-slime)
-  (require 'slime-autoloads)
-  (slime-setup '(slime-fancy slime-banner slime-autodoc))
-  (add-hook 'slime-mode-hook 'set-up-slime-ac)
-  (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
-  (add-to-list 'ac-modes 'slime-repl-mode)
-  (add-to-list 'ac-modes 'slime-mode)
+   (setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
+   (require 'ac-slime)
+   (require 'slime-autoloads)
+   (slime-setup '(slime-fancy slime-banner slime-autodoc))
+   (add-hook 'slime-mode-hook 'set-up-slime-ac)
+   (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
+   (add-to-list 'ac-modes 'slime-repl-mode)
+   (add-to-list 'ac-modes 'slime-mode)
 
-  (let ((org-note-file
-         "c:/Users/Itasca/Dropbox/org/notes.org"))
-    (setq org-default-notes-file org-note-file)
-    (setq org-agenda-files (list org-note-file))
-    (set-register ?n `(file . ,org-note-file)))
-  (set-register ?d '(file . "c:/Users/Itasca/downloads")))
+   (let ((org-note-file
+          "c:/Users/Itasca/Dropbox/org/notes.org"))
+     (setq org-default-notes-file org-note-file)
+     (setq org-agenda-files (list org-note-file))
+     (set-register ?n `(file . ,org-note-file)))
+   (set-register ?d '(file . "c:/Users/Itasca/downloads")))
 
                                         ; vaio Ubuntu virtual machine
- ((equal (system-name) "u64")
-  (setq initial-frame-alist '((width . 80) (height . 40)))
-  (setq inferior-lisp-program "ecl")
-  (require 'ac-slime)
-  (require 'slime-autoloads)
-  (slime-setup '(slime-fancy slime-banner slime-autodoc))
-  (add-hook 'slime-mode-hook 'set-up-slime-ac)
-  (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
-  (add-to-list 'ac-modes 'slime-repl-mode)
-  (add-to-list 'ac-modes 'slime-mode))
+  ("u64"
+   (setq initial-frame-alist '((width . 80) (height . 40)))
+   (setq inferior-lisp-program "ecl")
+   (require 'ac-slime)
+   (require 'slime-autoloads)
+   (slime-setup '(slime-fancy slime-banner slime-autodoc))
+   (add-hook 'slime-mode-hook 'set-up-slime-ac)
+   (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
+   (add-to-list 'ac-modes 'slime-repl-mode)
+   (add-to-list 'ac-modes 'slime-mode))
 
- ((equal (system-name) "uvb64") ; work virtual machine
-  (set-face-attribute 'default nil :height 140)
-  (require 'slime-autoloads)
-  (slime-setup '(slime-fancy slime-banner slime-autodoc))
-  (setq inferior-lisp-program "sbcl"))
+  ("uvb64" ; work virtual machine
+   (set-face-attribute 'default nil :height 140)
+   (require 'slime-autoloads)
+   (slime-setup '(slime-fancy slime-banner slime-autodoc))
+   (setq inferior-lisp-program "sbcl"))
 
- ((equal (system-name) "jason-furtneys-imac.local")
-  (setq initial-frame-alist '((width . 80) (height . 52))))
+  ("jason-furtneys-imac.local"
+   (setq initial-frame-alist '((width . 80) (height . 52))))
 
- (t (setq initial-frame-alist '((width . 80) (height . 34)))))
+  ("LAKEMAIDEN" ; build server
+   (setq initial-frame-alist '((width . 80) (height . 28)))
+   (set-face-attribute 'default nil :height 140)
+   (let ((org-note-file
+          "c:\\Users\\Jason\\Documents\\My Dropbox\\org\\notes.org"))
+     (setq org-default-notes-file org-note-file)
+     (setq org-agenda-files (list org-note-file))
+     (progn
+       (require 'ac-slime)
+       (require 'slime-autoloads)
+       (slime-setup '(slime-fancy slime-banner slime-autodoc))
+       (add-hook 'slime-mode-hook 'set-up-slime-ac)
+       (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
+       (add-to-list 'ac-modes 'slime-repl-mode)
+       (add-to-list 'ac-modes 'slime-mode))
+     (set-register ?n `(file . ,org-note-file))))
+
+  (_ (setq initial-frame-alist '((width . 80) (height . 34)))))
 
  ;; note on windows $HOME is different in bash and emacs!
  ;; cp ~/.gitconfig ~/AppData/Roaming/
@@ -600,8 +644,8 @@ file with a2ps"
     (shell-command (format template fn fn ))))
 
 ;(require 'smart-operator)
-(require 'expand-region)
-(global-set-key (kbd "C-=") 'er/expand-region)
+;(require 'expand-region)
+;(global-set-key (kbd "C-=") 'er/expand-region)
 
 (require 'magit)
 ;(require 'magit-svn)
@@ -742,7 +786,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
       (kill-new new-kill-string))))
 (global-set-key (kbd "C-c M-c") 'jkf/copy-buffer-file-name-as-kill)
 
-(global-set-key (kbd "C-c j c") 'goto-last-change)
+;(global-set-key (kbd "C-c j c") 'goto-last-change)
 (global-set-key (kbd "C-c j b") 'beginning-of-buffer)
 (global-set-key (kbd "C-c j e") 'end-of-buffer)
 (global-set-key (kbd "C-c j f") 'idomenu)
@@ -858,8 +902,8 @@ incriment it and write on a new line below. Leave the origional inplace"
            (tmp (string-match "\\([0-9]+\\)"current-line))
            (old-number (match-string 1 current-line))
            (new-number (number-to-string (1+ (string-to-int old-number))))
-           (new-line (replace-regexp-in-string old-number new-number current-line))
-           )
+           (new-line (replace-regexp-in-string old-number
+                                               new-number current-line)))
       (move-end-of-line nil)
       (newline-and-indent )
       (insert new-line))))
@@ -984,6 +1028,13 @@ function to make an autocomplete list"
 (global-set-key (kbd "C-c l") 'jkf/toggle-slime)
 (global-set-key (kbd "C-c L") 'jkf/launch-blo-up-swank)
 (global-set-key (kbd "C-c M-l") 'jkf/launch-blo-up)
+
+
+;(setf blo-up-exe-name "c:/src/svn_bu/binaries/x64Release/bloup206_64.exe")
+
+(setf blo-up-exe-name "c:/Program Files/HSBM/Blo-Up_2.7/exe64/bloup206_64.exe")
+;(setf blo-up-swank-location "c:/Users/jfurtney/AppData/Roaming/.emacs.d/elpa/slime-20141024.937/swank-loader.lisp")
+(setf blo-up-swank-location "c:/src/bu-lisp/ecl-swank.lisp")
 
 (defun jkf/launch-blo-up-swank ()
   (interactive)
@@ -1181,3 +1232,26 @@ function to make an autocomplete list"
   "say the message and read from the minibuffer"
   (tts-say text)
   (read-from-minibuffer "<speech>"))
+
+(defun jkf/tuple-pack-refactor ()
+  "a,b = c,d into a=c newline b=d "
+  (interactive)
+  (save-excursion
+    (flet ((chomp (str)
+                  (while (string-match "\\`\n+\\|^\\s-+\\|\\s-+$\\|\n+\\'" str)
+                    (setq str (replace-match "" t t str)))
+                  str))
+      (let* ((line (buffer-substring (point-at-bol) (point-at-eol)))
+                ;;; find number of leading whitespace chars
+             (nindent (loop for c in (string-to-list line)
+                           sum (if (char-equal c ?\ ) 1 0) into count do
+                           (when (not (char-equal c ?\ )) (return count))))
+             (lhs-rhs (split-string line "=" t))
+             (lhs (split-string (first lhs-rhs) "," t))
+             (rhs (split-string (second lhs-rhs) "," t)))
+        (move-beginning-of-line nil)
+        (kill-line)
+        (loop for l in lhs for r in rhs do
+              (dotimes (n nindent) (insert " "))
+              (insert (format "%s = %s\n" (chomp l) (chomp r))))
+        (backward-delete-char 1)))))
