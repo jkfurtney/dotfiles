@@ -1025,11 +1025,22 @@ function to make an autocomplete list"
 (global-set-key (kbd "C-c M-l") 'jkf/launch-blo-up)
 
 
-;(setf blo-up-exe-name "c:/src/svn_bu/binaries/x64Release/bloup206_64.exe")
+;;; Blo-Up SLIME Emacs integration.
+;;;
+;;; Starting Blo-Up with -test -swank -script <location of ecl-boot
+;;; code> runs the ecl boot code which initializes the swank server,
+;;; Emacs/SLIME then trys to connect to the swank server running inside Blo-Up.
+;;
+;; For this to work SLIME has to be installed in Emacs.
 
+;(setf blo-up-exe-name "c:/src/svn_bu/binaries/x64Release/bloup206_64.exe")
 (setf blo-up-exe-name "c:/Program Files/HSBM/Blo-Up_2.7/exe64/bloup206_64.exe")
-;(setf blo-up-swank-location "c:/Users/jfurtney/AppData/Roaming/.emacs.d/elpa/slime-20141024.937/swank-loader.lisp")
-(setf blo-up-swank-location "c:/src/bu-lisp/ecl-swank.lisp")
+(setf blo-up-swank-location "c:/src/dotfiles/ecl-swank.lisp")
+
+;;; This code finds the slime installation directory and sets it to an
+;;; environmental variable the child process can read.
+(setenv "BLOUP_SWANK"
+ (concat (file-name-directory (buffer-file-name (car (find-definition-noselect 'slime-eval-buffer nil)))) "swank-loader.lisp"))
 
 (defun jkf/launch-blo-up-swank ()
   (interactive)
@@ -1092,6 +1103,7 @@ function to make an autocomplete list"
 
 (require 'god-mode)
 (global-set-key (kbd "<home>") 'god-mode-all)
+(global-set-key (kbd "<insert>") 'god-mode-all)
 (defun my-update-cursor ()
   (setq cursor-type (if (or god-local-mode buffer-read-only)
                         'hbox
@@ -1101,6 +1113,7 @@ function to make an autocomplete list"
 (define-key god-local-mode-map (kbd "i") 'god-local-mode)
 (define-key god-local-mode-map (kbd "C-<tab>") 'god-local-mode)
 (global-set-key (kbd "C-<tab>") 'god-local-mode)
+
 (setq c-default-style "linux"
           c-basic-offset 4)
 ;(c++-set-offset 'substatement-open 0)
