@@ -2,6 +2,7 @@
 (tool-bar-mode 0)
 (menu-bar-mode 0)
 (scroll-bar-mode 0)
+(setq magit-last-seen-setup-instructions "1.4.0")
 
 ;;;; packages
 (require 'package)
@@ -497,6 +498,7 @@ number of characters is written to the message area."
 ;;;; computer specific setup
 
 (pcase system-name
+
   ("ABITA" ; 6 core i7
    (let ((org-note-file
           "c:/Users/jfurtney/Dropbox/org/notes.org"))
@@ -594,7 +596,20 @@ number of characters is written to the message area."
 
   ("LAKEMAIDEN" ; build server
    (setq initial-frame-alist '((width . 80) (height . 28)))
-   (set-face-attribute 'default nil :height 140))
+   (set-face-attribute 'default nil :height 140)
+   (let ((org-note-file
+          "c:\\Users\\Jason\\Documents\\My Dropbox\\org\\notes.org"))
+     (setq org-default-notes-file org-note-file)
+     (setq org-agenda-files (list org-note-file))
+     (progn
+       (require 'ac-slime)
+       (require 'slime-autoloads)
+       (slime-setup '(slime-fancy slime-banner slime-autodoc))
+       (add-hook 'slime-mode-hook 'set-up-slime-ac)
+       (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
+       (add-to-list 'ac-modes 'slime-repl-mode)
+       (add-to-list 'ac-modes 'slime-mode))
+     (set-register ?n `(file . ,org-note-file))))
 
   (_ (setq initial-frame-alist '((width . 80) (height . 34)))))
 
@@ -1011,11 +1026,22 @@ function to make an autocomplete list"
 (global-set-key (kbd "C-c M-l") 'jkf/launch-blo-up)
 
 
-;(setf blo-up-exe-name "c:/src/svn_bu/binaries/x64Release/bloup206_64.exe")
+;;; Blo-Up SLIME Emacs integration.
+;;;
+;;; Starting Blo-Up with -test -swank -script <location of ecl-boot
+;;; code> runs the ecl boot code which initializes the swank server,
+;;; Emacs/SLIME then trys to connect to the swank server running inside Blo-Up.
+;;
+;; For this to work SLIME has to be installed in Emacs.
 
+;(setf blo-up-exe-name "c:/src/svn_bu/binaries/x64Release/bloup206_64.exe")
 (setf blo-up-exe-name "c:/Program Files/HSBM/Blo-Up_2.7/exe64/bloup206_64.exe")
-;(setf blo-up-swank-location "c:/Users/jfurtney/AppData/Roaming/.emacs.d/elpa/slime-20141024.937/swank-loader.lisp")
-(setf blo-up-swank-location "c:/src/bu-lisp/ecl-swank.lisp")
+(setf blo-up-swank-location "c:/src/dotfiles/ecl-swank.lisp")
+
+;;; This code finds the slime installation directory and sets it to an
+;;; environmental variable the child process can read.
+(setenv "BLOUP_SWANK"
+ (concat (file-name-directory (buffer-file-name (car (find-definition-noselect 'slime-eval-buffer nil)))) "swank-loader.lisp"))
 
 (defun jkf/launch-blo-up-swank ()
   (interactive)
@@ -1089,6 +1115,7 @@ function to make an autocomplete list"
 (define-key god-local-mode-map (kbd "i") 'god-local-mode)
 (define-key god-local-mode-map (kbd "C-<tab>") 'god-local-mode)
 (global-set-key (kbd "C-<tab>") 'god-local-mode)
+
 (setq c-default-style "linux"
           c-basic-offset 4)
 ;(c++-set-offset 'substatement-open 0)
