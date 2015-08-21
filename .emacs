@@ -730,6 +730,7 @@ file with a2ps"
 (diminish 'auto-fill-function)
 (diminish 'abbrev-mode)
 
+
 (define-key ac-completing-map (kbd "C-n") 'ac-next)
 (define-key ac-completing-map (kbd "C-p") 'ac-previous)
 
@@ -867,7 +868,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
   (if (looking-at " ") (delete-char 1)))
 (ad-activate 'sp-forward-slurp-sexp)
 
-(setq ido-file-extension-order '(".py" ".dat" ".f3dat" ".lisp"))
+
 
 (defun jkf/insert-basename ()
   "insert the string of the buffername without extension"
@@ -1076,7 +1077,9 @@ function to make an autocomplete list"
 
 
 (require 'god-mode)
+(diminish 'god-local-mode " g")
 (global-set-key (kbd "<home>") 'god-mode-all)
+(global-set-key (kbd "<insert>") 'god-mode-all)
 (defun my-update-cursor ()
   (setq cursor-type (if (or god-local-mode buffer-read-only)
                         'hbox
@@ -1231,3 +1234,7 @@ function to make an autocomplete list"
               (dotimes (n nindent) (insert " "))
               (insert (format "%s = %s\n" (chomp l) (chomp r))))
         (backward-delete-char 1)))))
+(require 'ox-latex)
+
+(setq ido-file-extension-order '(".py" ".dat" ".f3dat" ".lisp"))
+(global-set-key (kbd "C-c c") 'calc)
