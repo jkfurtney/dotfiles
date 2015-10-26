@@ -442,7 +442,7 @@ number of characters is written to the message area."
       (load "./w32-browser.el")
       (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
       (add-to-list 'exec-path "C:/Program Files (x86)/GnuWin32/bin/")
-      (add-to-list 'exec-path "c:/Program Files (x86)/Git/bin/")
+      (add-to-list 'exec-path "c:/Program Files/Git/bin/")
       (add-to-list 'exec-path "C:/Program Files (x86)/ImageMagick-6.8.5-Q16/")
       (add-to-list 'exec-path "C:/Program Files (x86)/ImageMagick-6.8.5-Q16/")
       (add-to-list 'exec-path "C:/Program Files (x86)/MiKTeX 2.9/miktex/bin/")
@@ -487,7 +487,7 @@ number of characters is written to the message area."
             str
           (concat "'" (replace-regexp-in-string "'" "'\\''" str) "'")))
       (custom-set-variables
-       '(magit-git-executable "C:\\Program Files (x86)\\Git\\bin\\git"))
+       '(magit-git-executable "C:\\Program Files\\Git\\bin\\git"))
 
       ;; windows specific font stuff
       (setq w32-get-true-file-attributes nil)
@@ -1265,3 +1265,17 @@ function to make an autocomplete list"
 
 (setq ido-file-extension-order '(".py" ".dat" ".f3dat" ".lisp"))
 (global-set-key (kbd "C-c c") 'calc)
+
+;C:\Program Files (x86)\Git\bin\bash.exe
+(global-set-key (kbd "C-c n") 'jkf/open-temp-file)
+
+(defun jkf/open-temp-file ()
+  "opens a new temporary file in c:\src "
+  (interactive)
+  (let* ((base "c:/src/tmp_%d.txt")
+        (i 0)
+        (name (format base i)))
+    (while (file-exists-p name)
+      (incf i)
+      (setf name (format base i)))
+    (find-file name)))
