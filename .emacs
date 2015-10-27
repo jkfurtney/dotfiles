@@ -1279,3 +1279,12 @@ function to make an autocomplete list"
       (incf i)
       (setf name (format base i)))
     (find-file name)))
+
+(defun jkf/spell-check-ipython-notebook ()
+  (interactive)
+  (search-forward   "\"cell_type\": \"markdown\"")
+  (move-beginning-of-line 1)
+  (next-line 3)
+  (push-mark)
+  (search-forward "]\n  },"))
+(global-set-key (kbd "C-c i") 'jkf/spell-check-ipython-notebook)
