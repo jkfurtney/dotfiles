@@ -442,7 +442,7 @@ number of characters is written to the message area."
       (load "./w32-browser.el")
       (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
       (add-to-list 'exec-path "C:/Program Files (x86)/GnuWin32/bin/")
-      (add-to-list 'exec-path "c:/Program Files (x86)/Git/bin/")
+      (add-to-list 'exec-path "c:/Program Files/Git/bin/")
       (add-to-list 'exec-path "C:/Program Files (x86)/ImageMagick-6.8.5-Q16/")
       (add-to-list 'exec-path "C:/Program Files (x86)/ImageMagick-6.8.5-Q16/")
       (add-to-list 'exec-path "C:/Program Files (x86)/MiKTeX 2.9/miktex/bin/")
@@ -487,7 +487,7 @@ number of characters is written to the message area."
             str
           (concat "'" (replace-regexp-in-string "'" "'\\''" str) "'")))
       (custom-set-variables
-       '(magit-git-executable "C:\\Program Files (x86)\\Git\\bin\\git"))
+       '(magit-git-executable "C:\\Program Files\\Git\\bin\\git"))
 
       ;; windows specific font stuff
       (setq w32-get-true-file-attributes nil)
@@ -745,6 +745,7 @@ file with a2ps"
 (diminish 'auto-fill-function)
 (diminish 'abbrev-mode)
 
+
 (define-key ac-completing-map (kbd "C-n") 'ac-next)
 (define-key ac-completing-map (kbd "C-p") 'ac-previous)
 
@@ -882,7 +883,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
   (if (looking-at " ") (delete-char 1)))
 (ad-activate 'sp-forward-slurp-sexp)
 
-(setq ido-file-extension-order '(".py" ".dat" ".f3dat" ".lisp"))
+
 
 (defun jkf/insert-basename ()
   "insert the string of the buffername without extension"
@@ -1030,11 +1031,22 @@ function to make an autocomplete list"
 (global-set-key (kbd "C-c M-l") 'jkf/launch-blo-up)
 
 
-;(setf blo-up-exe-name "c:/src/svn_bu/binaries/x64Release/bloup206_64.exe")
+;;; Blo-Up SLIME Emacs integration.
+;;;
+;;; Starting Blo-Up with -test -swank -script <location of ecl-boot
+;;; code> runs the ecl boot code which initializes the swank server,
+;;; Emacs/SLIME then trys to connect to the swank server running inside Blo-Up.
+;;
+;; For this to work SLIME has to be installed in Emacs.
 
+;(setf blo-up-exe-name "c:/src/svn_bu/binaries/x64Release/bloup206_64.exe")
 (setf blo-up-exe-name "c:/Program Files/HSBM/Blo-Up_2.7/exe64/bloup206_64.exe")
-;(setf blo-up-swank-location "c:/Users/jfurtney/AppData/Roaming/.emacs.d/elpa/slime-20141024.937/swank-loader.lisp")
-(setf blo-up-swank-location "c:/src/bu-lisp/ecl-swank.lisp")
+(setf blo-up-swank-location "c:/src/dotfiles/ecl-swank.lisp")
+
+;;; This code finds the slime installation directory and sets it to an
+;;; environmental variable the child process can read.
+(setenv "BLOUP_SWANK"
+ (concat (file-name-directory (buffer-file-name (car (find-definition-noselect 'slime-eval-buffer nil)))) "swank-loader.lisp"))
 
 (defun jkf/launch-blo-up-swank ()
   (interactive)
@@ -1096,7 +1108,9 @@ function to make an autocomplete list"
 (global-set-key (kbd "C-x r v") 'helm-register)
 
 (require 'god-mode)
+(diminish 'god-local-mode " g")
 (global-set-key (kbd "<home>") 'god-mode-all)
+(global-set-key (kbd "<insert>") 'god-mode-all)
 (defun my-update-cursor ()
   (setq cursor-type (if (or god-local-mode buffer-read-only)
                         'hbox
@@ -1106,6 +1120,7 @@ function to make an autocomplete list"
 (define-key god-local-mode-map (kbd "i") 'god-local-mode)
 (define-key god-local-mode-map (kbd "C-<tab>") 'god-local-mode)
 (global-set-key (kbd "C-<tab>") 'god-local-mode)
+
 (setq c-default-style "linux"
           c-basic-offset 4)
 ;(c++-set-offset 'substatement-open 0)
@@ -1255,3 +1270,30 @@ function to make an autocomplete list"
               (dotimes (n nindent) (insert " "))
               (insert (format "%s = %s\n" (chomp l) (chomp r))))
         (backward-delete-char 1)))))
+(require 'ox-latex)
+
+(setq ido-file-extension-order '(".py" ".dat" ".f3dat" ".lisp"))
+(global-set-key (kbd "C-c c") 'calc)
+
+;C:\Program Files (x86)\Git\bin\bash.exe
+(global-set-key (kbd "C-c n") 'jkf/open-temp-file)
+
+(defun jkf/open-temp-file ()
+  "opens a new temporary file in c:\src "
+  (interactive)
+  (let* ((base "c:/src/tmp_%d.txt")
+        (i 0)
+        (name (format base i)))
+    (while (file-exists-p name)
+      (incf i)
+      (setf name (format base i)))
+    (find-file name)))
+
+(defun jkf/spell-check-ipython-notebook ()
+  (interactive)
+  (search-forward   "\"cell_type\": \"markdown\"")
+  (move-beginning-of-line 1)
+  (next-line 3)
+  (push-mark)
+  (search-forward "]\n  },"))
+(global-set-key (kbd "C-c i") 'jkf/spell-check-ipython-notebook)
