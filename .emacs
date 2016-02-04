@@ -1288,3 +1288,7 @@ function to make an autocomplete list"
   (push-mark)
   (search-forward "]\n  },"))
 (global-set-key (kbd "C-c i") 'jkf/spell-check-ipython-notebook)
+
+(defun jkf/clear-ispell-local-words ()
+  (interactive)
+  (setq ispell-buffer-session-localwords nil))
