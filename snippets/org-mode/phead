@@ -1,0 +1,8 @@
+#+TITLE: $1
+#+DATE:
+#+OPTIONS: toc:nil date:nil
+#+LATEX_HEADER: \usepackage[margin=1.in]{geometry}
+
+use csnip and psnip for code blocks.
+
+use meq for equation blocks
