@@ -15,8 +15,7 @@ strings in the buffer local variable `pair-jump-list'."
       (message "pair-jump-mode: Jumping over %c" (char-after))
       (backward-char 2)
       (delete-forward-char 2)
-      (forward-char 1)
-      )))
+      (forward-char 1))))
 
 ;;;###autoload
 (define-minor-mode pair-jump-mode
