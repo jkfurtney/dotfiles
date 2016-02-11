@@ -11,7 +11,7 @@
 (package-initialize)
 
 ; ein expand-region projectile goto-last-change clojure-mode diff-hl
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete  helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit smartparens popup dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav idomenu multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection ox-reveal cython-mode)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete  helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit smartparens popup dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav idomenu multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection ox-reveal cython-mode nsis-mode org-tree-slide imenu-anywhere)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -30,7 +30,9 @@
     (setq dotfile-dir (expand-file-name "~/src/dotfiles/"))
   (setq dotfile-dir "c:/src/dotfiles/"))
 (add-to-list 'load-path dotfile-dir)
+
 ;;;; basic key bindings
+(require 'python)
 (require 'dired+)
 (global-set-key "\C-o" 'find-file) ; C-o for find file
 (add-hook 'dired-mode-hook
@@ -63,18 +65,14 @@
 (global-set-key (kbd "C-c C-f") 'fold-dwim-toggle)
 (global-set-key (kbd "C-c M-f") 'fold-dwim-hide-all)
 (global-set-key (kbd "C-c M-F") 'fold-dwim-show-all)
-
+;(define-key python-mode-map (kbd "C-c d") 'jedi:show-doc)
 
 ; emacs lisp specific
 (global-set-key (kbd "C-c e e") 'toggle-debug-on-error)
 (global-set-key (kbd "C-c e f") 'emacs-lisp-byte-compile-and-load)
 (global-set-key (kbd "C-c e r") 'eval-region)
 (global-set-key (kbd "C-c e b") 'eval-buffer)
-(global-set-key (kbd "C-c e s") '(lambda ()
-                                   (interactive)
-                                   (switch-to-buffer "*scratch*")
-                                   (insert ";; scratch buffer")
-                                   (newline)))
+(global-set-key (kbd "C-c e s") 'jkf/switch-to-scratch)
 
 ; C-i for search forward
 (define-key input-decode-map (kbd "C-i") (kbd "H-i")); hack needed to unset tab
@@ -130,6 +128,12 @@
 (setq calendar-longitude -93.187408)
 (setq calendar-location-name "Minneapolis/St. Paul")
 (setq calendar-week-start-day 1)
+
+(defun jkf/switch-to-scratch ()
+  (interactive)
+  (switch-to-buffer "*scratch*")
+  (insert ";; scratch buffer")
+  (newline))
 
 (defun jkf/dont-kill-emacs ()
  (interactive)
@@ -488,7 +492,7 @@ number of characters is written to the message area."
 (let ((org-note-file
        (concat jkf/dropbox-dir "/org/notes.org"))
       (org-todo-file
-       (concat jkf/dropbox-dir "/org/notes.org")))
+       (concat jkf/dropbox-dir "/org/todo.org")))
   (setq org-default-notes-file org-note-file)
   (setq org-agenda-files (list org-todo-file))
   (set-register ?t `(file . ,org-todo-file))
@@ -1148,3 +1152,10 @@ function to make an autocomplete list"
 (defun jkf/clear-ispell-local-words ()
   (interactive)
   (setq ispell-buffer-session-localwords nil))
+
+
+(autoload 'nsis-mode "nsis-mode" "NSIS mode" t)
+(setq auto-mode-alist (append '(("\\.\\([Nn][Ss][Ii]\\)$" .
+                                 nsis-mode)) auto-mode-alist))
+(setq auto-mode-alist (append '(("\\.\\([Nn][Ss][Hh]\\)$" .
+                                 nsis-mode)) auto-mode-alist))
