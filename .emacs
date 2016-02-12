@@ -11,7 +11,7 @@
 (package-initialize)
 
 ; ein expand-region projectile goto-last-change clojure-mode diff-hl
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete  helm helm-descbinds ido-hacks ido-ubiquitous ido-vertical-mode macrostep markdown-mode magit smartparens popup dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav idomenu multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection ox-reveal cython-mode nsis-mode org-tree-slide imenu-anywhere)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete  helm helm-descbinds ido-hacks ido-ubiquitous macrostep markdown-mode magit smartparens popup dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav idomenu multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection ox-reveal cython-mode nsis-mode org-tree-slide imenu-anywhere w32-browser)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -22,14 +22,16 @@
                                         ; install org and org-plus-extras from here:
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 
-;(defvar dotfile-dir nil "location of .emacs and other stuff")
+(defvar dotfile-dir nil "location of .emacs and other stuff")
 (defvar jkf/src-dir nil "location of src folder")
 (defvar jkf/dropbox-dir nil "location of dropbox")
-
 (if (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     (setq dotfile-dir (expand-file-name "~/src/dotfiles/"))
   (setq dotfile-dir "c:/src/dotfiles/"))
 (add-to-list 'load-path dotfile-dir)
+
+(require 'smartparens-config)
+(smartparens-global-mode t)
 
 ;;;; basic key bindings
 (require 'python)
@@ -46,7 +48,6 @@
 (global-set-key (kbd "M-n") 'forward-paragraph)
 
 ;;;; C-c bindings
-
 (global-set-key (kbd "C-c e m") 'macrostep-expand)
 (global-set-key (kbd "C-c c") 'calc)
 (global-set-key (kbd "C-c n") 'jkf/open-temp-file)
@@ -58,14 +59,14 @@
 (global-set-key (kbd "C-c L") 'jkf/launch-blo-up-swank)
 (global-set-key (kbd "C-c M-l") 'jkf/launch-blo-up)
 (global-set-key (kbd "C-c M-c") 'jkf/copy-buffer-file-name-as-kill)
-(global-set-key (kbd "C-c j f") 'idomenu)
 (global-set-key (kbd "C-c k") 'jkf/kill-all-buffers)
 (global-set-key (kbd "C-c K") 'jkf/kill-other-buffers)
 (global-set-key (kbd "C-c f") 'fold-dwim-toggle)
 (global-set-key (kbd "C-c C-f") 'fold-dwim-toggle)
 (global-set-key (kbd "C-c M-f") 'fold-dwim-hide-all)
 (global-set-key (kbd "C-c M-F") 'fold-dwim-show-all)
-;(define-key python-mode-map (kbd "C-c d") 'jedi:show-doc)
+(define-key python-mode-map (kbd "C-c d") 'jedi:show-doc)
+(global-set-key (kbd "C-c i") 'helm-imenu)
 
 ; emacs lisp specific
 (global-set-key (kbd "C-c e e") 'toggle-debug-on-error)
@@ -88,12 +89,14 @@
 (global-set-key (kbd "M-3") 'split-window-right)
 (global-set-key (kbd "<f1>") 'kill-this-buffer)
 (global-set-key (kbd "<f12>") 'other-window)
-(global-set-key (kbd "<apps> /") 'ido-switch-buffer)
-(global-set-key (kbd "M-<apps>") 'ido-switch-buffer)
+;(global-set-key (kbd "<apps> /") 'ido-switch-buffer)
+(global-set-key (kbd "<apps> /") 'helm-buffers-list)
+;(global-set-key (kbd "M-<apps>") 'ido-switch-buffer)
+(global-set-key (kbd "M-<apps>") 'helm-buffers-list)
 (global-set-key (kbd "C-<apps>") 'other-window)
-(global-set-key (kbd "C-<lwindow>") 'smex)
+;(global-set-key (kbd "C-<lwindow>") 'smex)
 (global-set-key (kbd "M-<lwindow>") 'other-window)
-(global-set-key (kbd "<apps> .") 'smex)
+;(global-set-key (kbd "<apps> .") 'smex)
 ;(global-set-key (kbd "C-S-x") 'ido-switch-buffer)
 (global-set-key (kbd "M-k") ; kill the entire line
                 '(lambda () (interactive)
@@ -290,6 +293,7 @@ number of characters is written to the message area."
 ;;;; Lisp Setup
 
 (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'python-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'scheme-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'lisp-mode-hook 'hs-minor-mode)
 
@@ -298,8 +302,6 @@ number of characters is written to the message area."
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 (add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
 (setq edebug-trace nil)
-
-
 
 (require 'ac-slime)
 (require 'slime-autoloads)
@@ -320,8 +322,7 @@ number of characters is written to the message area."
 (add-hook 'emacs-lisp-mode-hook 'jkf/imenu-elisp-sections)
 
 ;;;; Org-mode Setup
-
-(global-set-key (kbd "C-M-<return>") 'org-insert-subheading)
+;(global-set-key (kbd "C-M-<return>") 'org-insert-subheading)
 
 (require 'org-tree-slide)
 (define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
@@ -331,15 +332,11 @@ number of characters is written to the message area."
 
 (setq org-tree-slide-slide-in-effect nil)
 (setq org-src-fontify-natively t)
-;(add-hook 'org-mode-hook 'pair-jump-mode)
-;(add-hook 'org-mode-hook 'refill-mode)
 (setq org-startup-truncated nil)
-
 
 (defun jkf/kill-all-buffers ()
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
-
 
 ;; Helper for compilation. Close the compilation window if
 ;; there was no error at all.
@@ -364,8 +361,8 @@ number of characters is written to the message area."
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
 
       (global-unset-key (kbd "<menu>"))
-      (global-set-key (kbd "M-<menu>") 'ido-switch-buffer)
-      (global-set-key (kbd "<menu> /") 'smex)
+      (global-set-key (kbd "M-<menu>") 'helm-buffers-list)
+      (global-set-key (kbd "<menu> /") 'helm-M-x)
 
       ; this is OK when you remap menu....
       ;(global-set-key (kbd "s-/") 'ido-switch-buffer)
@@ -374,7 +371,7 @@ number of characters is written to the message area."
       (add-to-list 'yas/snippet-dirs "~/src/itasca-emacs/snippets")
       (add-to-list 'yas/snippet-dirs "~/src/dotfiles/snippets")
       (add-to-list 'ac-dictionary-directories "~/src/itasca-emacs/ac-dict")
-      ;(setq eshell-rc-script "~/src/dotfiles/eshellrc")
+      (setq eshell-rc-script "~/src/dotfiles/eshellrc")
 
       (add-to-list 'load-path "~/src/itasca-emacs" )
       (require 'itasca)
@@ -392,11 +389,11 @@ number of characters is written to the message area."
     (progn
       (setq jkf/src-dir "~/src/")
       (setq jkf/dropbox-dir "~/Dropbox/")
-      (global-set-key (kbd "<M-268632080>") 'ido-switch-buffer)
+      (global-set-key (kbd "<M-268632080>") 'helm-buffers-list)
       (set-face-attribute 'default nil :family "Monaco"
                           :height 145 :weight 'normal)
       (setq initial-frame-alist '((width . 80) (height . 52)))
-      ;(setq eshell-rc-script "~/src/dotfiles/eshellrc_osx")
+      (setq eshell-rc-script "~/src/dotfiles/eshellrc_osx")
       (setq x-select-enable-clipboard t)
       (add-to-list 'exec-path "/opt/local/bin/")))
 
@@ -411,10 +408,12 @@ number of characters is written to the message area."
 ;;;; windows specific setup
 (if  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
     (progn
+      (require 'w32-win)
       (setq jkf/src-dir "c:/src/")
       (setq jkf/dropbox-dir (jkf/windows-get-dropbox-folder))
 
- ;;;;; hack because we use Anaconda which does not have virtual env
+;;;; Jedi setup
+      ;;; hack because we use Anaconda which does not have virtual env
       (setq jedi:server-command
             `("python"
               ,(concat (file-name-directory
@@ -568,13 +567,13 @@ file with a2ps"
 (global-set-key (kbd "C-c s") 'magit-status)
 
 (require 'ido)
-(require 'ido-ubiquitous)
-(require 'ido-vertical-mode)
-(ido-mode t)
-(setq ido-enable-flex-matching t)
-(setq ido-everywhere t)
-(setq ido-create-new-buffer 'always)
-(setq ido-case-fold t)
+;; (require 'ido-ubiquitous)
+;; (require 'ido-vertical-mode)
+;; (ido-mode t)
+;; (setq ido-enable-flex-matching t)
+;; (setq ido-everywhere t)
+;; (setq ido-create-new-buffer 'always)
+;; (setq ido-case-fold t)
 
 (require 'ace-jump-mode)
 (autoload
@@ -615,16 +614,33 @@ file with a2ps"
 (require 'helm-config)
 (require 'helm-descbinds)
 (require 'imenu-anywhere)
-;(global-set-key (kbd "C-.") 'helm-imenu)
-(global-set-key (kbd "C-M-.") 'helm-imenu)
+(helm-mode 1)
 (global-set-key (kbd "C-h b") 'helm-descbinds)
+
+
+;;; see http://emacs.stackexchange.com/questions/3798/how-do-i-make-pressing-ret-in-helm-find-files-open-the-directory
+(setq helm-boring-file-regexp-list '("\\.$" "\\.\\.$"))
+(setf helm-ff-skip-boring-files t)
+
+(defun jkf/helm-find-files-navigate-forward (orig-fun &rest args)
+  (if (file-directory-p (helm-get-selection))
+      (helm-execute-persistent-action)
+    (apply orig-fun args)))
+(advice-add 'helm-confirm-and-exit-minibuffer
+            :around #'jkf/helm-find-files-navigate-forward)
+
+(defun fu/helm-find-files-navigate-back (orig-fun &rest args)
+  (if (= (length helm-pattern) (length (helm-find-files-initial-input)))
+      (helm-find-files-up-one-level 1)
+    (apply orig-fun args)))
+(advice-add 'helm-ff-delete-char-backward :around #'fu/helm-find-files-navigate-back)
 
 (require 'recentf)
 (recentf-mode 1)
 (setq recentf-max-menu-items 100)
 (global-set-key (kbd "C-S-o") 'helm-recentf)
 
-(define-key global-map (kbd "RET") 'newline-and-indent)
+(define-key global-map (kbd "<RET>") 'newline-and-indent)
 
 ; Dont prompt me if I try to kill a buffer with an active process
 ; via http://www.masteringemacs.org/
@@ -699,7 +715,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
 
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
-(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "M-x") 'helm-M-x)
 
 (require 'multiple-cursors)
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
@@ -736,15 +752,12 @@ Useful when editing a datafile in emacs and loading it a lisp."
   (interactive)
   (jkf/calc-eval-and-insert (point-at-bol) (point-at-eol)))
 
-(require 'smartparens-config)
-(smartparens-global-mode t)
-
 (global-set-key (kbd "C-}") 'sp-forward-slurp-sexp)
 (global-set-key (kbd "C-{") 'sp-backward-slurp-sexp)
 (global-set-key (kbd "M-}") 'sp-forward-barf-sexp)
 (global-set-key (kbd "M-{") 'sp-backward-barf-sexp)
 
-(global-set-key (kbd "<backspace>") 'sp-backward-delete-char)
+;(global-set-key (kbd "<backspace>") 'sp-backward-delete-char)
 (global-set-key (kbd "<delete>") 'sp-delete-char)
 (global-set-key (kbd "C-c <delete>") 'delete-char)
 (global-set-key (kbd "C-c <backspace>") 'backward-delete-char)
