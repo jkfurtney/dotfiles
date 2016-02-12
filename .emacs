@@ -36,7 +36,7 @@
 ;;;; basic key bindings
 (require 'python)
 (require 'dired+)
-(global-set-key "\C-o" 'find-file) ; C-o for find file
+(global-set-key "\C-o" 'helm-find-files)
 (add-hook 'dired-mode-hook
           (function (lambda ()
                       (local-set-key (kbd "<backspace>") 'kill-this-buffer)
@@ -563,8 +563,8 @@ file with a2ps"
         (fn (dired-get-filename)))
     (shell-command (format template fn fn ))))
 
-(require 'magit)
-(global-set-key (kbd "C-c s") 'magit-status)
+;(require 'magit)
+;(global-set-key (kbd "C-c s") 'magit-status)
 
 (require 'ido)
 ;; (require 'ido-ubiquitous)
@@ -622,12 +622,13 @@ file with a2ps"
 (setq helm-boring-file-regexp-list '("\\.$" "\\.\\.$"))
 (setf helm-ff-skip-boring-files t)
 
-(defun jkf/helm-find-files-navigate-forward (orig-fun &rest args)
+(defun fu/helm-find-files-navigate-forward (orig-fun &rest args)
   (if (file-directory-p (helm-get-selection))
-      (helm-execute-persistent-action)
-    (apply orig-fun args)))
-(advice-add 'helm-confirm-and-exit-minibuffer
-            :around #'jkf/helm-find-files-navigate-forward)
+      (apply orig-fun args)
+    (helm-maybe-exit-minibuffer)))
+(advice-add 'helm-execute-persistent-action :around #'fu/helm-find-files-navigate-forward)
+(define-key helm-find-files-map (kbd "<return>") 'helm-execute-persistent-action)
+(define-key helm-find-files-map (kbd "C-j") 'helm-maybe-exit-minibuffer)
 
 (defun fu/helm-find-files-navigate-back (orig-fun &rest args)
   (if (= (length helm-pattern) (length (helm-find-files-initial-input)))
