@@ -11,7 +11,7 @@
 (package-initialize)
 
 ; ein expand-region projectile goto-last-change clojure-mode diff-hl
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete  helm helm-descbinds ido-hacks ido-ubiquitous macrostep markdown-mode magit smartparens popup dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav idomenu multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection ox-reveal cython-mode nsis-mode org-tree-slide imenu-anywhere w32-browser)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete  helm helm-descbinds ido-hacks ido-ubiquitous macrostep markdown-mode magit smartparens popup dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav idomenu multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection ox-reveal cython-mode nsis-mode org-tree-slide w32-browser)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -46,29 +46,32 @@
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "M-p") 'backward-paragraph)
 (global-set-key (kbd "M-n") 'forward-paragraph)
+(global-set-key (kbd "C-x M-q") 'jkf/remove-hard-wrap)
 
 ;;;; C-c bindings
-(global-set-key (kbd "C-c e m") 'macrostep-expand)
 (global-set-key (kbd "C-c c") 'calc)
 (global-set-key (kbd "C-c n") 'jkf/open-temp-file)
-(global-set-key (kbd "C-x M-q") 'jkf/remove-hard-wrap)
 (global-set-key (kbd "C-c ;") 'comment-region)
 (global-set-key (kbd "C-c a") 'org-agenda)
 (global-set-key (kbd "C-c =") 'jkf/calc-eval-line-and-insert)
 (global-set-key (kbd "C-c l") 'jkf/toggle-slime)
 (global-set-key (kbd "C-c L") 'jkf/launch-blo-up-swank)
-(global-set-key (kbd "C-c M-l") 'jkf/launch-blo-up)
-(global-set-key (kbd "C-c M-c") 'jkf/copy-buffer-file-name-as-kill)
 (global-set-key (kbd "C-c k") 'jkf/kill-all-buffers)
 (global-set-key (kbd "C-c K") 'jkf/kill-other-buffers)
+(global-set-key (kbd "C-c i") 'helm-imenu)
+(global-set-key (kbd "C-c g") 'helm-google-suggest)
+
+(define-key python-mode-map (kbd "C-c d") 'jedi:show-doc)
+
 (global-set-key (kbd "C-c f") 'fold-dwim-toggle)
-(global-set-key (kbd "C-c C-f") 'fold-dwim-toggle)
 (global-set-key (kbd "C-c M-f") 'fold-dwim-hide-all)
 (global-set-key (kbd "C-c M-F") 'fold-dwim-show-all)
-(define-key python-mode-map (kbd "C-c d") 'jedi:show-doc)
-(global-set-key (kbd "C-c i") 'helm-imenu)
+
+(global-set-key (kbd "C-c M-l") 'jkf/launch-blo-up)
+(global-set-key (kbd "C-c M-c") 'jkf/copy-buffer-file-name-as-kill)
 
 ; emacs lisp specific
+(global-set-key (kbd "C-c e m") 'macrostep-expand)
 (global-set-key (kbd "C-c e e") 'toggle-debug-on-error)
 (global-set-key (kbd "C-c e f") 'emacs-lisp-byte-compile-and-load)
 (global-set-key (kbd "C-c e r") 'eval-region)
@@ -613,7 +616,6 @@ file with a2ps"
 
 (require 'helm-config)
 (require 'helm-descbinds)
-(require 'imenu-anywhere)
 (helm-mode 1)
 (global-set-key (kbd "C-h b") 'helm-descbinds)
 
@@ -1173,3 +1175,16 @@ function to make an autocomplete list"
                                  nsis-mode)) auto-mode-alist))
 (setq auto-mode-alist (append '(("\\.\\([Nn][Ss][Hh]\\)$" .
                                  nsis-mode)) auto-mode-alist))
+
+(defvar jkf/journal-file (concat jkf/dropbox-dir "/org/journal.org"))
+(defun jkf/org-journal-header () (interactive) (format-time-string "* %A %B %d %Y"))
+
+(defun jkf/journal ()
+  (interactive)
+  (find-file jkf/journal-file)
+  (goto-char (point-max))
+  (save-excursion (when (null (search-backward-regexp
+                               (jkf/org-journal-header) (point-min) t))
+     (insert (jkf/org-journal-header))))
+  (newline))
+(global-set-key (kbd "C-c j") 'jkf/journal)
