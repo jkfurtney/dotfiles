@@ -1,3 +1,5 @@
+(defmacro disable (&rest body))
+
 (setq-default inhibit-startup-screen t)
 (tool-bar-mode 0)
 (menu-bar-mode 0)
@@ -10,8 +12,7 @@
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-; ein expand-region projectile goto-last-change clojure-mode diff-hl
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete  helm helm-descbinds ido-hacks ido-ubiquitous macrostep markdown-mode magit smartparens popup dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav idomenu multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection ox-reveal cython-mode nsis-mode org-tree-slide w32-browser)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete  helm helm-descbinds ido-hacks ido-ubiquitous macrostep markdown-mode magit smartparens popup dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav idomenu multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection ox-reveal cython-mode nsis-mode org-tree-slide w32-browser guide-key)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -43,6 +44,9 @@
                       (local-unset-key (kbd "<f1>"))
                       (local-unset-key (kbd "C-o")))))
 
+(defmacro jkf/func-ff (filename) `(lambda () (interactive)
+                                           (find-file ,filename)))
+
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "M-p") 'backward-paragraph)
 (global-set-key (kbd "M-n") 'forward-paragraph)
@@ -50,6 +54,7 @@
 
 ;;;; C-c bindings
 (global-set-key (kbd "C-c c") 'calc)
+(global-set-key (kbd "C-c j") 'jkf/journal)
 (global-set-key (kbd "C-c n") 'jkf/open-temp-file)
 (global-set-key (kbd "C-c ;") 'comment-region)
 (global-set-key (kbd "C-c a") 'org-agenda)
@@ -60,6 +65,11 @@
 (global-set-key (kbd "C-c K") 'jkf/kill-other-buffers)
 (global-set-key (kbd "C-c i") 'helm-imenu)
 (global-set-key (kbd "C-c g") 'helm-google-suggest)
+(global-set-key (kbd "C-c t") (jkf/func-ff (concat jkf/dropbox-dir "/org/todo.org")))
+
+;; windows specific interaction
+(global-set-key (kbd "C-c w e") 'w32explore)
+(global-set-key (kbd "C-c w b") 'jkf/open-bash-here)
 
 (define-key python-mode-map (kbd "C-c d") 'jedi:show-doc)
 
@@ -77,6 +87,13 @@
 (global-set-key (kbd "C-c e r") 'eval-region)
 (global-set-key (kbd "C-c e b") 'eval-buffer)
 (global-set-key (kbd "C-c e s") 'jkf/switch-to-scratch)
+(global-set-key (kbd "C-c e q") 'jkf/eval-replace-last-sexp)
+
+(defun jkf/to-init () (interactive)
+       "open .emacs file and jump to the end of the file."
+       (find-file (concat jkf/src-dir "dotfiles/.emacs"))
+       (goto-char (point-max)))
+(global-set-key (kbd "C-c e c") 'jkf/to-init)
 
 ; C-i for search forward
 (define-key input-decode-map (kbd "C-i") (kbd "H-i")); hack needed to unset tab
@@ -84,6 +101,7 @@
 (define-key isearch-mode-map (kbd "H-i") 'isearch-repeat-forward)
 
 (global-set-key (kbd "M-s") 'ispell-word)
+(global-set-key (kbd "M-s") 'flyspell-correct-word-before-point)
 (global-set-key (kbd "C-s") 'save-buffer)
 (global-set-key (kbd "M-u") 'undo)
 (global-set-key (kbd "M-0") 'delete-window)
@@ -174,48 +192,51 @@
 (add-hook 'latex-mode-hook 'turn-on-auto-fill)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-;;;; Sphinx reStructuredText Setup
-(defun jkf/chunk--start ()
-  "move point to begining of white-space seperated chunk"
-  (interactive)
-  (search-backward-regexp "\\s-")
-  (forward-char))
-(defun jkf/chunk--end ()
-  "move point to end of white-space separated chunk"
-  (interactive)
-  (search-forward-regexp "\\s-")
-  (backward-char))
-(defun jkf/rest-wrap-math ()
-  "wrap :math:`__` around the current word"
-  (interactive)
-  (jkf/chunk--start)
-  (insert ":math:`")
-  (jkf/chunk--end)
-  (insert "`"))
-
-(defun jkf/sphinx--compile-cmd (cmd)
-  "build sphinx documentation. First call prompts for a directory"
-  (interactive)
-  (unless (boundp 'sphinx-build-dir)
-    (setq sphinx-build-dir (read-directory-name "sphinx build dir ")))
-  (let ((default-directory sphinx-build-dir))
-       (compile cmd)))
-(defun jkf/sphinx-html-compile () (interactive)
-  (jkf/sphinx--compile-cmd "make html"))
-(defun jkf/sphinx-pdf-compile () (interactive)
-  (jkf/sphinx--compile-cmd "make latexpdf"))
-
-(defun jkf/sphinx-reset () (interactive) (makunbound 'sphinx-build-dir))
-
-(defun jkf/sphinx-open-pdf-windows () (interactive)
-  (when (boundp 'sphinx-build-dir)
-    (w32-browser (car (file-expand-wildcards
-                       (concat sphinx-build-dir "build/latex/*.pdf"))))))
 (require 'rst)
-(define-key rst-mode-map (kbd "C-c p") 'jkf/sphinx-open-pdf-windows)
-(define-key rst-mode-map (kbd "C-c C") 'jkf/sphinx-html-compile)
-(define-key rst-mode-map (kbd "C-c c") 'jkf/sphinx-pdf-compile)
-(define-key rst-mode-map (kbd "C-c m") 'jkf/rest-wrap-math)
+
+;;;; Sphinx reStructuredText Setup
+(disable
+ (defun jkf/chunk--start ()
+   "move point to begining of white-space seperated chunk"
+   (interactive)
+   (search-backward-regexp "\\s-")
+   (forward-char))
+ (defun jkf/chunk--end ()
+   "move point to end of white-space separated chunk"
+   (interactive)
+   (search-forward-regexp "\\s-")
+   (backward-char))
+ (defun jkf/rest-wrap-math ()
+   "wrap :math:`__` around the current word"
+   (interactive)
+   (jkf/chunk--start)
+   (insert ":math:`")
+   (jkf/chunk--end)
+   (insert "`"))
+
+ (defun jkf/sphinx--compile-cmd (cmd)
+   "build sphinx documentation. First call prompts for a directory"
+   (interactive)
+   (unless (boundp 'sphinx-build-dir)
+     (setq sphinx-build-dir (read-directory-name "sphinx build dir ")))
+   (let ((default-directory sphinx-build-dir))
+     (compile cmd)))
+ (defun jkf/sphinx-html-compile () (interactive)
+        (jkf/sphinx--compile-cmd "make html"))
+ (defun jkf/sphinx-pdf-compile () (interactive)
+        (jkf/sphinx--compile-cmd "make latexpdf"))
+
+ (defun jkf/sphinx-reset () (interactive) (makunbound 'sphinx-build-dir))
+
+ (defun jkf/sphinx-open-pdf-windows () (interactive)
+        (when (boundp 'sphinx-build-dir)
+          (w32-browser (car (file-expand-wildcards
+                             (concat sphinx-build-dir "build/latex/*.pdf"))))))
+
+ (define-key rst-mode-map (kbd "C-c p") 'jkf/sphinx-open-pdf-windows)
+ (define-key rst-mode-map (kbd "C-c C") 'jkf/sphinx-html-compile)
+ (define-key rst-mode-map (kbd "C-c c") 'jkf/sphinx-pdf-compile)
+ (define-key rst-mode-map (kbd "C-c m") 'jkf/rest-wrap-math))
 
 ;;;; FORTRAN Setup
 (add-to-list 'auto-mode-alist '("\\.inc\\'" . fortran-mode))
@@ -675,6 +696,7 @@ file with a2ps"
 (diminish 'auto-complete-mode)
 (diminish 'auto-fill-function)
 (diminish 'abbrev-mode)
+(diminish 'helm)
 
 (define-key ac-completing-map (kbd "C-n") 'ac-next)
 (define-key ac-completing-map (kbd "C-p") 'ac-previous)
@@ -1178,7 +1200,6 @@ function to make an autocomplete list"
 
 (defvar jkf/journal-file (concat jkf/dropbox-dir "/org/journal.org"))
 (defun jkf/org-journal-header () (interactive) (format-time-string "* %A %B %d %Y"))
-
 (defun jkf/journal ()
   (interactive)
   (find-file jkf/journal-file)
@@ -1186,5 +1207,67 @@ function to make an autocomplete list"
   (save-excursion (when (null (search-backward-regexp
                                (jkf/org-journal-header) (point-min) t))
      (insert (jkf/org-journal-header))))
+  (goto-char (point-max))
   (newline))
-(global-set-key (kbd "C-c j") 'jkf/journal)
+
+(require 'guide-key)
+(diminish 'guide-key)
+(setq guide-key/guide-key-sequence '("C-c" "C-c e" "C-c w"))
+(setq guide-key/popup-window-position 'bottom)
+(setq guide-key/idle-delay 0.25)
+(guide-key-mode 1)
+
+;;;;; setup flyspell
+(defun flyspell-emacs-popup-textual (event poss word)
+  "A textual flyspell popup menu."
+  (require 'popup)
+  (let* ((corrects (if flyspell-sort-corrections
+                       (sort (car (cdr (cdr poss))) 'string<)
+                     (car (cdr (cdr poss)))))
+         (cor-menu (if (consp corrects)
+                       (mapcar (lambda (correct)
+                                 (list correct correct))
+                               corrects)
+                     '()))
+         (affix (car (cdr (cdr (cdr poss)))))
+         show-affix-info
+         (base-menu  (let ((save (if (and (consp affix) show-affix-info)
+                                     (list
+                                      (list (concat "Save affix: " (car affix))
+                                            'save)
+                                      '("Accept (session)" session)
+                                      '("Accept (buffer)" buffer))
+                                   '(("Save word" save)
+                                     ("Accept (session)" session)
+                                     ("Accept (buffer)" buffer)))))
+                       (if (consp cor-menu)
+                           (append cor-menu (cons "" save))
+                         save)))
+         (menu (mapcar
+                (lambda (arg) (if (consp arg) (car arg) arg))
+                base-menu)))
+    (cadr (assoc (popup-menu* menu :scroll-bar t) base-menu))))
+(eval-after-load "flyspell"
+      '(progn
+         (fset 'flyspell-emacs-popup 'flyspell-emacs-popup-textual)))
+
+;; http://stackoverflow.com/questions/5194294/how-to-remove-all-newlines-from-selected-region-in-emacs
+(defun remove-newlines-in-region ()
+  "Removes all newlines in the region."
+  (interactive)
+  (save-restriction
+    (narrow-to-region (point) (mark))
+    (goto-char (point-min))
+    (while (search-forward "\n" nil t) (replace-match "" nil t))))
+
+(defun jkf/add-word-at-point-to-ispell-buffer-session-localwords () (interactive)
+       (add-to-list 'ispell-buffer-session-localwords
+                    (substring-no-properties (word-at-point))))
+(flyspell-mode 1)
+
+
+
+(defun jkf/open-bash-here ()
+  (interactive)
+  ;; but how to start in the current working directory
+  (w32-browser "c:/Program Files (x86)/Git/Git Bash.vbs"))
