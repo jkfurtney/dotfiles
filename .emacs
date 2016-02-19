@@ -13,7 +13,7 @@
 
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime smex uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime smex uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -24,7 +24,7 @@
 
                                         ; install org and org-plus-extras from here:
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-                                        ;ox-reveal
+                                        ; then install ox-reveal
 
 (defvar dotfile-dir nil "location of .emacs and other stuff")
 (defvar jkf/src-dir nil "location of src folder")
@@ -36,6 +36,8 @@
 
 (require 'smartparens-config)
 (smartparens-global-mode t)
+(diminish 'smartparens-mode)
+(diminish 'hs-minor-mode)
 
 ;;;; basic key bindings
 (require 'python)
@@ -75,6 +77,7 @@
 ;; windows specific interaction
 (global-set-key (kbd "C-c w e") 'w32explore)
 (global-set-key (kbd "C-c w b") 'jkf/open-bash-here)
+(global-set-key (kbd "C-c w w") 'helm-w32-launcher)
 
 (define-key python-mode-map (kbd "C-c d") 'jedi:show-doc)
 
@@ -533,6 +536,7 @@ number of characters is written to the message area."
 ;;;; computer specific setup
 (pcase system-name
   ("ABITA" ; 6 core i7
+   (display-time)
    (let ((org-note-file
           "c:/Users/jfurtney/Dropbox/org/notes.org"))
      (setq magit-git-executable "C:\\Program Files (x86)\\Git\\bin\\git")
@@ -597,7 +601,7 @@ file with a2ps"
         (fn (dired-get-filename)))
     (shell-command (format template fn fn ))))
 
-(require 'magit)
+;(require 'magit)
 
 (require 'ido)
 ;; (require 'ido-ubiquitous)
@@ -625,6 +629,62 @@ file with a2ps"
       '((:eval (if (buffer-file-name)
                    (abbreviate-file-name (buffer-file-name))
                  "%b"))))
+;; (setq header-line-format
+;;       '((:eval (if (buffer-file-name)
+;;                    (abbreviate-file-name (buffer-file-name))
+;;                  "%b"))))
+;; (add-hook 'buffer-list-update-hook
+;;        (lambda nil (setq header-line-format (abbreviate-file-name (buffer-file-name)))))
+
+
+(progn
+  (defmacro with-face (str &rest properties)
+  `(propertize ,str 'face (list ,@properties)))
+  (defun sl/make-header ()
+    ""
+    (let* ((sl/full-header (abbreviate-file-name buffer-file-name))
+           (sl/header (file-name-directory sl/full-header))
+           (sl/drop-str "[...]"))
+      (if (> (length sl/full-header)
+             (window-body-width))
+          (if (> (length sl/header)
+                 (window-body-width))
+              (progn
+                (concat (with-face sl/drop-str
+                                   :background "blue"
+                                   :weight 'bold
+                                   )
+                        (with-face (substring sl/header
+                                              (+ (- (length sl/header)
+                                                    (window-body-width))
+                                                 (length sl/drop-str))
+                                              (length sl/header))
+                                   ;; :background "red"
+                                   :weight 'bold
+                                   )))
+            (concat (with-face sl/header
+                               ;; :background "red"
+                               :foreground "#8fb28f"
+                               :weight 'bold
+                               )))
+        (concat (with-face sl/header
+                           ;; :background "green"
+                           ;; :foreground "black"
+                           :weight 'bold
+                           :foreground "#8fb28f"
+                           )
+                (with-face (file-name-nondirectory buffer-file-name)
+                           :weight 'bold
+                           ;; :background "red"
+                           )))))
+  (defun sl/display-header ()
+    (setq header-line-format
+          '("" ;; invocation-name
+            (:eval (if (buffer-file-name)
+                       (sl/make-header)
+                     "%b")))))
+(add-hook 'buffer-list-update-hook
+          'sl/display-header))
 
 (defun jkf/move-line-up ()
   "Move up the current line."
@@ -699,13 +759,14 @@ file with a2ps"
 (require 'eldoc)
 (require 'diminish)
 (diminish 'elisp-slime-nav-mode)
-(diminish 'pair-jump-mode " pj")
+(diminish 'pair-jump-mode)
 (diminish 'yas-minor-mode)
 (diminish 'eldoc-mode)
 (diminish 'auto-complete-mode)
 (diminish 'auto-fill-function)
 (diminish 'abbrev-mode)
-(diminish 'helm)
+(diminish 'helm-mode)
+
 
 (define-key ac-completing-map (kbd "C-n") 'ac-next)
 (define-key ac-completing-map (kbd "C-p") 'ac-previous)
@@ -773,7 +834,6 @@ Useful when editing a datafile in emacs and loading it a lisp."
       (newline-and-indent)
       (insert (format "%s = %s" (chomp rhs) (chomp lhs))))))
 
-(load-theme 'cyberpunk t)
 (load-theme 'cyberpunk t) ; for some reason this needs to be called 2x?
 
 (defun jkf/calc-eval-and-insert (&optional start end)
@@ -1030,7 +1090,6 @@ function to make an autocomplete list"
 (define-key rst-mode-map (kbd "C-c C-c") 'rst-adjust)
 
 (require 'god-mode)
-(diminish 'god-local-mode " g")
 (global-set-key (kbd "<home>") 'god-mode-all)
 (global-set-key (kbd "<insert>") 'god-mode-all)
 (defun my-update-cursor ()
@@ -1220,7 +1279,7 @@ function to make an autocomplete list"
   (newline))
 
 (require 'guide-key)
-(diminish 'guide-key)
+(diminish 'guide-key-mode)
 (setq guide-key/guide-key-sequence '("C-c" "C-c e" "C-c w"))
 (setq guide-key/popup-window-position 'bottom)
 (setq guide-key/idle-delay 0.25)
@@ -1295,3 +1354,12 @@ function to make an autocomplete list"
 (defun jkf/proselint-buffer () (interactive)
        (compile (format "proselint.exe %s" (buffer-file-name))))
 (put 'narrow-to-region 'disabled nil)
+
+(defun jkf/active-minor-modes () (interactive)
+       (--filter (and (boundp it) (symbol-value it)) minor-mode-list))
+
+(powerline-default-theme)
+(set-face-attribute 'mode-line nil
+                    :foreground "Black"
+                    :background "DarkOrange"
+                    :box nil)
