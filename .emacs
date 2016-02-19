@@ -536,6 +536,7 @@ number of characters is written to the message area."
 ;;;; computer specific setup
 (pcase system-name
   ("ABITA" ; 6 core i7
+   (setq display-time-default-load-average nil)
    (display-time)
    (let ((org-note-file
           "c:/Users/jfurtney/Dropbox/org/notes.org"))
@@ -1363,3 +1364,5 @@ function to make an autocomplete list"
                     :foreground "Black"
                     :background "DarkOrange"
                     :box nil)
+
+(add-hook 'org-mode-hook 'flyspell-mode)
