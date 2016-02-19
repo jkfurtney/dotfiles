@@ -4,15 +4,16 @@
 (tool-bar-mode 0)
 (menu-bar-mode 0)
 (scroll-bar-mode 0)
-(setq magit-last-seen-setup-instructions "1.4.0")
+(setq magit-last-seen-setup-instructions "2.4.0")
 
 ;;;; packages
 (require 'package)
 (add-to-list 'package-archives
-  '("melpa" . "http://melpa.milkbox.net/packages/") t)
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete  helm helm-descbinds ido-hacks ido-ubiquitous macrostep markdown-mode magit smartparens popup dash request s slime smex uuid websocket yasnippet rainbow-delimiters minimap diminish elisp-slime-nav idomenu multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection ox-reveal cython-mode nsis-mode org-tree-slide w32-browser guide-key)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime smex uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -20,8 +21,10 @@
     (if (y-or-n-p (format "Package %s is missing. Install it? " p))
         (package-install p))))
 
+
                                         ; install org and org-plus-extras from here:
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+                                        ;ox-reveal
 
 (defvar dotfile-dir nil "location of .emacs and other stuff")
 (defvar jkf/src-dir nil "location of src folder")
@@ -66,6 +69,8 @@
 (global-set-key (kbd "C-c i") 'helm-imenu)
 (global-set-key (kbd "C-c g") 'helm-google-suggest)
 (global-set-key (kbd "C-c t") (jkf/func-ff (concat jkf/dropbox-dir "/org/todo.org")))
+(global-set-key (kbd "C-c p") 'jkf/proselint-buffer)
+(global-set-key (kbd "C-c s") 'magit-status)
 
 ;; windows specific interaction
 (global-set-key (kbd "C-c w e") 'w32explore)
@@ -348,15 +353,18 @@ number of characters is written to the message area."
 ;;;; Org-mode Setup
 ;(global-set-key (kbd "C-M-<return>") 'org-insert-subheading)
 
-(require 'org-tree-slide)
-(define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
-(define-key org-mode-map (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
+(disable
+ (require 'org-tree-slide)
+ (define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
+ (define-key org-mode-map (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
+ (setq org-tree-slide-slide-in-effect nil))
 
+(require 'org)
 (define-key org-mode-map (kbd "C-M-k") 'kill-sentence)
 
-(setq org-tree-slide-slide-in-effect nil)
+
 (setq org-src-fontify-natively t)
-(setq org-startup-truncated nil)
+;(setq org-startup-truncated nil)
 
 (defun jkf/kill-all-buffers ()
   (interactive)
@@ -369,7 +377,8 @@ number of characters is written to the message area."
     (bury-buffer)
     (delete-window (get-buffer-window (get-buffer "*compilation*"))))
     (cons msg code))
-(setq compilation-exit-message-function 'jkf/compilation-exit-autoclose)
+;(setq compilation-exit-message-function 'jkf/compilation-exit-autoclose)
+;(setq compilation-exit-message-function nil)
 
 (require 'yasnippet)
 (yas/global-mode 1)
@@ -495,13 +504,13 @@ number of characters is written to the message area."
         (add-to-list 'ac-modes 'itasca-3dec-mode)
         (add-to-list 'ac-modes 'itasca-udec-mode))
                                         ; windows specific magit init
-      (defun magit-escape-for-shell (str)
-        (if (or (string= str "git")
-                (string-match "^--" str))
-            str
-          (concat "'" (replace-regexp-in-string "'" "'\\''" str) "'")))
-      (setq magit-git-executable "C:\\Program Files\\Git\\bin\\git")
-
+      (disable
+       (defun magit-escape-for-shell (str)
+         (if (or (string= str "git")
+                 (string-match "^--" str))
+             str
+           (concat "'" (replace-regexp-in-string "'" "'\\''" str) "'")))
+       (setq magit-git-executable "C:\\Program Files\\Git\\bin\\git"))
 
       ;; windows specific font stuff
       (setq w32-get-true-file-attributes nil)
@@ -526,6 +535,7 @@ number of characters is written to the message area."
   ("ABITA" ; 6 core i7
    (let ((org-note-file
           "c:/Users/jfurtney/Dropbox/org/notes.org"))
+     (setq magit-git-executable "C:\\Program Files (x86)\\Git\\bin\\git")
      (setq initial-frame-alist '((width . 80) (height . 44)))))
 
   ("SHOTOVER"                            ; vaio
@@ -587,8 +597,7 @@ file with a2ps"
         (fn (dired-get-filename)))
     (shell-command (format template fn fn ))))
 
-;(require 'magit)
-;(global-set-key (kbd "C-c s") 'magit-status)
+(require 'magit)
 
 (require 'ido)
 ;; (require 'ido-ubiquitous)
@@ -871,7 +880,7 @@ incriment it and write on a new line below. Leave the origional inplace"
   replaced with case4"
   (interactive)
   (save-match-data
-    (let* ((old-casename (file-name-sans-extension (buffer-name)))
+    (let* ((old-casename (file-name-sans-extension (buffer-file-name)))
            (tmp (string-match "\\([0-9]+\\)" old-casename))
            (old-number (match-string 1 old-casename))
            (new-number
@@ -1271,3 +1280,18 @@ function to make an autocomplete list"
   (interactive)
   ;; but how to start in the current working directory
   (w32-browser "c:/Program Files (x86)/Git/Git Bash.vbs"))
+
+(disable (flycheck-define-checker proselint
+                                  "A linter for prose."
+                                  :command ("proselint" source-inplace)
+                                  :error-patterns
+                                  ((warning line-start (file-name) ":" line ":" column ": "
+                                            (id (one-or-more (not (any " "))))
+                                            (message) line-end))
+                                  :modes (text-mode markdown-mode gfm-mode))
+
+         (add-to-list 'flycheck-checkers 'proselint))
+
+(defun jkf/proselint-buffer () (interactive)
+       (compile (format "proselint.exe %s" (buffer-file-name))))
+(put 'narrow-to-region 'disabled nil)
