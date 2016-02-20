@@ -1366,3 +1366,4 @@ function to make an autocomplete list"
                     :box nil)
 
 (add-hook 'org-mode-hook 'flyspell-mode)
+(setq org-startup-truncated nil)  ; linewrap for org-mode
