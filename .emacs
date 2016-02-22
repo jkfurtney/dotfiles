@@ -200,6 +200,7 @@
 (add-hook 'latex-mode-hook 'turn-on-auto-fill)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+
 (require 'rst)
 
 ;;;; Sphinx reStructuredText Setup
@@ -767,7 +768,7 @@ file with a2ps"
 (diminish 'auto-fill-function)
 (diminish 'abbrev-mode)
 (diminish 'helm-mode)
-
+(diminish 'flyspell-mode)
 
 (define-key ac-completing-map (kbd "C-n") 'ac-next)
 (define-key ac-completing-map (kbd "C-p") 'ac-previous)
