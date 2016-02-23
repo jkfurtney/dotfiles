@@ -525,14 +525,14 @@ number of characters is written to the message area."
 (add-to-list 'yas/snippet-dirs (concat jkf/src-dir "dotfiles/snippets"))
 (set-register ?e `(file . ,(concat jkf/src-dir "dotfiles/.emacs")))
 
-(let ((org-note-file
-       (concat jkf/dropbox-dir "/org/notes.org"))
-      (org-todo-file
-       (concat jkf/dropbox-dir "/org/todo.org")))
-  (setq org-default-notes-file org-note-file)
-  (setq org-agenda-files (list org-todo-file))
-  (set-register ?t `(file . ,org-todo-file))
-  (set-register ?n `(file . ,org-note-file)))
+(setq jkf/org-note-file (concat jkf/dropbox-dir "/org/notes.org"))
+(setq jkf/org-todo-file (concat jkf/dropbox-dir "/org/todo.org"))
+(setq jkf/journal-file (concat jkf/dropbox-dir "/org/journal.org"))
+
+(setq org-default-notes-file jkf/org-note-file)
+(setq org-agenda-files (list jkf/org-todo-file jkf/journal-file))
+(set-register ?t `(file . ,jkf/org-todo-file))
+(set-register ?n `(file . ,jkf/org-note-file))
 
 ;;;; computer specific setup
 (pcase system-name
@@ -1268,7 +1268,6 @@ function to make an autocomplete list"
 (setq auto-mode-alist (append '(("\\.\\([Nn][Ss][Hh]\\)$" .
                                  nsis-mode)) auto-mode-alist))
 
-(defvar jkf/journal-file (concat jkf/dropbox-dir "/org/journal.org"))
 (defun jkf/org-journal-header () (interactive) (format-time-string "* %A %B %d %Y"))
 (defun jkf/journal ()
   (interactive)
@@ -1368,3 +1367,9 @@ function to make an autocomplete list"
 
 (add-hook 'org-mode-hook 'flyspell-mode)
 (setq org-startup-truncated nil)  ; linewrap for org-mode
+(setq org-log-done 'time)
+(define-key dired-mode-map (kbd "f") 'dired-filter-mode)
+; f /. to filter by extension
+
+(setq org-capture-templates
+      '(("s" "Sit" entry (file jkf/journal-file) "* Sit %^t \n%^{time}p")))
