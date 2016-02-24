@@ -79,6 +79,9 @@
 (global-set-key (kbd "C-c w b") 'jkf/open-bash-here)
 (global-set-key (kbd "C-c w w") 'helm-w32-launcher)
 
+;; org-mode C-c bindings
+(global-set-key (kbd "C-c o o") 'org-capture)
+
 (define-key python-mode-map (kbd "C-c d") 'jedi:show-doc)
 
 (global-set-key (kbd "C-c f") 'fold-dwim-toggle)
@@ -1281,7 +1284,7 @@ function to make an autocomplete list"
 
 (require 'guide-key)
 (diminish 'guide-key-mode)
-(setq guide-key/guide-key-sequence '("C-c" "C-c e" "C-c w"))
+(setq guide-key/guide-key-sequence '("C-c" "C-c e" "C-c w" "C-c o"))
 (setq guide-key/popup-window-position 'bottom)
 (setq guide-key/idle-delay 0.25)
 (guide-key-mode 1)
@@ -1372,4 +1375,17 @@ function to make an autocomplete list"
 ; f /. to filter by extension
 
 (setq org-capture-templates
-      '(("s" "Sit" entry (file jkf/journal-file) "* Sit %^t \n%^{time}p")))
+      '(("s" "Sit" item (file+headline jkf/journal-file "Sitting")
+         "%^t %^{time}" :immediate-finish t)
+        ("r" "Run" item (file+headline jkf/journal-file "Running")
+         "%^t %^{distance}" :immediate-finish t)
+        ("w" "Work TODO" entry (file+headline jkf/org-todo-file "Work")
+         "** TODO %?\n    DEADLINE: %^{deadline}t")
+        ("h" "Home TODO" entry (file+headline jkf/org-todo-file "Home")
+         "** TODO %?\n    DEADLINE: %^{deadline}t")))
+(setq org-agenda-skip-scheduled-if-done t)
+
+(setq org-agenda-custom-commands
+      '(("w" "Agenda and Home-related tasks"
+         ((agenda "")
+          (tags-todo "Work")))))
