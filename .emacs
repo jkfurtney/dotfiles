@@ -1383,9 +1383,9 @@ function to make an autocomplete list"
          "** TODO %?\n    DEADLINE: %^{deadline}t")
         ("h" "Home TODO" entry (file+headline jkf/org-todo-file "Home")
          "** TODO %?\n    DEADLINE: %^{deadline}t")))
-(setq org-agenda-skip-scheduled-if-done t)
 
+(setq org-agenda-skip-scheduled-if-done t)
 (setq org-agenda-custom-commands
-      '(("w" "Agenda and Home-related tasks"
-         ((agenda "")
-          (tags-todo "Work")))))
+      '(("w" agenda "work agenda"
+        ((org-agenda-skip-function '(org-agenda-skip-subtree-if
+                                     'todo 'done))))))
