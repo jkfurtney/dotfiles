@@ -1271,16 +1271,10 @@ function to make an autocomplete list"
 (setq auto-mode-alist (append '(("\\.\\([Nn][Ss][Hh]\\)$" .
                                  nsis-mode)) auto-mode-alist))
 
-(defun jkf/org-journal-header () (interactive) (format-time-string "* %A %B %d %Y"))
 (defun jkf/journal ()
   (interactive)
   (find-file jkf/journal-file)
-  (goto-char (point-max))
-  (save-excursion (when (null (search-backward-regexp
-                               (jkf/org-journal-header) (point-min) t))
-     (insert (jkf/org-journal-header))))
-  (goto-char (point-max))
-  (newline))
+  (goto-char (point-max)))
 
 (require 'guide-key)
 (diminish 'guide-key-mode)
@@ -1379,6 +1373,8 @@ function to make an autocomplete list"
          "%^t %^{time}" :immediate-finish t)
         ("r" "Run" item (file+headline jkf/journal-file "Running")
          "%^t %^{distance}" :immediate-finish t)
+        ("j" "Journal" entry (file+datetree jkf/journal-file "")
+         "* %U\n%?")
         ("w" "Work TODO" entry (file+headline jkf/org-todo-file "Work")
          "** TODO %?\n    DEADLINE: %^{deadline}t")
         ("h" "Home TODO" entry (file+headline jkf/org-todo-file "Home")
