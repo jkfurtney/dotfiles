@@ -1389,3 +1389,13 @@ function to make an autocomplete list"
       '(("w" agenda "work agenda"
         ((org-agenda-skip-function '(org-agenda-skip-subtree-if
                                      'todo 'done))))))
+
+(defun jkf---skip-unless-work-tree ()
+  "Skip trees that are not under the work tree"
+  (save-excursion 
+    (search-backward-regexp "^* " 0 t)
+    (looking-at "* work")))
+
+
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "SOMEDAY(s)" "DONE(d)")))
