@@ -1388,10 +1388,11 @@ function to make an autocomplete list"
 
 (defun jkf---skip-unless-work-tree ()
   "Skip trees that are not under the work tree"
-  (save-excursion 
+  (save-excursion
     (search-backward-regexp "^* " 0 t)
     (looking-at "* work")))
 
 
 (setq org-todo-keywords
       '((sequence "TODO(t)" "SOMEDAY(s)" "DONE(d)")))
+(setq org-tags-column 55)
