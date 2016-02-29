@@ -1394,5 +1394,5 @@ function to make an autocomplete list"
 
 
 (setq org-todo-keywords
-      '((sequence "TODO(t)" "SOMEDAY(s)" "DONE(d)")))
+      '((sequence "TODO(t)" "SOMEDAY(s)" "DONE(d)" "WAITING(w)")))
 (setq org-tags-column 55)
