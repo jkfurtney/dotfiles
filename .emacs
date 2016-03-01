@@ -49,13 +49,14 @@
                       (local-unset-key (kbd "<f1>"))
                       (local-unset-key (kbd "C-o")))))
 
-(defmacro jkf/func-ff (filename) `(lambda () (interactive)
-                                           (find-file ,filename)))
 
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "M-p") 'backward-paragraph)
 (global-set-key (kbd "M-n") 'forward-paragraph)
 (global-set-key (kbd "C-x M-q") 'jkf/remove-hard-wrap)
+
+(defmacro jkf/func-ff (filename) `(lambda () (interactive)
+                                           (find-file ,filename)))
 
 ;;;; C-c bindings
 (global-set-key (kbd "C-c c") 'calc)
@@ -79,8 +80,13 @@
 (global-set-key (kbd "C-c w b") 'jkf/open-bash-here)
 (global-set-key (kbd "C-c w w") 'helm-w32-launcher)
 
+
 ;; org-mode C-c bindings
+(defun jkf/open-notes () (interactive)
+       (find-file (concat jkf/dropbox-dir "/org/notes.org"))
+       (org-overview))
 (global-set-key (kbd "C-c o o") 'org-capture)
+(global-set-key (kbd "C-c o n") 'jkf/open-notes)
 
 (define-key python-mode-map (kbd "C-c d") 'jedi:show-doc)
 
