@@ -87,6 +87,8 @@
        (org-overview))
 (global-set-key (kbd "C-c o o") 'org-capture)
 (global-set-key (kbd "C-c o n") 'jkf/open-notes)
+(global-set-key (kbd "C-c o i") 'helm-org-agenda-files-headings)
+
 
 (define-key python-mode-map (kbd "C-c d") 'jedi:show-doc)
 
@@ -1402,3 +1404,43 @@ function to make an autocomplete list"
 (setq org-todo-keywords
       '((sequence "TODO(t)" "SOMEDAY(s)" "DONE(d)" "WAITING(w)")))
 (setq org-tags-column 55)
+
+;; (defun dfeich/helm-org-clock-in (marker)
+;;   "Clock into the item at MARKER"
+;;   (with-current-buffer (marker-buffer marker)
+;;     (goto-char (marker-position marker))
+;;     (org-clock-in)))
+;; (eval-after-load 'helm-org
+;;   '(nconc helm-org-headings-actions
+;;           (list
+;;            (cons "Clock into task" #'dfeich/helm-org-clock-in))))
+
+; easy way to clock into a job
+(global-set-key (kbd "C-c o i") 'jkf/work-clock-in)
+(setq jkf/clock-into-work-helm-source
+      '((name . "Clock into which job?")
+        (candidates . jkf/get-headers)
+        (action . (lambda (candidate)
+                    (with-current-buffer "todo.org"
+                      ;(find-file jkf/org-todo-file)
+                      (message "%s" candidate)
+                      (goto-line candidate)
+                      (org-clock-in))))))
+(defun jkf/work-clock-in ()
+  (interactive)
+  (helm :sources '(jkf/clock-into-work-helm-source)))
+(defun jkf/get-line-and-number ()
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (widen)
+      (cons (buffer-substring-no-properties (point-at-bol) (point-at-eol))
+            (line-number-at-pos)))))
+(defun jkf/get-headers ()
+  (interactive)
+  (with-temp-buffer
+    (insert-file jkf/org-todo-file)
+    (org-mode)
+    (search-forward-regexp "^\\* work")
+    (move-beginning-of-line 1)
+    (org-map-entries 'jkf/get-line-and-number nil 'tree)))
