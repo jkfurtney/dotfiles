@@ -1383,6 +1383,8 @@ function to make an autocomplete list"
          "\n%?")
         ("w" "Work TODO" entry (file+headline jkf/org-todo-file "Work")
          "** TODO %?\n    DEADLINE: %^{deadline}t")
+        ("f" "free software TODO" entry (file+headline jkf/org-todo-file "free software")
+         "** SOMEDAY %?\n    ")
         ("h" "Home TODO" entry (file+headline jkf/org-todo-file "Home")
          "** TODO %?\n    DEADLINE: %^{deadline}t")))
 
@@ -1402,3 +1404,4 @@ function to make an autocomplete list"
 (setq org-todo-keywords
       '((sequence "TODO(t)" "SOMEDAY(s)" "DONE(d)" "WAITING(w)")))
 (setq org-tags-column 55)
+(global-set-key (kbd "C-c C-x C-o") 'org-clock-out)
