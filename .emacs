@@ -21,6 +21,10 @@
     (if (y-or-n-p (format "Package %s is missing. Install it? " p))
         (package-install p))))
 
+; for new installs
+;; (package-installed-p "ace-jump-mode")
+;; (dolist (p my-packages) (when (not (package-installed-p p))
+;;                        (package-install p)))
 
                                         ; install org and org-plus-extras from here:
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
@@ -449,7 +453,10 @@ number of characters is written to the message area."
 (require 'json)
 (defun jkf/windows-get-dropbox-folder ()
  (let* ((dropbox-file
-         (concat (getenv "APPDATA") "/Dropbox/info.json"))
+         (if (file-exists-p
+              (concat (getenv "LOCALAPPDATA") "/Dropbox/info.json"))
+             (concat (getenv "LOCALAPPDATA") "/Dropbox/info.json")
+           (concat (getenv "APPDATA") "/Dropbox/info.json")))
         (data (json-read-file dropbox-file)))
    (cdr (assoc 'path (cdr (assoc 'personal data))))))
 
@@ -545,10 +552,11 @@ number of characters is written to the message area."
 (set-register ?t `(file . ,jkf/org-todo-file))
 (set-register ?n `(file . ,jkf/org-note-file))
 
+(setq display-time-default-load-average nil)
 ;;;; computer specific setup
 (pcase system-name
   ("ABITA" ; 6 core i7
-   (setq display-time-default-load-average nil)
+
    (display-time)
    (let ((org-note-file
           "c:/Users/jfurtney/Dropbox/org/notes.org"))
