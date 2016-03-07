@@ -21,6 +21,10 @@
     (if (y-or-n-p (format "Package %s is missing. Install it? " p))
         (package-install p))))
 
+; for new installs
+;; (package-installed-p "ace-jump-mode")
+;; (dolist (p my-packages) (when (not (package-installed-p p))
+;;                        (package-install p)))
 
                                         ; install org and org-plus-extras from here:
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
@@ -87,6 +91,8 @@
        (org-overview))
 (global-set-key (kbd "C-c o o") 'org-capture)
 (global-set-key (kbd "C-c o n") 'jkf/open-notes)
+(global-set-key (kbd "C-c o i") 'helm-org-agenda-files-headings)
+
 
 (define-key python-mode-map (kbd "C-c d") 'jedi:show-doc)
 
@@ -447,7 +453,10 @@ number of characters is written to the message area."
 (require 'json)
 (defun jkf/windows-get-dropbox-folder ()
  (let* ((dropbox-file
-         (concat (getenv "APPDATA") "/Dropbox/info.json"))
+         (if (file-exists-p
+              (concat (getenv "LOCALAPPDATA") "/Dropbox/info.json"))
+             (concat (getenv "LOCALAPPDATA") "/Dropbox/info.json")
+           (concat (getenv "APPDATA") "/Dropbox/info.json")))
         (data (json-read-file dropbox-file)))
    (cdr (assoc 'path (cdr (assoc 'personal data))))))
 
@@ -543,10 +552,11 @@ number of characters is written to the message area."
 (set-register ?t `(file . ,jkf/org-todo-file))
 (set-register ?n `(file . ,jkf/org-note-file))
 
+(setq display-time-default-load-average nil)
 ;;;; computer specific setup
 (pcase system-name
   ("ABITA" ; 6 core i7
-   (setq display-time-default-load-average nil)
+
    (display-time)
    (let ((org-note-file
           "c:/Users/jfurtney/Dropbox/org/notes.org"))
@@ -1405,3 +1415,43 @@ function to make an autocomplete list"
       '((sequence "TODO(t)" "SOMEDAY(s)" "DONE(d)" "WAITING(w)")))
 (setq org-tags-column 55)
 (global-set-key (kbd "C-c C-x C-o") 'org-clock-out)
+
+;; (defun dfeich/helm-org-clock-in (marker)
+;;   "Clock into the item at MARKER"
+;;   (with-current-buffer (marker-buffer marker)
+;;     (goto-char (marker-position marker))
+;;     (org-clock-in)))
+;; (eval-after-load 'helm-org
+;;   '(nconc helm-org-headings-actions
+;;           (list
+;;            (cons "Clock into task" #'dfeich/helm-org-clock-in))))
+
+; easy way to clock into a job
+(global-set-key (kbd "C-c o i") 'jkf/work-clock-in)
+(setq jkf/clock-into-work-helm-source
+      '((name . "Clock into which job?")
+        (candidates . jkf/get-headers)
+        (action . (lambda (candidate)
+                    (with-current-buffer "todo.org"
+                      ;(find-file jkf/org-todo-file)
+                      (message "%s" candidate)
+                      (goto-line candidate)
+                      (org-clock-in))))))
+(defun jkf/work-clock-in ()
+  (interactive)
+  (helm :sources '(jkf/clock-into-work-helm-source)))
+(defun jkf/get-line-and-number ()
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (widen)
+      (cons (buffer-substring-no-properties (point-at-bol) (point-at-eol))
+            (line-number-at-pos)))))
+(defun jkf/get-headers ()
+  (interactive)
+  (with-temp-buffer
+    (insert-file jkf/org-todo-file)
+    (org-mode)
+    (search-forward-regexp "^\\* work")
+    (move-beginning-of-line 1)
+    (org-map-entries 'jkf/get-line-and-number nil 'tree)))
