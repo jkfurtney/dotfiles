@@ -92,7 +92,7 @@
 (global-set-key (kbd "C-c o o") 'org-capture)
 (global-set-key (kbd "C-c o n") 'jkf/open-notes)
 (global-set-key (kbd "C-c o i") 'helm-org-agenda-files-headings)
-
+(global-set-key (kbd "C-c C-x C-o") 'org-clock-out)
 
 (define-key python-mode-map (kbd "C-c d") 'jedi:show-doc)
 
@@ -1428,7 +1428,7 @@ function to make an autocomplete list"
 (setq jkf/clock-into-work-helm-source
       '((name . "Clock into which job?")
         (candidates . jkf/get-headers)
-        (action . (lambda (candidate)
+         (action . (lambda (candidate)
                     (with-current-buffer "todo.org"
                       ;(find-file jkf/org-todo-file)
                       (message "%s" candidate)
@@ -1452,3 +1452,21 @@ function to make an autocomplete list"
     (search-forward-regexp "^\\* work")
     (move-beginning-of-line 1)
     (org-map-entries 'jkf/get-line-and-number nil 'tree)))
+
+(defun jkf/scale-stl ()
+  (interactive)
+  (replace-string "E-06" "E-09" nil (point-min) (point-max))
+  (replace-string "E-05" "E-08" nil (point-min) (point-max))
+  (replace-string "E-04" "E-07" nil (point-min) (point-max))
+  (replace-string "E-03" "E-06" nil (point-min) (point-max))
+  (replace-string "E-02" "E-05" nil (point-min) (point-max))
+  (replace-string "E-01" "E-04" nil (point-min) (point-max))
+  (replace-string "E+00" "E-03" nil (point-min) (point-max))
+  (replace-string "E+01" "E-02" nil (point-min) (point-max))
+  (replace-string "E+02" "E-01" nil (point-min) (point-max))
+  (replace-string "E+03" "E+00" nil (point-min) (point-max)))
+
+(let* ((fname (concat jkf/dropbox-dir "/org/itasca-telephone.el")))
+  (when (file-exists-p fname)
+    (load fname)
+    (global-set-key (kbd "C-c o t") 'jkf/itasca-phone-book)))
