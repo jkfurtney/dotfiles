@@ -22,9 +22,11 @@
         (package-install p))))
 
 ; for new installs
-;; (package-installed-p "ace-jump-mode")
-;; (dolist (p my-packages) (when (not (package-installed-p p))
-;;                        (package-install p)))
+(disable (progn
+           (package-install "ace-jump-mode")
+           (dolist (p my-packages)
+             (when (not (package-installed-p p))
+               (package-install p)))))
 
                                         ; install org and org-plus-extras from here:
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
