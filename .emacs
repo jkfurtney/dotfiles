@@ -1427,16 +1427,16 @@ function to make an autocomplete list"
 ;;            (cons "Clock into task" #'dfeich/helm-org-clock-in))))
 
 ;; helm patch to put filename into kill ring
-(defun helm-ff-insert-file-full-path-in-killring (filename) (kill-new filename))
-(defun helm-ff-insert-file-basename-in-killring (filename)
+(defun helm-ff-insert-file-full-path-into-killring (filename) (kill-new filename))
+(defun helm-ff-insert-file-basename-into-killring (filename)
   (kill-new (file-name-base filename)))
 (eval-after-load 'helm-files
   '(nconc helm-find-files-actions
           (list
            (cons "Insert file base name into kill ring"
-                 #'helm-ff-insert-file-basename-in-killring )
+                 #'helm-ff-insert-file-basename-into-killring )
            (cons "Insert full path of file into kill ring"
-                 #'helm-ff-insert-file-full-path-in-killring ))))
+                 #'helm-ff-insert-file-full-path-into-killring ))))
 
 ; easy way to clock into a job
 (global-set-key (kbd "C-c o i") 'jkf/work-clock-in)
