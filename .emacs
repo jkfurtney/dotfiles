@@ -1485,3 +1485,4 @@ function to make an autocomplete list"
   (when (file-exists-p fname)
     (load fname)
     (global-set-key (kbd "C-c o t") 'jkf/itasca-phone-book)))
+(setq ispell-personal-dictionary "c:/src/dotfiles/jkf_ispell.txt")
