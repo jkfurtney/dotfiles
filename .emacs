@@ -22,9 +22,11 @@
         (package-install p))))
 
 ; for new installs
-;; (package-installed-p "ace-jump-mode")
-;; (dolist (p my-packages) (when (not (package-installed-p p))
-;;                        (package-install p)))
+(disable (progn
+           (package-install "ace-jump-mode")
+           (dolist (p my-packages)
+             (when (not (package-installed-p p))
+               (package-install p)))))
 
                                         ; install org and org-plus-extras from here:
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
@@ -1393,6 +1395,8 @@ function to make an autocomplete list"
          "\n%?")
         ("w" "Work TODO" entry (file+headline jkf/org-todo-file "Work")
          "** TODO %?\n    DEADLINE: %^{deadline}t")
+        ("f" "free software TODO" entry (file+headline jkf/org-todo-file "free software")
+         "** SOMEDAY %?\n    ")
         ("h" "Home TODO" entry (file+headline jkf/org-todo-file "Home")
          "** TODO %?\n    DEADLINE: %^{deadline}t")))
 
@@ -1412,6 +1416,7 @@ function to make an autocomplete list"
 (setq org-todo-keywords
       '((sequence "TODO(t)" "SOMEDAY(s)" "DONE(d)" "WAITING(w)")))
 (setq org-tags-column 55)
+(global-set-key (kbd "C-c C-x C-o") 'org-clock-out)
 
 ;; (defun dfeich/helm-org-clock-in (marker)
 ;;   "Clock into the item at MARKER"
@@ -1422,6 +1427,18 @@ function to make an autocomplete list"
 ;;   '(nconc helm-org-headings-actions
 ;;           (list
 ;;            (cons "Clock into task" #'dfeich/helm-org-clock-in))))
+
+;; helm patch to put filename into kill ring
+(defun helm-ff-insert-file-full-path-into-killring (filename) (kill-new filename))
+(defun helm-ff-insert-file-basename-into-killring (filename)
+  (kill-new (file-name-base filename)))
+(eval-after-load 'helm-files
+  '(nconc helm-find-files-actions
+          (list
+           (cons "Insert file base name into kill ring"
+                 #'helm-ff-insert-file-basename-into-killring )
+           (cons "Insert full path of file into kill ring"
+                 #'helm-ff-insert-file-full-path-into-killring ))))
 
 ; easy way to clock into a job
 (global-set-key (kbd "C-c o i") 'jkf/work-clock-in)
