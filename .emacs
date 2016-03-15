@@ -1416,15 +1416,6 @@ function to make an autocomplete list"
 (setq org-tags-column 55)
 (global-set-key (kbd "C-c C-x C-o") 'org-clock-out)
 
-;; (defun dfeich/helm-org-clock-in (marker)
-;;   "Clock into the item at MARKER"
-;;   (with-current-buffer (marker-buffer marker)
-;;     (goto-char (marker-position marker))
-;;     (org-clock-in)))
-;; (eval-after-load 'helm-org
-;;   '(nconc helm-org-headings-actions
-;;           (list
-;;            (cons "Clock into task" #'dfeich/helm-org-clock-in))))
 
 ;; helm patch to put filename into kill ring
 (defun helm-ff-insert-file-full-path-into-killring (filename) (kill-new filename))
@@ -1464,9 +1455,11 @@ function to make an autocomplete list"
   (with-temp-buffer
     (insert-file jkf/org-todo-file)
     (org-mode)
-    (search-forward-regexp "^\\* work")
+    (goto-char (point-min))
+    ;(search-forward-regexp "^\\* work")
     (move-beginning-of-line 1)
-    (org-map-entries 'jkf/get-line-and-number nil 'tree)))
+    ;(org-map-entries 'jkf/get-line-and-number nil 'tree)
+    (org-map-entries 'jkf/get-line-and-number nil nil)))
 
 (defun jkf/scale-stl ()
   (interactive)
