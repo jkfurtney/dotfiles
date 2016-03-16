@@ -1488,3 +1488,8 @@ function to make an autocomplete list"
     (load fname)
     (global-set-key (kbd "C-c o t") 'jkf/itasca-phone-book)))
 (setq ispell-personal-dictionary "c:/src/dotfiles/jkf_ispell.txt")
+
+
+;; (setq default-abbrev-mode t)
+;; (define-abbrev-table
+;;   'global-abbrev-table '(("mbf" "\\mathbf{}" nil 1)))
