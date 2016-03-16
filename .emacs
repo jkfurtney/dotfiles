@@ -266,10 +266,6 @@
 
 ;;;; FORTRAN Setup
 (add-to-list 'auto-mode-alist '("\\.inc\\'" . fortran-mode))
-(defun jkf/setup-fortran-mode ()
-  (interactive)
-  (which-function-mode 1))
-(add-hook 'fortran-mode-hook 'jkf/setup-fortran-mode)
 
 (defun jkf/udec-string (s)
   "Prompt for a string and insert it at point as a FORTRAN char

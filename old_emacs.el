@@ -8,3 +8,8 @@
                                  (with-temp-buffer
                                    (insert-file-literally filename)
                                    (string-to-unibyte (buffer-string))))))))
+
+(defun jkf/setup-fortran-mode ()
+  (interactive)
+  (which-function-mode 1))
+(add-hook 'fortran-mode-hook 'jkf/setup-fortran-mode)
