@@ -1430,9 +1430,9 @@ function to make an autocomplete list"
 (setq jkf/clock-into-work-helm-source
       '((name . "Clock into which job?")
         (candidates . jkf/get-headers)
-         (action . (lambda (candidate)
-                    (with-current-buffer "todo.org"
-                      ;(find-file jkf/org-todo-file)
+        (action . (lambda (candidate)
+                    (progn
+                      (find-file jkf/org-todo-file)
                       (message "%s" candidate)
                       (goto-line candidate)
                       (org-clock-in))))))
