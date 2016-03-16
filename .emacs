@@ -13,7 +13,7 @@
 
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime smex uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime smex uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -266,10 +266,6 @@
 
 ;;;; FORTRAN Setup
 (add-to-list 'auto-mode-alist '("\\.inc\\'" . fortran-mode))
-(defun jkf/setup-fortran-mode ()
-  (interactive)
-  (which-function-mode 1))
-(add-hook 'fortran-mode-hook 'jkf/setup-fortran-mode)
 
 (defun jkf/udec-string (s)
   "Prompt for a string and insert it at point as a FORTRAN char
@@ -407,6 +403,29 @@ number of characters is written to the message area."
 (require 'auto-complete-config)
 (ac-config-default)
 
+(defun jkf/setup-itasca ()
+  (interactive)
+  (require 'ert)
+  (require 'itasca)
+  (let* ((itasca-pkg-dir (file-name-directory
+                          (buffer-file-name
+                           (car
+                            (find-definition-noselect
+                             'itasca-general-mode nil)))))
+         (itasca-snippets (concat itasca-pkg-dir "snippets"))
+         (itasca-ac (concat itasca-pkg-dir "ac-dict")))
+    (add-to-list 'yas/snippet-dirs itasca-snippets)
+    (add-to-list 'ac-dictionary-directories itasca-ac))
+
+  (add-to-list 'ac-modes 'itasca-general-mode)
+  (add-to-list 'ac-modes 'itasca-pfc-mode)
+  (add-to-list 'ac-modes 'itasca-pfc5-mode)
+  (add-to-list 'ac-modes 'itasca-flac-mode)
+  (add-to-list 'ac-modes 'itasca-flac3d-mode)
+  (add-to-list 'ac-modes 'itasca-udec-mode)
+  (add-to-list 'ac-modes 'itasca-3dec-mode))
+(jkf/setup-itasca)
+
 ;;;; Linux specific setup
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     (progn
@@ -422,21 +441,8 @@ number of characters is written to the message area."
       ;(global-set-key (kbd "s-/") 'ido-switch-buffer)
       ;(global-set-key (kbd "s-.") 'smex)
 
-      (add-to-list 'yas/snippet-dirs "~/src/itasca-emacs/snippets")
       (add-to-list 'yas/snippet-dirs "~/src/dotfiles/snippets")
-      (add-to-list 'ac-dictionary-directories "~/src/itasca-emacs/ac-dict")
-      (setq eshell-rc-script "~/src/dotfiles/eshellrc")
-
-      (add-to-list 'load-path "~/src/itasca-emacs" )
-      (require 'itasca)
-      (progn
-        (add-to-list 'ac-modes 'itasca-general-mode)
-        (add-to-list 'ac-modes 'itasca-pfc-mode)
-        (add-to-list 'ac-modes 'itasca-pfc5-mode)
-        (add-to-list 'ac-modes 'itasca-flac-mode)
-        (add-to-list 'ac-modes 'itasca-flac3d-mode)
-        (add-to-list 'ac-modes 'itasca-udec-mode)
-        (add-to-list 'ac-modes 'itasca-3dec-mode))))
+      (setq eshell-rc-script "~/src/dotfiles/eshellrc")))
 
 ;;;; OS X specific setup
 (if (eq system-type 'darwin)
@@ -511,22 +517,10 @@ number of characters is written to the message area."
       (jkf/add-to-path "C:/Program Files (x86)/GnuWin32/bin/")
       (jkf/add-to-path "C:/Program Files (x86)/MiKTeX 2.9/miktex/bin/")
 
-      (add-to-list 'yas/snippet-dirs "c:/src/itasca-emacs/snippets")
       (add-to-list 'yas/snippet-dirs "c:/src/dotfiles/snippets")
-      (add-to-list 'ac-dictionary-directories "c:/src/itasca-emacs/ac-dict")
       (add-to-list 'ac-dictionary-directories "c:/src/dotfiles/ac-dict")
       (setq eshell-rc-script "c:/src/dotfiles/eshellrc")
 
-      (add-to-list 'load-path "C:/src/itasca-emacs")
-      (require 'itasca)
-      (progn
-        (add-to-list 'ac-modes 'itasca-general-mode)
-        (add-to-list 'ac-modes 'itasca-pfc-mode)
-        (add-to-list 'ac-modes 'itasca-pfc5-mode)
-        (add-to-list 'ac-modes 'itasca-flac-mode)
-        (add-to-list 'ac-modes 'itasca-flac3d-mode)
-        (add-to-list 'ac-modes 'itasca-3dec-mode)
-        (add-to-list 'ac-modes 'itasca-udec-mode))
                                         ; windows specific magit init
       (disable
        (defun magit-escape-for-shell (str)
@@ -1418,15 +1412,6 @@ function to make an autocomplete list"
 (setq org-tags-column 55)
 (global-set-key (kbd "C-c C-x C-o") 'org-clock-out)
 
-;; (defun dfeich/helm-org-clock-in (marker)
-;;   "Clock into the item at MARKER"
-;;   (with-current-buffer (marker-buffer marker)
-;;     (goto-char (marker-position marker))
-;;     (org-clock-in)))
-;; (eval-after-load 'helm-org
-;;   '(nconc helm-org-headings-actions
-;;           (list
-;;            (cons "Clock into task" #'dfeich/helm-org-clock-in))))
 
 ;; helm patch to put filename into kill ring
 (defun helm-ff-insert-file-full-path-into-killring (filename) (kill-new filename))
@@ -1466,9 +1451,11 @@ function to make an autocomplete list"
   (with-temp-buffer
     (insert-file jkf/org-todo-file)
     (org-mode)
-    (search-forward-regexp "^\\* work")
+    (goto-char (point-min))
+    ;(search-forward-regexp "^\\* work")
     (move-beginning-of-line 1)
-    (org-map-entries 'jkf/get-line-and-number nil 'tree)))
+    ;(org-map-entries 'jkf/get-line-and-number nil 'tree)
+    (org-map-entries 'jkf/get-line-and-number nil nil)))
 
 (defun jkf/scale-stl ()
   (interactive)
