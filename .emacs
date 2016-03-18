@@ -28,6 +28,14 @@
              (when (not (package-installed-p p))
                (package-install p)))))
 
+(defun jkf/get-package-dir (pname)
+  (interactive)
+  "return the directory in which the package pname is installed."
+  (if (package-installed-p pname)
+      (file-name-as-directory
+       (package-desc-dir (cadr (assq pname package-alist))))
+    (error "package not installed")))
+
                                         ; install org and org-plus-extras from here:
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
                                         ; then install ox-reveal
@@ -407,11 +415,7 @@ number of characters is written to the message area."
   (interactive)
   (require 'ert)
   (require 'itasca)
-  (let* ((itasca-pkg-dir (file-name-directory
-                          (buffer-file-name
-                           (car
-                            (find-definition-noselect
-                             'itasca-general-mode nil)))))
+  (let* ((itasca-pkg-dir (jkf/get-package-dir 'itasca))
          (itasca-snippets (concat itasca-pkg-dir "snippets"))
          (itasca-ac (concat itasca-pkg-dir "ac-dict")))
     (add-to-list 'yas/snippet-dirs itasca-snippets)
@@ -479,10 +483,7 @@ number of characters is written to the message area."
       ;;; hack because we use Anaconda which does not have virtual env
       (setq jedi:server-command
             `("python"
-              ,(concat (file-name-directory
-                       (buffer-file-name
-                        (car
-                         (find-definition-noselect 'jedi:setup nil))))
+              ,(concat (jkf/get-package-dir 'jedi-core)
                       "jediepcserver.py")))
 
       (if (file-exists-p "C:/Program Files (x86)/Git/bin/bash.exe")
@@ -1048,23 +1049,21 @@ function to make an autocomplete list"
 ;;; This code finds the slime installation directory and sets it to an
 ;;; environmental variable the child process can read.
 (setenv "BLOUP_SWANK"
-        (concat (file-name-directory
-                 (buffer-file-name
-                  (car
-                   (find-definition-noselect 'slime-eval-buffer nil))))
+        (concat (jkf/get-package-dir 'slime)
                 "swank-loader.lisp"))
+ ;;; (file-exists-p (getenv "BLOUP_SWANK"))
 
-(defun jkf/launch-blo-up-swank ()
-  (interactive)
-  (start-process "Blo-Up" "bub"
-                 blo-up-exe-name
-                 "-test"
-                 "-swank"
-                 "-script"
-                 blo-up-swank-location)
-   ; need to poll here with idle timer
-  (sleep-for 2)
-  (jkf/toggle-slime))
+ (defun jkf/launch-blo-up-swank ()
+   (interactive)
+   (start-process "Blo-Up" "bub"
+                  blo-up-exe-name
+                  "-test"
+                  "-swank"
+                  "-script"
+                  blo-up-swank-location)
+                                        ; need to poll here with idle timer
+   (sleep-for 2)
+   (jkf/toggle-slime))
 
 (defun jkf/launch-blo-up ()
   (interactive)
