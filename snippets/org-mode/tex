@@ -1,0 +1,5 @@
+#+TITLE: $0
+#+DATE:
+#+OPTIONS: toc:nil date:nil
+#+LATEX_HEADER: \usepackage[margin=1.in]{geometry}
+#+STARTUP: showall

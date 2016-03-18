@@ -266,10 +266,6 @@
 
 ;;;; FORTRAN Setup
 (add-to-list 'auto-mode-alist '("\\.inc\\'" . fortran-mode))
-(defun jkf/setup-fortran-mode ()
-  (interactive)
-  (which-function-mode 1))
-(add-hook 'fortran-mode-hook 'jkf/setup-fortran-mode)
 
 (defun jkf/udec-string (s)
   "Prompt for a string and insert it at point as a FORTRAN char
@@ -1419,15 +1415,6 @@ function to make an autocomplete list"
 (setq org-tags-column 55)
 (global-set-key (kbd "C-c C-x C-o") 'org-clock-out)
 
-;; (defun dfeich/helm-org-clock-in (marker)
-;;   "Clock into the item at MARKER"
-;;   (with-current-buffer (marker-buffer marker)
-;;     (goto-char (marker-position marker))
-;;     (org-clock-in)))
-;; (eval-after-load 'helm-org
-;;   '(nconc helm-org-headings-actions
-;;           (list
-;;            (cons "Clock into task" #'dfeich/helm-org-clock-in))))
 
 ;; helm patch to put filename into kill ring
 (defun helm-ff-insert-file-full-path-into-killring (filename) (kill-new filename))
@@ -1446,9 +1433,9 @@ function to make an autocomplete list"
 (setq jkf/clock-into-work-helm-source
       '((name . "Clock into which job?")
         (candidates . jkf/get-headers)
-         (action . (lambda (candidate)
-                    (with-current-buffer "todo.org"
-                      ;(find-file jkf/org-todo-file)
+        (action . (lambda (candidate)
+                    (progn
+                      (find-file jkf/org-todo-file)
                       (message "%s" candidate)
                       (goto-line candidate)
                       (org-clock-in))))))
@@ -1467,9 +1454,11 @@ function to make an autocomplete list"
   (with-temp-buffer
     (insert-file jkf/org-todo-file)
     (org-mode)
-    (search-forward-regexp "^\\* work")
+    (goto-char (point-min))
+    ;(search-forward-regexp "^\\* work")
     (move-beginning-of-line 1)
-    (org-map-entries 'jkf/get-line-and-number nil 'tree)))
+    ;(org-map-entries 'jkf/get-line-and-number nil 'tree)
+    (org-map-entries 'jkf/get-line-and-number nil nil)))
 
 (defun jkf/scale-stl ()
   (interactive)
@@ -1489,3 +1478,8 @@ function to make an autocomplete list"
     (load fname)
     (global-set-key (kbd "C-c o t") 'jkf/itasca-phone-book)))
 (setq ispell-personal-dictionary "c:/src/dotfiles/jkf_ispell.txt")
+
+
+;; (setq default-abbrev-mode t)
+;; (define-abbrev-table
+;;   'global-abbrev-table '(("mbf" "\\mathbf{}" nil 1)))
