@@ -489,8 +489,11 @@ number of characters is written to the message area."
                          (find-definition-noselect 'jedi:setup nil))))
                       "jediepcserver.py")))
 
-      (setq explicit-shell-file-name
-            "C:/Program Files (x86)/Git/bin/bash.exe")
+      (if (file-exists-p "C:/Program Files (x86)/Git/bin/bash.exe")
+          (setq explicit-shell-file-name
+                "C:/Program Files (x86)/Git/bin/bash.exe")
+        (setq explicit-shell-file-name
+                "C:/Program Files/Git/bin/bash.exe"))
       (setq shell-file-name explicit-shell-file-name)
 
                                         ; to get grep working?
