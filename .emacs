@@ -1482,3 +1482,32 @@ function to make an autocomplete list"
 ;; (setq default-abbrev-mode t)
 ;; (define-abbrev-table
 ;;   'global-abbrev-table '(("mbf" "\\mathbf{}" nil 1)))
+
+;;; working for looking in current file
+;;; extend for looking at other open buffers.
+
+(require 'thingatpt)
+(defun itasca-find-fish-function-at-point ()
+  "Jump to the definition "
+  (interactive)
+  (let ((line-num -1)
+        (function-name (thing-at-point 'word))
+        (step 0))
+    (save-excursion
+      (goto-char (point-min))
+      (while
+          (or (equal (forward-line step) 0)
+              (= line-num -1))
+        (when (equal step 0) (setq step 1))
+        (when (looking-at itasca-defun-start-regexp)
+          (when (string= (buffer-substring (match-beginning 1) (match-end 1))
+                         function-name)
+            (setq line-num (line-number-at-pos))))))
+    (if (equal line-num -1)
+        (message "could not find FISH function %s" function-name)
+      (goto-line line-num))))
+
+(add-hook 'itasca-3dec-mode-hook
+          (function (lambda ()
+                      (local-set-key
+                       (kbd "M-.") 'itasca-find-fish-function-at-point))))
