@@ -1496,9 +1496,9 @@ function to make an autocomplete list"
     (save-excursion
       (goto-char (point-min))
       (while
-          (or (equal (forward-line step) 0)
-              (= line-num -1))
-        (when (equal step 0) (setq step 1))
+          (and (= (forward-line step) 0)
+               (= line-num -1))
+        (when (= step 0) (setq step 1))
         (when (looking-at itasca-defun-start-regexp)
           (when (string= (buffer-substring (match-beginning 1) (match-end 1))
                          function-name)
