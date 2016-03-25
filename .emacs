@@ -1483,19 +1483,31 @@ function to make an autocomplete list"
 ;; (define-abbrev-table
 ;;   'global-abbrev-table '(("mbf" "\\mathbf{}" nil 1)))
 
-;;; extend to open files in cwdir
 
 (require 'thingatpt)
+
+(defvar itasca-search-for-fish-functions-in-current-directory t)
+(defvar itasca-file-regexp "\\.[upf]?dat$\\|\\.3ddat$\\|\\.fis$\\|\\.f[23]dat$\\|\\.p[23]dat$")
+(string-match itasca-file-regexp "jason.dat")
+
+
+(defun itasca-open-other-files ()
+  "Open other files in the same directory with itasca extensions"
+  (interactive)
+  (dolist (file (directory-files (file-name-directory (buffer-file-name))))
+    (when (string-match itasca-file-regexp file)
+      (find-file-noselect file))))
 
 (defun itasca--get-itasca-buffers ()
   "Return the list of buffers using an itasca major mode."
   (interactive)
-  (-filter  (lambda
-              (buffer)
-              (string-prefix-p
-                 "itasca"
-                 (symbol-name (with-current-buffer buffer major-mode))))
-            (buffer-list)))
+  (let* (itasca-buffer-list)
+    (dolist (buffer (buffer-list))
+      (when (string-prefix-p
+             "itasca"
+             (symbol-name (with-current-buffer buffer major-mode)))
+        (push buffer itasca-buffer-list)))
+    itasca-buffer-list))
 
 (defun itasca-find-fish-function-at-point-in-buffer (function-name buffer)
   (interactive)
@@ -1519,17 +1531,21 @@ function to make an autocomplete list"
   (interactive)
   "Jump to the definition of FISH function at point. All buffers
 using an itasca major mode are searched."
+  (when itasca-search-for-fish-functions-in-current-directory
+    (itasca-open-other-files))
   (let ((itasca-buffers (itasca--get-itasca-buffers))
         (function-name (thing-at-point 'word))
         trial-buffer result)
-    (while (and itasca-buffers (not result))
-      (setq trial-buffer (pop itasca-buffers))
-      (message "searching %s " trial-buffer)
-      (setq result
-            (itasca-find-fish-function-at-point-in-buffer function-name trial-buffer))
-      (when result
-        (switch-to-buffer (car result) (goto-line (cdr result)))))
-    (unless result (message "could not find FISH function %s" function-name))))
+    (save-excursion
+      (while (and itasca-buffers (not result))
+        (setq trial-buffer (pop itasca-buffers))
+        (message "searching %s for FISH function: " trial-buffer function-name)
+        (setq result
+              (itasca-find-fish-function-at-point-in-buffer function-name trial-buffer))))
+    (if result
+        (switch-to-buffer (car result) (goto-line (cdr result)))
+      (message "could not find FISH function %s" function-name))))
+
 
 (add-hook 'itasca-3dec-mode-hook
           (function (lambda ()
