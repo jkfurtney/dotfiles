@@ -1483,17 +1483,25 @@ function to make an autocomplete list"
 ;; (define-abbrev-table
 ;;   'global-abbrev-table '(("mbf" "\\mathbf{}" nil 1)))
 
-;;; working for looking in current file
-;;; extend for looking at other open buffers.
+;;; extend to open files in cwdir
 
 (require 'thingatpt)
-(defun itasca-find-fish-function-at-point ()
-  "Jump to the definition "
+
+(defun itasca--get-itasca-buffers ()
+  "Return the list of buffers using an itasca major mode."
+  (interactive)
+  (-filter  (lambda
+              (buffer)
+              (string-prefix-p
+                 "itasca"
+                 (symbol-name (with-current-buffer buffer major-mode))))
+            (buffer-list)))
+
+(defun itasca-find-fish-function-at-point-in-buffer (function-name buffer)
   (interactive)
   (let ((line-num -1)
-        (function-name (thing-at-point 'word))
         (step 0))
-    (save-excursion
+    (with-current-buffer buffer
       (goto-char (point-min))
       (while
           (and (= (forward-line step) 0)
@@ -1504,8 +1512,24 @@ function to make an autocomplete list"
                          function-name)
             (setq line-num (line-number-at-pos))))))
     (if (equal line-num -1)
-        (message "could not find FISH function %s" function-name)
-      (goto-line line-num))))
+        nil
+      (cons buffer line-num))))
+
+(defun itasca-find-fish-function-at-point ()
+  (interactive)
+  "Jump to the definition of FISH function at point. All buffers
+using an itasca major mode are searched."
+  (let ((itasca-buffers (itasca--get-itasca-buffers))
+        (function-name (thing-at-point 'word))
+        trial-buffer result)
+    (while (and itasca-buffers (not result))
+      (setq trial-buffer (pop itasca-buffers))
+      (message "searching %s " trial-buffer)
+      (setq result
+            (itasca-find-fish-function-at-point-in-buffer function-name trial-buffer))
+      (when result
+        (switch-to-buffer (car result) (goto-line (cdr result)))))
+    (unless result (message "could not find FISH function %s" function-name))))
 
 (add-hook 'itasca-3dec-mode-hook
           (function (lambda ()
