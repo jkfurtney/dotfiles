@@ -158,6 +158,9 @@
                   (kill-line)))
 (global-set-key (kbd  "C-z") '(lambda () (interactive) nil))
 
+(define-key help-mode-map (kbd "<backspace>") 'help-go-back)
+(define-key help-mode-map (kbd "M-<backspace>") 'help-go-forward)
+
 ; Unset problematic keys
 (global-unset-key (kbd "C-x C-s"))
 (global-unset-key (kbd "C-x C-f"))
@@ -1486,13 +1489,19 @@ function to make an autocomplete list"
 
 (require 'thingatpt)
 
-(defvar itasca-search-for-fish-functions-in-current-directory t)
-(defvar itasca-file-regexp "\\.[upf]?dat$\\|\\.3ddat$\\|\\.fis$\\|\\.f[23]dat$\\|\\.p[23]dat$")
-(string-match itasca-file-regexp "jason.dat")
+(defvar itasca-search-for-fish-functions-in-current-directory t
+  "When this value is not nil all files in the current directory
+  matching `itasca-file-regexp' are opened before searching for
+  FISH function definitions.")
 
+(defvar itasca-file-regexp
+  "\\.[upf]?dat$\\|\\.3ddat$\\|\\.fis$\\|\\.f[23]dat$\\|\\.p[23]dat$"
+"This regular expression is used by `itasca-open-other-files' to
+determine which files are itasca data files.")
 
 (defun itasca-open-other-files ()
-  "Open other files in the same directory with itasca extensions"
+  "Open other files in the current directory which match
+`itasca-file-regexp'"
   (interactive)
   (dolist (file (directory-files (file-name-directory (buffer-file-name))))
     (when (string-match itasca-file-regexp file)
@@ -1509,7 +1518,7 @@ function to make an autocomplete list"
         (push buffer itasca-buffer-list)))
     itasca-buffer-list))
 
-(defun itasca-find-fish-function-at-point-in-buffer (function-name buffer)
+(defun itasca--find-fish-function-at-point-in-buffer (function-name buffer)
   (interactive)
   (let ((line-num -1)
         (step 0))
@@ -1528,9 +1537,13 @@ function to make an autocomplete list"
       (cons buffer line-num))))
 
 (defun itasca-find-fish-function-at-point ()
-  (interactive)
   "Jump to the definition of FISH function at point. All buffers
-using an itasca major mode are searched."
+using an itasca major mode are searched. If
+`itasca-search-for-fish-functions-in-current-directory' is not
+nil open all itasca code files in the current directory before
+searching. `itasca-file-regexp' is used to determine if a file is
+an itasca file."
+  (interactive)
   (when itasca-search-for-fish-functions-in-current-directory
     (itasca-open-other-files))
   (let ((itasca-buffers (itasca--get-itasca-buffers))
@@ -1541,7 +1554,7 @@ using an itasca major mode are searched."
         (setq trial-buffer (pop itasca-buffers))
         (message "searching %s for FISH function: " trial-buffer function-name)
         (setq result
-              (itasca-find-fish-function-at-point-in-buffer function-name trial-buffer))))
+              (itasca--find-fish-function-at-point-in-buffer function-name trial-buffer))))
     (if result
         (switch-to-buffer (car result) (goto-line (cdr result)))
       (message "could not find FISH function %s" function-name))))
