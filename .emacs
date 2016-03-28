@@ -48,6 +48,15 @@
   (setq dotfile-dir "c:/src/dotfiles/"))
 (add-to-list 'load-path dotfile-dir)
 
+(defun jkf/replace-regexp (from to)
+  "like replace-string but for calling from lisp."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while
+        (search-forward-regexp from nil 'noerror)
+      (replace-match to))))
+
 (require 'smartparens-config)
 (smartparens-global-mode t)
 (diminish 'smartparens-mode)
@@ -88,6 +97,8 @@
 (global-set-key (kbd "C-c t") (jkf/func-ff (concat jkf/dropbox-dir "/org/todo.org")))
 (global-set-key (kbd "C-c p") 'jkf/proselint-buffer)
 (global-set-key (kbd "C-c s") 'magit-status)
+(global-set-key (kbd "C-c +") 'jkf/increment-number-at-point)
+
 
 ;; windows specific interaction
 (global-set-key (kbd "C-c w e") 'w32explore)
@@ -328,17 +339,19 @@ number of characters is written to the message area."
 (setq python-check-command "pep8 -r --ignore=E221")
 (add-to-list 'auto-mode-alist '("\\.pyx\\'" . cython-mode))
 
+(defvar jkf/python-build-dir nil)
 (defun jkf/python-extension-compile ()
   "build python extension module. First call prompts for a directory"
   (interactive)
-  (unless (boundp 'python-build-dir)
-    (setq python-build-dir (read-directory-name "python build dir ")))
-  (let ((default-directory python-build-dir)
+  (unless jkf/python-build-dir
+    (setq jkf/python-build-dir (read-directory-name "python build dir ")))
+  (let ((default-directory jkf/python-build-dir)
         (extra-arg (if (eq  system-type 'windows-nt)
                        " " " --user")))
     (compile (concat "python setup.py install" extra-arg))))
 
-(define-key python-mode-map (kbd "C-c M-c") 'copy-run-buffer-filename-as-kill)
+(define-key python-mode-map (kbd "C-c M-c")
+  'copy-run-buffer-filename-as-kill)
 (add-hook 'python-mode-hook 'jedi:setup)
 (add-hook 'python-mode-hook 'hs-minor-mode)
 
@@ -409,7 +422,7 @@ number of characters is written to the message area."
 ;(setq compilation-exit-message-function nil)
 
 (require 'yasnippet)
-(yas/global-mode 1)
+(yas-global-mode 1)
 
 (require 'auto-complete-config)
 (ac-config-default)
@@ -539,7 +552,7 @@ number of characters is written to the message area."
 
       ;; windows specific font stuff
       (setq w32-get-true-file-attributes nil)
-      (set-default-font
+      (set-frame-font
        "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")
       (set-face-attribute 'default nil :height 140)))
 
@@ -848,7 +861,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (defun jkf/=-transpose ()
   "Transpose the text before and after the first equals sign"
   (interactive)
-  (flet ((chomp (str)
+  (cl-flet ((chomp (str)
                 (while (string-match "\\`\n+\\|^\\s-+\\|\\s-+$\\|\n+\\'" str)
                   (setq str (replace-match "" t t str)))
                 str))
@@ -886,7 +899,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (sp-local-pair 'rst-mode "`" "`")
 (sp-local-pair 'rst-mode ":" ":")
 (sp-local-pair 'lisp-mode "#|" "|#") ; does not work with slurp/barf?
-(setq sp-autoescape-string-quote nil) ;; fix for using pair jump mode
+;(setq sp-autoescape-string-quote nil) ;; fix for using pair jump mode
 
 (defun jkf/comment-sexp ()
   "wrap a common lisp sexp in #| |# style comments"
@@ -934,7 +947,7 @@ incriment it and write on a new line below. Leave the origional inplace"
                            (point-at-eol)))
            (tmp (string-match "\\([0-9]+\\)"current-line))
            (old-number (match-string 1 current-line))
-           (new-number (number-to-string (1+ (string-to-int old-number))))
+           (new-number (number-to-string (1+ (string-to-number old-number))))
            (new-line (replace-regexp-in-string old-number
                                                new-number current-line)))
       (move-end-of-line nil)
@@ -949,7 +962,7 @@ incriment it and write on a new line below. Leave the origional inplace"
            (tmp (string-match "\\([0-9]+\\)" old-casename))
            (old-number (match-string 1 old-casename))
            (new-number
-            (number-to-string (1+ (string-to-int old-number))))
+            (number-to-string (1+ (string-to-number old-number))))
            (new-filename
             (replace-regexp-in-string old-number new-number (buffer-name))))
       (find-file new-filename))))
@@ -969,13 +982,14 @@ incriment it and write on a new line below. Leave the origional inplace"
            (old-number (match-string 1 old-casename))
            (new-number
             (read-from-minibuffer "new case number: "
-                                  (number-to-string (1+ (string-to-int old-number)))))
+                                  (number-to-string
+                                   (1+ (string-to-number old-number)))))
            (new-casename
             (replace-regexp-in-string old-number new-number old-casename))
            (new-filename
             (replace-regexp-in-string old-casename new-casename (buffer-name))))
       (write-file new-filename 1)
-      (replace-string old-casename new-casename nil (point-min) (point-max)))))
+      (jkf/replace-regexp old-casename new-casename))))
 
 
 (require 'fold-dwim)
@@ -984,9 +998,9 @@ incriment it and write on a new line below. Leave the origional inplace"
   "paste Blo-Up lisp documentation dump in a buffer and call this
 function to make an autocomplete list"
   (keep-lines "^\.\. func.*")
-  (replace-regexp "(.*$" "")
-  (beginning-of-buffer)
-  (replace-regexp ".. function:: " ""))
+  (jkf/replace-regexp "(.*$" "")
+  (goto-char (point-min))
+  (jkf/replace-regexp ".. function:: " ""))
 
 (defun jkf/setup-slime-live ()
      (interactive)
@@ -1000,9 +1014,9 @@ function to make an autocomplete list"
 (defun jkf/lisp-code-to-c-comment (start end)
   (interactive "r")
   (save-excursion
-    (replace-string "\"" "\\\"" nil start end)
-    (replace-regexp "^" "\"  " nil start end)
-    (replace-regexp "$" "  \\\\n\"" nil start end)))
+    (jkf/replace-regexp "\"" "\\\"")
+    (jkf/replace-regexp "^" "\"  ")
+    (jkf/replace-regexp "$" "  \\\\n\"")))
 
 (defadvice slime-compilation-finished (after jkf/post-slime-compile-defun (result))
   "open the intermediate C file generated by ECL when compiling a defun."
@@ -1086,7 +1100,6 @@ function to make an autocomplete list"
          (error "no number at point"))
      (replace-match (number-to-string
                      (1+ (string-to-number (match-string 0))))))))
-(global-set-key (kbd "C-c +") 'jkf/increment-number-at-point)
 
 (defun jkf/eval-replace-last-sexp ()
   "Evaluate the previous sexp, remove it and insert the result into the buffer"
@@ -1177,9 +1190,9 @@ function to make an autocomplete list"
                     (n2 (rand))
                     (res (op n1 n2))
                     (problem (format "%d %s %d " n1 op-name n2))
-                    (trial (string-to-int (io problem))))
+                    (trial (string-to-number (io problem))))
                (while (not  (= trial res))
-                 (setq trial (string-to-int
+                 (setq trial (string-to-number
                               (io (format "no: %s " problem)))))
                (setq solve-time (truncate (* 1e3 (- (float-time) t0))))
                (with-current-buffer (get-buffer-create "*atest*")
@@ -1235,7 +1248,7 @@ function to make an autocomplete list"
   "a,b = c,d into a=c newline b=d "
   (interactive)
   (save-excursion
-    (flet ((chomp (str)
+    (cl-flet ((chomp (str)
                   (while (string-match "\\`\n+\\|^\\s-+\\|\\s-+$\\|\n+\\'" str)
                     (setq str (replace-match "" t t str)))
                   str))
@@ -1267,15 +1280,6 @@ function to make an autocomplete list"
       (incf i)
       (setf name (format base i)))
     (find-file name)))
-
-(defun jkf/spell-check-ipython-notebook ()
-  (interactive)
-  (search-forward   "\"cell_type\": \"markdown\"")
-  (move-beginning-of-line 1)
-  (next-line 3)
-  (push-mark)
-  (search-forward "]\n  },"))
-;(global-set-key (kbd "C-c i") 'jkf/spell-check-ipython-notebook)
 
 (defun jkf/clear-ispell-local-words ()
   (interactive)
@@ -1454,7 +1458,7 @@ function to make an autocomplete list"
 (defun jkf/get-headers ()
   (interactive)
   (with-temp-buffer
-    (insert-file jkf/org-todo-file)
+    (insert-file-contents jkf/org-todo-file)
     (org-mode)
     (goto-char (point-min))
     ;(search-forward-regexp "^\\* work")
@@ -1464,16 +1468,16 @@ function to make an autocomplete list"
 
 (defun jkf/scale-stl ()
   (interactive)
-  (replace-string "E-06" "E-09" nil (point-min) (point-max))
-  (replace-string "E-05" "E-08" nil (point-min) (point-max))
-  (replace-string "E-04" "E-07" nil (point-min) (point-max))
-  (replace-string "E-03" "E-06" nil (point-min) (point-max))
-  (replace-string "E-02" "E-05" nil (point-min) (point-max))
-  (replace-string "E-01" "E-04" nil (point-min) (point-max))
-  (replace-string "E+00" "E-03" nil (point-min) (point-max))
-  (replace-string "E+01" "E-02" nil (point-min) (point-max))
-  (replace-string "E+02" "E-01" nil (point-min) (point-max))
-  (replace-string "E+03" "E+00" nil (point-min) (point-max)))
+  (jkf/replace-regexp "E-06" "E-09")
+  (jkf/replace-regexp "E-05" "E-08")
+  (jkf/replace-regexp "E-04" "E-07")
+  (jkf/replace-regexp "E-03" "E-06")
+  (jkf/replace-regexp "E-02" "E-05")
+  (jkf/replace-regexp "E-01" "E-04")
+  (jkf/replace-regexp "E+00" "E-03")
+  (jkf/replace-regexp "E+01" "E-02")
+  (jkf/replace-regexp "E+02" "E-01")
+  (jkf/replace-regexp "E+03" "E+00"))
 
 (let* ((fname (concat jkf/dropbox-dir "/org/itasca-telephone.el")))
   (when (file-exists-p fname)
@@ -1552,7 +1556,7 @@ an itasca file."
     (save-excursion
       (while (and itasca-buffers (not result))
         (setq trial-buffer (pop itasca-buffers))
-        (message "searching %s for FISH function: " trial-buffer function-name)
+        (message "searching %s for FISH function %s: " trial-buffer function-name)
         (setq result
               (itasca--find-fish-function-at-point-in-buffer function-name trial-buffer))))
     (if result

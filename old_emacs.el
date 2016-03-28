@@ -13,3 +13,12 @@
   (interactive)
   (which-function-mode 1))
 (add-hook 'fortran-mode-hook 'jkf/setup-fortran-mode)
+
+(defun jkf/spell-check-ipython-notebook ()
+  (interactive)
+  (search-forward   "\"cell_type\": \"markdown\"")
+  (move-beginning-of-line 1)
+  (forward-line 3)
+  (push-mark)
+  (search-forward "]\n  },"))
+;(global-set-key (kbd "C-c i") 'jkf/spell-check-ipython-notebook)
