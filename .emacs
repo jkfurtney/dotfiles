@@ -1489,3 +1489,5 @@ function to make an autocomplete list"
 ;; (setq default-abbrev-mode t)
 ;; (define-abbrev-table
 ;;   'global-abbrev-table '(("mbf" "\\mathbf{}" nil 1)))
+
+;;; (setq byte-compile-error-on-warn t)
