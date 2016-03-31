@@ -1425,7 +1425,7 @@ function to make an autocomplete list"
 ;; helm patch to put filename into kill ring
 (defun helm-ff-insert-file-full-path-into-killring (filename) (kill-new filename))
 (defun helm-ff-insert-file-basename-into-killring (filename)
-  (kill-new (file-name-base filename)))
+  (kill-new (file-name-nondirectory filename)))
 (eval-after-load 'helm-files
   '(nconc helm-find-files-actions
           (list
