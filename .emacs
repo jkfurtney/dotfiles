@@ -13,7 +13,7 @@
 
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -21,6 +21,20 @@
     (if (y-or-n-p (format "Package %s is missing. Install it? " p))
         (package-install p))))
 
+; for new installs
+(disable (progn
+           (package-install "ace-jump-mode")
+           (dolist (p my-packages)
+             (when (not (package-installed-p p))
+               (package-install p)))))
+
+(defun jkf/get-package-dir (pname)
+  (interactive)
+  "return the directory in which the package pname is installed."
+  (if (package-installed-p pname)
+      (file-name-as-directory
+       (package-desc-dir (cadr (assq pname package-alist))))
+    (error "package not installed")))
 
                                         ; install org and org-plus-extras from here:
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
@@ -33,6 +47,15 @@
     (setq dotfile-dir (expand-file-name "~/src/dotfiles/"))
   (setq dotfile-dir "c:/src/dotfiles/"))
 (add-to-list 'load-path dotfile-dir)
+
+(defun jkf/replace-regexp (from to)
+  "like replace-string but for calling from lisp."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while
+        (search-forward-regexp from nil 'noerror)
+      (replace-match to))))
 
 (require 'smartparens-config)
 (smartparens-global-mode t)
@@ -49,13 +72,14 @@
                       (local-unset-key (kbd "<f1>"))
                       (local-unset-key (kbd "C-o")))))
 
-(defmacro jkf/func-ff (filename) `(lambda () (interactive)
-                                           (find-file ,filename)))
 
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "M-p") 'backward-paragraph)
 (global-set-key (kbd "M-n") 'forward-paragraph)
 (global-set-key (kbd "C-x M-q") 'jkf/remove-hard-wrap)
+
+(defmacro jkf/func-ff (filename) `(lambda () (interactive)
+                                           (find-file ,filename)))
 
 ;;;; C-c bindings
 (global-set-key (kbd "C-c c") 'calc)
@@ -73,14 +97,23 @@
 (global-set-key (kbd "C-c t") (jkf/func-ff (concat jkf/dropbox-dir "/org/todo.org")))
 (global-set-key (kbd "C-c p") 'jkf/proselint-buffer)
 (global-set-key (kbd "C-c s") 'magit-status)
+(global-set-key (kbd "C-c +") 'jkf/increment-number-at-point)
+
 
 ;; windows specific interaction
 (global-set-key (kbd "C-c w e") 'w32explore)
 (global-set-key (kbd "C-c w b") 'jkf/open-bash-here)
 (global-set-key (kbd "C-c w w") 'helm-w32-launcher)
 
+
 ;; org-mode C-c bindings
+(defun jkf/open-notes () (interactive)
+       (find-file (concat jkf/dropbox-dir "/org/notes.org"))
+       (org-overview))
 (global-set-key (kbd "C-c o o") 'org-capture)
+(global-set-key (kbd "C-c o n") 'jkf/open-notes)
+(global-set-key (kbd "C-c o i") 'helm-org-agenda-files-headings)
+(global-set-key (kbd "C-c C-x C-o") 'org-clock-out)
 
 (define-key python-mode-map (kbd "C-c d") 'jedi:show-doc)
 
@@ -135,6 +168,9 @@
                   (move-beginning-of-line nil)
                   (kill-line)))
 (global-set-key (kbd  "C-z") '(lambda () (interactive) nil))
+
+(define-key help-mode-map (kbd "<backspace>") 'help-go-back)
+(define-key help-mode-map (kbd "M-<backspace>") 'help-go-forward)
 
 ; Unset problematic keys
 (global-unset-key (kbd "C-x C-s"))
@@ -252,10 +288,6 @@
 
 ;;;; FORTRAN Setup
 (add-to-list 'auto-mode-alist '("\\.inc\\'" . fortran-mode))
-(defun jkf/setup-fortran-mode ()
-  (interactive)
-  (which-function-mode 1))
-(add-hook 'fortran-mode-hook 'jkf/setup-fortran-mode)
 
 (defun jkf/udec-string (s)
   "Prompt for a string and insert it at point as a FORTRAN char
@@ -307,17 +339,19 @@ number of characters is written to the message area."
 (setq python-check-command "pep8 -r --ignore=E221")
 (add-to-list 'auto-mode-alist '("\\.pyx\\'" . cython-mode))
 
+(defvar jkf/python-build-dir nil)
 (defun jkf/python-extension-compile ()
   "build python extension module. First call prompts for a directory"
   (interactive)
-  (unless (boundp 'python-build-dir)
-    (setq python-build-dir (read-directory-name "python build dir ")))
-  (let ((default-directory python-build-dir)
+  (unless jkf/python-build-dir
+    (setq jkf/python-build-dir (read-directory-name "python build dir ")))
+  (let ((default-directory jkf/python-build-dir)
         (extra-arg (if (eq  system-type 'windows-nt)
                        " " " --user")))
     (compile (concat "python setup.py install" extra-arg))))
 
-(define-key python-mode-map (kbd "C-c M-c") 'copy-run-buffer-filename-as-kill)
+(define-key python-mode-map (kbd "C-c M-c")
+  'copy-run-buffer-filename-as-kill)
 (add-hook 'python-mode-hook 'jedi:setup)
 (add-hook 'python-mode-hook 'hs-minor-mode)
 
@@ -388,10 +422,29 @@ number of characters is written to the message area."
 ;(setq compilation-exit-message-function nil)
 
 (require 'yasnippet)
-(yas/global-mode 1)
+(yas-global-mode 1)
 
 (require 'auto-complete-config)
 (ac-config-default)
+
+(defun jkf/setup-itasca ()
+  (interactive)
+  (require 'ert)
+  (require 'itasca)
+  (let* ((itasca-pkg-dir (jkf/get-package-dir 'itasca))
+         (itasca-snippets (concat itasca-pkg-dir "snippets"))
+         (itasca-ac (concat itasca-pkg-dir "ac-dict")))
+    (add-to-list 'yas/snippet-dirs itasca-snippets)
+    (add-to-list 'ac-dictionary-directories itasca-ac))
+
+  (add-to-list 'ac-modes 'itasca-general-mode)
+  (add-to-list 'ac-modes 'itasca-pfc-mode)
+  (add-to-list 'ac-modes 'itasca-pfc5-mode)
+  (add-to-list 'ac-modes 'itasca-flac-mode)
+  (add-to-list 'ac-modes 'itasca-flac3d-mode)
+  (add-to-list 'ac-modes 'itasca-udec-mode)
+  (add-to-list 'ac-modes 'itasca-3dec-mode))
+(jkf/setup-itasca)
 
 ;;;; Linux specific setup
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
@@ -408,27 +461,14 @@ number of characters is written to the message area."
       ;(global-set-key (kbd "s-/") 'ido-switch-buffer)
       ;(global-set-key (kbd "s-.") 'smex)
 
-      (add-to-list 'yas/snippet-dirs "~/src/itasca-emacs/snippets")
       (add-to-list 'yas/snippet-dirs "~/src/dotfiles/snippets")
-      (add-to-list 'ac-dictionary-directories "~/src/itasca-emacs/ac-dict")
-      (setq eshell-rc-script "~/src/dotfiles/eshellrc")
-
-      (add-to-list 'load-path "~/src/itasca-emacs" )
-      (require 'itasca)
-      (progn
-        (add-to-list 'ac-modes 'itasca-general-mode)
-        (add-to-list 'ac-modes 'itasca-pfc-mode)
-        (add-to-list 'ac-modes 'itasca-pfc5-mode)
-        (add-to-list 'ac-modes 'itasca-flac-mode)
-        (add-to-list 'ac-modes 'itasca-flac3d-mode)
-        (add-to-list 'ac-modes 'itasca-udec-mode)
-        (add-to-list 'ac-modes 'itasca-3dec-mode))))
+      (setq eshell-rc-script "~/src/dotfiles/eshellrc")))
 
 ;;;; OS X specific setup
 (if (eq system-type 'darwin)
     (progn
       (setq jkf/src-dir "~/src/")
-      (setq jkf/dropbox-dir "~/Dropbox/")
+      (setq jkf/dropbox-dir "~/Dropbox")
       (global-set-key (kbd "<M-268632080>") 'helm-buffers-list)
       (set-face-attribute 'default nil :family "Monaco"
                           :height 145 :weight 'normal)
@@ -440,7 +480,10 @@ number of characters is written to the message area."
 (require 'json)
 (defun jkf/windows-get-dropbox-folder ()
  (let* ((dropbox-file
-         (concat (getenv "APPDATA") "/Dropbox/info.json"))
+         (if (file-exists-p
+              (concat (getenv "LOCALAPPDATA") "/Dropbox/info.json"))
+             (concat (getenv "LOCALAPPDATA") "/Dropbox/info.json")
+           (concat (getenv "APPDATA") "/Dropbox/info.json")))
         (data (json-read-file dropbox-file)))
    (cdr (assoc 'path (cdr (assoc 'personal data))))))
 
@@ -455,14 +498,14 @@ number of characters is written to the message area."
       ;;; hack because we use Anaconda which does not have virtual env
       (setq jedi:server-command
             `("python"
-              ,(concat (file-name-directory
-                       (buffer-file-name
-                        (car
-                         (find-definition-noselect 'jedi:setup nil))))
+              ,(concat (jkf/get-package-dir 'jedi-core)
                       "jediepcserver.py")))
 
-      (setq explicit-shell-file-name
-            "C:/Program Files (x86)/Git/bin/bash.exe")
+      (if (file-exists-p "C:/Program Files (x86)/Git/bin/bash.exe")
+          (setq explicit-shell-file-name
+                "C:/Program Files (x86)/Git/bin/bash.exe")
+        (setq explicit-shell-file-name
+                "C:/Program Files/Git/bin/bash.exe"))
       (setq shell-file-name explicit-shell-file-name)
 
                                         ; to get grep working?
@@ -493,22 +536,10 @@ number of characters is written to the message area."
       (jkf/add-to-path "C:/Program Files (x86)/GnuWin32/bin/")
       (jkf/add-to-path "C:/Program Files (x86)/MiKTeX 2.9/miktex/bin/")
 
-      (add-to-list 'yas/snippet-dirs "c:/src/itasca-emacs/snippets")
       (add-to-list 'yas/snippet-dirs "c:/src/dotfiles/snippets")
-      (add-to-list 'ac-dictionary-directories "c:/src/itasca-emacs/ac-dict")
       (add-to-list 'ac-dictionary-directories "c:/src/dotfiles/ac-dict")
       (setq eshell-rc-script "c:/src/dotfiles/eshellrc")
 
-      (add-to-list 'load-path "C:/src/itasca-emacs")
-      (require 'itasca)
-      (progn
-        (add-to-list 'ac-modes 'itasca-general-mode)
-        (add-to-list 'ac-modes 'itasca-pfc-mode)
-        (add-to-list 'ac-modes 'itasca-pfc5-mode)
-        (add-to-list 'ac-modes 'itasca-flac-mode)
-        (add-to-list 'ac-modes 'itasca-flac3d-mode)
-        (add-to-list 'ac-modes 'itasca-3dec-mode)
-        (add-to-list 'ac-modes 'itasca-udec-mode))
                                         ; windows specific magit init
       (disable
        (defun magit-escape-for-shell (str)
@@ -520,7 +551,7 @@ number of characters is written to the message area."
 
       ;; windows specific font stuff
       (setq w32-get-true-file-attributes nil)
-      (set-default-font
+      (set-frame-font
        "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")
       (set-face-attribute 'default nil :height 140)))
 
@@ -536,10 +567,11 @@ number of characters is written to the message area."
 (set-register ?t `(file . ,jkf/org-todo-file))
 (set-register ?n `(file . ,jkf/org-note-file))
 
+(setq display-time-default-load-average nil)
 ;;;; computer specific setup
 (pcase system-name
   ("ABITA" ; 6 core i7
-   (setq display-time-default-load-average nil)
+
    (display-time)
    (let ((org-note-file
           "c:/Users/jfurtney/Dropbox/org/notes.org"))
@@ -828,7 +860,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (defun jkf/=-transpose ()
   "Transpose the text before and after the first equals sign"
   (interactive)
-  (flet ((chomp (str)
+  (cl-flet ((chomp (str)
                 (while (string-match "\\`\n+\\|^\\s-+\\|\\s-+$\\|\n+\\'" str)
                   (setq str (replace-match "" t t str)))
                 str))
@@ -866,7 +898,7 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (sp-local-pair 'rst-mode "`" "`")
 (sp-local-pair 'rst-mode ":" ":")
 (sp-local-pair 'lisp-mode "#|" "|#") ; does not work with slurp/barf?
-(setq sp-autoescape-string-quote nil) ;; fix for using pair jump mode
+;(setq sp-autoescape-string-quote nil) ;; fix for using pair jump mode
 
 (defun jkf/comment-sexp ()
   "wrap a common lisp sexp in #| |# style comments"
@@ -914,7 +946,7 @@ incriment it and write on a new line below. Leave the origional inplace"
                            (point-at-eol)))
            (tmp (string-match "\\([0-9]+\\)"current-line))
            (old-number (match-string 1 current-line))
-           (new-number (number-to-string (1+ (string-to-int old-number))))
+           (new-number (number-to-string (1+ (string-to-number old-number))))
            (new-line (replace-regexp-in-string old-number
                                                new-number current-line)))
       (move-end-of-line nil)
@@ -929,7 +961,7 @@ incriment it and write on a new line below. Leave the origional inplace"
            (tmp (string-match "\\([0-9]+\\)" old-casename))
            (old-number (match-string 1 old-casename))
            (new-number
-            (number-to-string (1+ (string-to-int old-number))))
+            (number-to-string (1+ (string-to-number old-number))))
            (new-filename
             (replace-regexp-in-string old-number new-number (buffer-name))))
       (find-file new-filename))))
@@ -949,13 +981,14 @@ incriment it and write on a new line below. Leave the origional inplace"
            (old-number (match-string 1 old-casename))
            (new-number
             (read-from-minibuffer "new case number: "
-                                  (number-to-string (1+ (string-to-int old-number)))))
+                                  (number-to-string
+                                   (1+ (string-to-number old-number)))))
            (new-casename
             (replace-regexp-in-string old-number new-number old-casename))
            (new-filename
             (replace-regexp-in-string old-casename new-casename (buffer-name))))
       (write-file new-filename 1)
-      (replace-string old-casename new-casename nil (point-min) (point-max)))))
+      (jkf/replace-regexp old-casename new-casename))))
 
 
 (require 'fold-dwim)
@@ -964,9 +997,9 @@ incriment it and write on a new line below. Leave the origional inplace"
   "paste Blo-Up lisp documentation dump in a buffer and call this
 function to make an autocomplete list"
   (keep-lines "^\.\. func.*")
-  (replace-regexp "(.*$" "")
-  (beginning-of-buffer)
-  (replace-regexp ".. function:: " ""))
+  (jkf/replace-regexp "(.*$" "")
+  (goto-char (point-min))
+  (jkf/replace-regexp ".. function:: " ""))
 
 (defun jkf/setup-slime-live ()
      (interactive)
@@ -980,9 +1013,9 @@ function to make an autocomplete list"
 (defun jkf/lisp-code-to-c-comment (start end)
   (interactive "r")
   (save-excursion
-    (replace-string "\"" "\\\"" nil start end)
-    (replace-regexp "^" "\"  " nil start end)
-    (replace-regexp "$" "  \\\\n\"" nil start end)))
+    (jkf/replace-regexp "\"" "\\\"")
+    (jkf/replace-regexp "^" "\"  ")
+    (jkf/replace-regexp "$" "  \\\\n\"")))
 
 (defadvice slime-compilation-finished (after jkf/post-slime-compile-defun (result))
   "open the intermediate C file generated by ECL when compiling a defun."
@@ -1032,23 +1065,21 @@ function to make an autocomplete list"
 ;;; This code finds the slime installation directory and sets it to an
 ;;; environmental variable the child process can read.
 (setenv "BLOUP_SWANK"
-        (concat (file-name-directory
-                 (buffer-file-name
-                  (car
-                   (find-definition-noselect 'slime-eval-buffer nil))))
+        (concat (jkf/get-package-dir 'slime)
                 "swank-loader.lisp"))
+ ;;; (file-exists-p (getenv "BLOUP_SWANK"))
 
-(defun jkf/launch-blo-up-swank ()
-  (interactive)
-  (start-process "Blo-Up" "bub"
-                 blo-up-exe-name
-                 "-test"
-                 "-swank"
-                 "-script"
-                 blo-up-swank-location)
-   ; need to poll here with idle timer
-  (sleep-for 2)
-  (jkf/toggle-slime))
+ (defun jkf/launch-blo-up-swank ()
+   (interactive)
+   (start-process "Blo-Up" "bub"
+                  blo-up-exe-name
+                  "-test"
+                  "-swank"
+                  "-script"
+                  blo-up-swank-location)
+                                        ; need to poll here with idle timer
+   (sleep-for 2)
+   (jkf/toggle-slime))
 
 (defun jkf/launch-blo-up ()
   (interactive)
@@ -1068,7 +1099,6 @@ function to make an autocomplete list"
          (error "no number at point"))
      (replace-match (number-to-string
                      (1+ (string-to-number (match-string 0))))))))
-(global-set-key (kbd "C-c +") 'jkf/increment-number-at-point)
 
 (defun jkf/eval-replace-last-sexp ()
   "Evaluate the previous sexp, remove it and insert the result into the buffer"
@@ -1159,9 +1189,9 @@ function to make an autocomplete list"
                     (n2 (rand))
                     (res (op n1 n2))
                     (problem (format "%d %s %d " n1 op-name n2))
-                    (trial (string-to-int (io problem))))
+                    (trial (string-to-number (io problem))))
                (while (not  (= trial res))
-                 (setq trial (string-to-int
+                 (setq trial (string-to-number
                               (io (format "no: %s " problem)))))
                (setq solve-time (truncate (* 1e3 (- (float-time) t0))))
                (with-current-buffer (get-buffer-create "*atest*")
@@ -1217,7 +1247,7 @@ function to make an autocomplete list"
   "a,b = c,d into a=c newline b=d "
   (interactive)
   (save-excursion
-    (flet ((chomp (str)
+    (cl-flet ((chomp (str)
                   (while (string-match "\\`\n+\\|^\\s-+\\|\\s-+$\\|\n+\\'" str)
                     (setq str (replace-match "" t t str)))
                   str))
@@ -1249,15 +1279,6 @@ function to make an autocomplete list"
       (incf i)
       (setf name (format base i)))
     (find-file name)))
-
-(defun jkf/spell-check-ipython-notebook ()
-  (interactive)
-  (search-forward   "\"cell_type\": \"markdown\"")
-  (move-beginning-of-line 1)
-  (next-line 3)
-  (push-mark)
-  (search-forward "]\n  },"))
-;(global-set-key (kbd "C-c i") 'jkf/spell-check-ipython-notebook)
 
 (defun jkf/clear-ispell-local-words ()
   (interactive)
@@ -1355,11 +1376,12 @@ function to make an autocomplete list"
 (defun jkf/active-minor-modes () (interactive)
        (--filter (and (boundp it) (symbol-value it)) minor-mode-list))
 
-(powerline-default-theme)
+(disable (powerline-default-theme)
 (set-face-attribute 'mode-line nil
                     :foreground "Black"
                     :background "DarkOrange"
-                    :box nil)
+                    :box nil))
+;(add-hook 'desktop-after-read-hook 'powerline-reset)
 
 (add-hook 'org-mode-hook 'flyspell-mode)
 (setq org-startup-truncated nil)  ; linewrap for org-mode
@@ -1372,10 +1394,12 @@ function to make an autocomplete list"
          "%^t %^{time}" :immediate-finish t)
         ("r" "Run" item (file+headline jkf/journal-file "Running")
          "%^t %^{distance}" :immediate-finish t)
-        ("j" "Journal" entry (file+datetree jkf/journal-file "")
-         "* %U\n%?")
+        ("j" "Journal" plain (file+datetree jkf/journal-file "")
+         "\n%?")
         ("w" "Work TODO" entry (file+headline jkf/org-todo-file "Work")
          "** TODO %?\n    DEADLINE: %^{deadline}t")
+        ("f" "free software TODO" entry (file+headline jkf/org-todo-file "free software")
+         "** SOMEDAY %?\n    ")
         ("h" "Home TODO" entry (file+headline jkf/org-todo-file "Home")
          "** TODO %?\n    DEADLINE: %^{deadline}t")))
 
@@ -1384,3 +1408,86 @@ function to make an autocomplete list"
       '(("w" agenda "work agenda"
         ((org-agenda-skip-function '(org-agenda-skip-subtree-if
                                      'todo 'done))))))
+
+(defun jkf---skip-unless-work-tree ()
+  "Skip trees that are not under the work tree"
+  (save-excursion
+    (search-backward-regexp "^* " 0 t)
+    (looking-at "* work")))
+
+
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "SOMEDAY(s)" "DONE(d)" "WAITING(w)")))
+(setq org-tags-column 55)
+(global-set-key (kbd "C-c C-x C-o") 'org-clock-out)
+
+
+;; helm patch to put filename into kill ring
+(defun helm-ff-insert-file-full-path-into-killring (filename) (kill-new filename))
+(defun helm-ff-insert-file-basename-into-killring (filename)
+  (kill-new (file-name-nondirectory filename)))
+(eval-after-load 'helm-files
+  '(nconc helm-find-files-actions
+          (list
+           (cons "Insert file base name into kill ring"
+                 #'helm-ff-insert-file-basename-into-killring )
+           (cons "Insert full path of file into kill ring"
+                 #'helm-ff-insert-file-full-path-into-killring ))))
+
+; easy way to clock into a job
+(global-set-key (kbd "C-c o i") 'jkf/work-clock-in)
+(setq jkf/clock-into-work-helm-source
+      '((name . "Clock into which job?")
+        (candidates . jkf/get-headers)
+        (action . (lambda (candidate)
+                    (progn
+                      (find-file jkf/org-todo-file)
+                      (message "%s" candidate)
+                      (goto-line candidate)
+                      (org-clock-in))))))
+(defun jkf/work-clock-in ()
+  (interactive)
+  (helm :sources '(jkf/clock-into-work-helm-source)))
+(defun jkf/get-line-and-number ()
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (widen)
+      (cons (buffer-substring-no-properties (point-at-bol) (point-at-eol))
+            (line-number-at-pos)))))
+(defun jkf/get-headers ()
+  (interactive)
+  (with-temp-buffer
+    (insert-file-contents jkf/org-todo-file)
+    (org-mode)
+    (goto-char (point-min))
+    ;(search-forward-regexp "^\\* work")
+    (move-beginning-of-line 1)
+    ;(org-map-entries 'jkf/get-line-and-number nil 'tree)
+    (org-map-entries 'jkf/get-line-and-number nil nil)))
+
+(defun jkf/scale-stl ()
+  (interactive)
+  (jkf/replace-regexp "E-06" "E-09")
+  (jkf/replace-regexp "E-05" "E-08")
+  (jkf/replace-regexp "E-04" "E-07")
+  (jkf/replace-regexp "E-03" "E-06")
+  (jkf/replace-regexp "E-02" "E-05")
+  (jkf/replace-regexp "E-01" "E-04")
+  (jkf/replace-regexp "E+00" "E-03")
+  (jkf/replace-regexp "E+01" "E-02")
+  (jkf/replace-regexp "E+02" "E-01")
+  (jkf/replace-regexp "E+03" "E+00"))
+
+(let* ((fname (concat jkf/dropbox-dir "/org/itasca-telephone.el")))
+  (when (file-exists-p fname)
+    (load fname)
+    (global-set-key (kbd "C-c o t") 'jkf/itasca-phone-book)))
+(setq ispell-personal-dictionary "c:/src/dotfiles/jkf_ispell.txt")
+
+
+;; (setq default-abbrev-mode t)
+;; (define-abbrev-table
+;;   'global-abbrev-table '(("mbf" "\\mathbf{}" nil 1)))
+
+;;; (setq byte-compile-error-on-warn t)
