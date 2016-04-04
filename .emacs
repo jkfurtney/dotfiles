@@ -744,7 +744,7 @@ file with a2ps"
 (require 'helm-descbinds)
 (helm-mode 1)
 (global-set-key (kbd "C-h b") 'helm-descbinds)
-
+(setq helm-ff-newfile-prompt-p nil)
 
 ;;; see http://emacs.stackexchange.com/questions/3798/how-do-i-make-pressing-ret-in-helm-find-files-open-the-directory
 (setq helm-boring-file-regexp-list '("\\.$" "\\.\\.$"))
