@@ -1,3 +1,14 @@
+(defvar dotfile-dir nil "location of .emacs and other stuff")
+(defvar jkf/src-dir nil "location of src folder")
+(defvar jkf/dropbox-dir nil "location of dropbox")
+(if (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
+    (setq dotfile-dir (expand-file-name "~/src/dotfiles/"))
+  (setq dotfile-dir "c:/src/dotfiles/"))
+(add-to-list 'load-path dotfile-dir)
+
+(require 'pair-jump-mode)
+(pair-jump-mode 1)
+
 (defmacro disable (&rest body))
 
 (setq-default inhibit-startup-screen t)
@@ -40,13 +51,6 @@
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
                                         ; then install ox-reveal
 
-(defvar dotfile-dir nil "location of .emacs and other stuff")
-(defvar jkf/src-dir nil "location of src folder")
-(defvar jkf/dropbox-dir nil "location of dropbox")
-(if (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
-    (setq dotfile-dir (expand-file-name "~/src/dotfiles/"))
-  (setq dotfile-dir "c:/src/dotfiles/"))
-(add-to-list 'load-path dotfile-dir)
 
 (defun jkf/replace-regexp (from to)
   "like replace-string but for calling from lisp."
@@ -784,8 +788,6 @@ file with a2ps"
 
 (yas-reload-all)
 
-(require 'pair-jump-mode)
-(pair-jump-mode 1)
 
 (global-set-key (kbd "M-j")
             (lambda ()
