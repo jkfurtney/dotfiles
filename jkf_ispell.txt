@@ -7,4 +7,5 @@ Courant
 borehole
 Geotechnical
 openFOAM
+Inkscape
 calorically

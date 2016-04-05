@@ -24,7 +24,7 @@
 
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime smex uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -472,11 +472,10 @@ number of characters is written to the message area."
 (if (eq system-type 'darwin)
     (progn
       (setq jkf/src-dir "~/src/")
-      (setq jkf/dropbox-dir "~/Dropbox/")
+      (setq jkf/dropbox-dir "~/Dropbox")
       (global-set-key (kbd "<M-268632080>") 'helm-buffers-list)
       (set-face-attribute 'default nil :family "Monaco"
                           :height 145 :weight 'normal)
-      (setq initial-frame-alist '((width . 80) (height . 52)))
       (setq eshell-rc-script "~/src/dotfiles/eshellrc_osx")
       (setq x-select-enable-clipboard t)
       (add-to-list 'exec-path "/opt/local/bin/")))
@@ -603,7 +602,7 @@ number of characters is written to the message area."
    )
 
   ("jason-furtneys-imac.local"
-   (setq initial-frame-alist '((width . 80) (height . 52))))
+   (setq initial-frame-alist '((width . 80) (height . 48))))
 
   ("LAKEMAIDEN" ; build server
    (setq magit-git-executable "C:/Program Files (x86)/Git/bin/git")
@@ -749,7 +748,7 @@ file with a2ps"
 (require 'helm-descbinds)
 (helm-mode 1)
 (global-set-key (kbd "C-h b") 'helm-descbinds)
-
+(setq helm-ff-newfile-prompt-p nil)
 
 ;;; see http://emacs.stackexchange.com/questions/3798/how-do-i-make-pressing-ret-in-helm-find-files-open-the-directory
 (setq helm-boring-file-regexp-list '("\\.$" "\\.\\.$"))
@@ -1379,11 +1378,12 @@ function to make an autocomplete list"
 (defun jkf/active-minor-modes () (interactive)
        (--filter (and (boundp it) (symbol-value it)) minor-mode-list))
 
-(powerline-default-theme)
+(disable (powerline-default-theme)
 (set-face-attribute 'mode-line nil
                     :foreground "Black"
                     :background "DarkOrange"
-                    :box nil)
+                    :box nil))
+;(add-hook 'desktop-after-read-hook 'powerline-reset)
 
 (add-hook 'org-mode-hook 'flyspell-mode)
 (setq org-startup-truncated nil)  ; linewrap for org-mode
