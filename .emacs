@@ -358,6 +358,8 @@ number of characters is written to the message area."
   'copy-run-buffer-filename-as-kill)
 (add-hook 'python-mode-hook 'jedi:setup)
 (add-hook 'python-mode-hook 'hs-minor-mode)
+(add-hook 'python-mode-hook 'flyspell-prog-mode)
+
 
 (setq jedi:setup-keys t)
 (setq jedi:complete-on-dot t)
