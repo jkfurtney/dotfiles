@@ -407,8 +407,8 @@ number of characters is written to the message area."
  (setq org-tree-slide-slide-in-effect nil))
 
 (require 'org)
+(setq org-cycle-separator-lines 0)
 (define-key org-mode-map (kbd "C-M-k") 'kill-sentence)
-
 
 (setq org-src-fontify-natively t)
 ;(setq org-startup-truncated nil)
