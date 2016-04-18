@@ -5,6 +5,7 @@ advection
 diagonalization
 rebase
 Courant
+isentropic
 borehole
 Geotechnical
 openFOAM

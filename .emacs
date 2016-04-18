@@ -358,6 +358,8 @@ number of characters is written to the message area."
   'copy-run-buffer-filename-as-kill)
 (add-hook 'python-mode-hook 'jedi:setup)
 (add-hook 'python-mode-hook 'hs-minor-mode)
+(add-hook 'python-mode-hook 'flyspell-prog-mode)
+
 
 (setq jedi:setup-keys t)
 (setq jedi:complete-on-dot t)
@@ -405,8 +407,8 @@ number of characters is written to the message area."
  (setq org-tree-slide-slide-in-effect nil))
 
 (require 'org)
+(setq org-cycle-separator-lines 0)
 (define-key org-mode-map (kbd "C-M-k") 'kill-sentence)
-
 
 (setq org-src-fontify-natively t)
 ;(setq org-startup-truncated nil)
