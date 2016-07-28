@@ -243,6 +243,7 @@
 
 
 (require 'rst)
+(add-hook 'rst-mode-hook 'flyspell-mode)
 
 ;;;; Sphinx reStructuredText Setup
 (disable
