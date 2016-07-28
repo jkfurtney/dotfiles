@@ -28,10 +28,8 @@
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
-  (when (not (package-installed-p p))
-    (if (y-or-n-p (format "Package %s is missing. Install it? " p))
-        (package-install p))))
-
+             (when (not (package-installed-p p))
+               (package-install p)))
 ; for new installs
 (disable (progn
            (package-install "ace-jump-mode")
@@ -367,7 +365,8 @@ number of characters is written to the message area."
                                         (setq python-indent-offset 4))))
 
 ;;;; Lisp Setup
-
+(require 'rainbow-delimiters)
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'python-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'scheme-mode-hook 'rainbow-delimiters-mode)
@@ -1506,3 +1505,7 @@ function to make an autocomplete list"
        (goto-char start)
        (while (< (point) end) (if (forward-word 1) (setq n (1+ n)))))
      (message "%3d %3d %3d" (count-lines start end) n (- end start))))
+
+(defun jkf/mean (data) (/ (reduce '+ data) (float (length data))))
+
+(defun jkf/percent-change (a b) (* 100 (/ (abs (- a b)) (max (abs a) (abs b))  )))
