@@ -28,8 +28,9 @@
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
-             (when (not (package-installed-p p))
-               (package-install p)))
+  (when (not (package-installed-p p))
+    (package-install p)))
+
 ; for new installs
 (disable (progn
            (package-install "ace-jump-mode")
@@ -244,6 +245,7 @@
 
 (require 'rst)
 (add-hook 'rst-mode-hook 'flyspell-mode)
+(add-hook 'text-mode-hook 'flyspell-mode)
 
 ;;;; Sphinx reStructuredText Setup
 (disable
