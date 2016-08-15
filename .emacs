@@ -129,6 +129,11 @@
 (global-set-key (kbd "C-c M-c") 'jkf/copy-buffer-file-name-as-kill)
 
 ; emacs lisp specific
+(defun jkf/to-init () (interactive)
+       "open .emacs file and jump to the end of the file."
+       (find-file (concat jkf/src-dir "dotfiles/.emacs"))
+       (goto-char (point-max)))
+
 (global-set-key (kbd "C-c e m") 'macrostep-expand)
 (global-set-key (kbd "C-c e e") 'toggle-debug-on-error)
 (global-set-key (kbd "C-c e f") 'emacs-lisp-byte-compile-and-load)
@@ -136,11 +141,6 @@
 (global-set-key (kbd "C-c e b") 'eval-buffer)
 (global-set-key (kbd "C-c e s") 'jkf/switch-to-scratch)
 (global-set-key (kbd "C-c e q") 'jkf/eval-replace-last-sexp)
-
-(defun jkf/to-init () (interactive)
-       "open .emacs file and jump to the end of the file."
-       (find-file (concat jkf/src-dir "dotfiles/.emacs"))
-       (goto-char (point-max)))
 (global-set-key (kbd "C-c e c") 'jkf/to-init)
 
 ; C-i for search forward
@@ -455,7 +455,7 @@ number of characters is written to the message area."
 ;;;; Linux specific setup
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     (progn
-      (setq jkf/src-dir "~/src")
+      (setq jkf/src-dir "~/src/")
       (setq x-select-enable-clipboard t)
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
 
