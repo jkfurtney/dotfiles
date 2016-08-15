@@ -1400,6 +1400,8 @@ function to make an autocomplete list"
          "%^t %^{time}" :immediate-finish t)
         ("r" "Run" item (file+headline jkf/journal-file "Running")
          "%^t %^{distance}" :immediate-finish t)
+        ("g" "Gym" item (file+headline jkf/journal-file "Gym")
+         "%^t" :immediate-finish t)
         ("j" "Journal" plain (file+datetree jkf/journal-file "")
          "\n%?")
         ("w" "Work TODO" entry (file+headline jkf/org-todo-file "Work")
