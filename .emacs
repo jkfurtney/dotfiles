@@ -111,7 +111,7 @@
 
 ;; org-mode C-c bindings
 (defun jkf/open-notes () (interactive)
-       (find-file (concat jkf/dropbox-dir "/org/notes.org"))
+       (find-file jkf/notes-file)
        (org-overview))
 (global-set-key (kbd "C-c o o") 'org-capture)
 (global-set-key (kbd "C-c o n") 'jkf/open-notes)
@@ -415,6 +415,7 @@ number of characters is written to the message area."
 (setq org-src-fontify-natively t)
 ;(setq org-startup-truncated nil)
 
+                  ; Show full paths for refiling
 (defun jkf/kill-all-buffers ()
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
@@ -569,6 +570,12 @@ number of characters is written to the message area."
 (setq jkf/org-note-file (concat jkf/dropbox-dir "/org/notes.org"))
 (setq jkf/org-todo-file (concat jkf/dropbox-dir "/org/todo.org"))
 (setq jkf/journal-file (concat jkf/dropbox-dir "/org/journal.org"))
+
+(setq org-refile-targets `((nil :maxlevel . 3)
+                           (,jkf/org-note-file :maxlevel . 3 )
+                           (,jkf/org-todo-file :maxlevel . 5)))
+(setq org-outline-path-complete-in-steps nil)         ; Refile in a single go
+(setq org-refile-use-outline-path t)
 
 (setq org-default-notes-file jkf/org-note-file)
 (setq org-agenda-files (list jkf/org-todo-file jkf/journal-file))
