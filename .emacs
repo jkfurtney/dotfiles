@@ -1402,12 +1402,15 @@ function to make an autocomplete list"
 (define-key dired-mode-map (kbd "f") 'dired-filter-mode)
 ; f /. to filter by extension
 
+
+(defmacro jkf/org-file (filename)
+  `(concat (file-name-directory jkf/journal-file) ,filename))
 (setq org-capture-templates
-      '(("s" "Sit" item (file+headline jkf/journal-file "Sitting")
+      '(("s" "Sit" item (file+headline (jkf/org-file "sit.org") "Sitting")
          "%^t %^{time}" :immediate-finish t)
-        ("r" "Run" item (file+headline jkf/journal-file "Running")
+        ("r" "Run" item (file+headline (jkf/org-file "run.org") "Running")
          "%^t %^{distance}" :immediate-finish t)
-        ("g" "Gym" item (file+headline jkf/journal-file "Gym")
+        ("g" "Gym" item (file+headline (jkf/org-file "gym.org")  "Gym")
          "%^t" :immediate-finish t)
         ("j" "Journal" plain (file+datetree jkf/journal-file "")
          "\n%?")
