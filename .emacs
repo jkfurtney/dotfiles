@@ -111,7 +111,8 @@
 
 ;; org-mode C-c bindings
 (defun jkf/open-notes () (interactive)
-       (find-file jkf/notes-file)
+       (find-file (concat jkf/dropbox-dir "/org/notes.org"))
+                  ;(find-file jkf/notes-file)
        (org-overview))
 (global-set-key (kbd "C-c o o") 'org-capture)
 (global-set-key (kbd "C-c o n") 'jkf/open-notes)
