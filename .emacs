@@ -111,7 +111,7 @@
 
 ;; org-mode C-c bindings
 (defun jkf/open-notes () (interactive)
-       (find-file jkf/notes-file)
+       (find-file jkf/org-note-file)
        (org-overview))
 (global-set-key (kbd "C-c o o") 'org-capture)
 (global-set-key (kbd "C-c o n") 'jkf/open-notes)
@@ -1433,7 +1433,7 @@ function to make an autocomplete list"
 
 (setq org-todo-keywords
       '((sequence "TODO(t)" "SOMEDAY(s)" "DONE(d)" "WAITING(w)")))
-(setq org-tags-column 55)
+(setq org-tags-column 50)
 (global-set-key (kbd "C-c C-x C-o") 'org-clock-out)
 
 
