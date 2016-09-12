@@ -24,7 +24,7 @@
 
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca swift-mode)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
