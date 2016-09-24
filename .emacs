@@ -460,6 +460,7 @@ number of characters is written to the message area."
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     (progn
       (setq jkf/src-dir "~/src")
+      (setq jkf/dropbox-dir "~/Dropbox")
       (setq x-select-enable-clipboard t)
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
 
