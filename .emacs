@@ -119,6 +119,7 @@
 ;; org-mode C-c bindings
 (defun jkf/open-notes () (interactive)
        (find-file (concat jkf/dropbox-dir "/org/notes.org"))
+                  ;(find-file jkf/notes-file)
        (org-overview))
 (global-set-key (kbd "C-c o o") 'org-capture)
 (global-set-key (kbd "C-c o n") 'jkf/open-notes)
@@ -422,6 +423,7 @@ number of characters is written to the message area."
 (setq org-src-fontify-natively t)
 ;(setq org-startup-truncated nil)
 
+                  ; Show full paths for refiling
 (defun jkf/kill-all-buffers ()
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
@@ -465,6 +467,7 @@ number of characters is written to the message area."
 (if  (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
     (progn
       (setq jkf/src-dir "~/src/")
+      (setq jkf/dropbox-dir "~/Dropbox")
       (setq x-select-enable-clipboard t)
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
       (setq jkf/dropbox-dir "~/Dropbox")
@@ -576,6 +579,12 @@ number of characters is written to the message area."
 (setq jkf/org-note-file (concat jkf/dropbox-dir "/org/notes.org"))
 (setq jkf/org-todo-file (concat jkf/dropbox-dir "/org/todo.org"))
 (setq jkf/journal-file (concat jkf/dropbox-dir "/org/journal.org"))
+
+(setq org-refile-targets `((nil :maxlevel . 3)
+                           (,jkf/org-note-file :maxlevel . 3 )
+                           (,jkf/org-todo-file :maxlevel . 5)))
+(setq org-outline-path-complete-in-steps nil)         ; Refile in a single go
+(setq org-refile-use-outline-path t)
 
 (setq org-default-notes-file jkf/org-note-file)
 (setq org-agenda-files (list jkf/org-todo-file jkf/journal-file))
@@ -1402,14 +1411,19 @@ function to make an autocomplete list"
 (define-key dired-mode-map (kbd "f") 'dired-filter-mode)
 ; f /. to filter by extension
 
+
+(defmacro jkf/org-file (filename)
+  `(concat (file-name-directory jkf/journal-file) ,filename))
 (setq org-capture-templates
-      '(("s" "Sit" item (file+headline jkf/journal-file "Sitting")
+      '(("s" "Sit" item (file+headline (jkf/org-file "sit.org") "Sitting")
          "%^t %^{time}" :immediate-finish t)
-        ("r" "Run" item (file+headline jkf/journal-file "Running")
+        ("r" "Run" item (file+headline (jkf/org-file "run.org") "Running")
          "%^t %^{distance}" :immediate-finish t)
-        ("g" "Gym" item (file+headline jkf/journal-file "Gym")
+        ("g" "Gym" item (file+headline (jkf/org-file "gym.org")  "Gym")
          "%^t" :immediate-finish t)
-        ("j" "Journal" plain (file+datetree jkf/journal-file "")
+        ("j" "Journal (today)" plain (file+datetree jkf/journal-file "")
+         "\n%?")
+        ("J" "Journal (other)" plain (file+datetree+prompt jkf/journal-file "")
          "\n%?")
         ("w" "Work TODO" entry (file+headline jkf/org-todo-file "Work")
          "** TODO %?\n    DEADLINE: %^{deadline}t")
@@ -1433,7 +1447,7 @@ function to make an autocomplete list"
 
 (setq org-todo-keywords
       '((sequence "TODO(t)" "SOMEDAY(s)" "DONE(d)" "WAITING(w)")))
-(setq org-tags-column 55)
+(setq org-tags-column 50)
 (global-set-key (kbd "C-c C-x C-o") 'org-clock-out)
 
 
@@ -1481,18 +1495,18 @@ function to make an autocomplete list"
     ;(org-map-entries 'jkf/get-line-and-number nil 'tree)
     (org-map-entries 'jkf/get-line-and-number nil nil)))
 
-(defun jkf/scale-stl ()
-  (interactive)
-  (jkf/replace-regexp "E-06" "E-09")
-  (jkf/replace-regexp "E-05" "E-08")
-  (jkf/replace-regexp "E-04" "E-07")
-  (jkf/replace-regexp "E-03" "E-06")
-  (jkf/replace-regexp "E-02" "E-05")
-  (jkf/replace-regexp "E-01" "E-04")
-  (jkf/replace-regexp "E+00" "E-03")
-  (jkf/replace-regexp "E+01" "E-02")
-  (jkf/replace-regexp "E+02" "E-01")
-  (jkf/replace-regexp "E+03" "E+00"))
+(disable (defun jkf/scale-stl ()
+   (interactive)
+   (jkf/replace-regexp "E-06" "E-09")
+   (jkf/replace-regexp "E-05" "E-08")
+   (jkf/replace-regexp "E-04" "E-07")
+   (jkf/replace-regexp "E-03" "E-06")
+   (jkf/replace-regexp "E-02" "E-05")
+   (jkf/replace-regexp "E-01" "E-04")
+   (jkf/replace-regexp "E+00" "E-03")
+   (jkf/replace-regexp "E+01" "E-02")
+   (jkf/replace-regexp "E+02" "E-01")
+   (jkf/replace-regexp "E+03" "E+00")))
 
 (let* ((fname (concat jkf/dropbox-dir "/org/itasca-telephone.el")))
   (when (file-exists-p fname)
