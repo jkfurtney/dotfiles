@@ -75,6 +75,11 @@
                       (local-unset-key (kbd "<f1>"))
                       (local-unset-key (kbd "C-o")))))
 
+(add-hook 'swift-mode-hook
+          (function (lambda ()
+                      (local-unset-key (kbd "M-j")))))
+
+
 
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "M-p") 'backward-paragraph)
@@ -96,7 +101,9 @@
 (global-set-key (kbd "C-c k") 'jkf/kill-all-buffers)
 (global-set-key (kbd "C-c K") 'jkf/kill-other-buffers)
 (global-set-key (kbd "C-c i") 'helm-imenu)
-(global-set-key (kbd "C-c g") 'helm-google-suggest)
+(global-set-key (kbd "C-c g") 'goto-line)
+(global-set-key (kbd "C-c r") 'replace-string)
+(global-set-key (kbd "C-c R") 'revert-buffer)
 (global-set-key (kbd "C-c t") (jkf/func-ff (concat jkf/dropbox-dir "/org/todo.org")))
 (global-set-key (kbd "C-c p") 'jkf/proselint-buffer)
 (global-set-key (kbd "C-c s") 'magit-status)
@@ -460,7 +467,7 @@ number of characters is written to the message area."
       (setq jkf/src-dir "~/src/")
       (setq x-select-enable-clipboard t)
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
-
+      (setq jkf/dropbox-dir "~/Dropbox")
       (global-unset-key (kbd "<menu>"))
       (global-set-key (kbd "M-<menu>") 'helm-buffers-list)
       (global-set-key (kbd "<menu> /") 'helm-M-x)
