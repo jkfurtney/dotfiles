@@ -1,11 +1,14 @@
-personal_ws-1.1 en 23
+personal_ws-1.1 en 26
 Friedrichs
+Groveland
 polyhedra
+refactor
 Hugoniot
 UDEC
 regolith
 advection
 Dropbox
+gridpointarray
 diagonalization
 Arlo
 Deviatoric

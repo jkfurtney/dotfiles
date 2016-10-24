@@ -999,18 +999,19 @@ incriment it and write on a new line below. Leave the origional inplace"
   (interactive)
   (save-match-data
     (let* ((old-casename (file-name-sans-extension (buffer-file-name)))
-           (tmp (string-match "\\([0-9]+\\)" old-casename))
-           (old-number (match-string 1 old-casename))
+           (sans-dir (file-name-nondirectory old-casename))
+           (tmp (string-match "\\([0-9]+\\)" sans-dir))
+           (old-number (match-string 1 sans-dir))
            (new-number
             (read-from-minibuffer "new case number: "
                                   (number-to-string
                                    (1+ (string-to-number old-number)))))
            (new-casename
-            (replace-regexp-in-string old-number new-number old-casename))
+            (replace-regexp-in-string old-number new-number sans-dir))
            (new-filename
-            (replace-regexp-in-string old-casename new-casename (buffer-name))))
+            (replace-regexp-in-string old-casename new-casename (buffer-file-name))))
       (write-file new-filename 1)
-      (jkf/replace-regexp old-casename new-casename))))
+      (jkf/replace-regexp sans-dir new-casename))))
 
 
 (require 'fold-dwim)
