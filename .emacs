@@ -1536,3 +1536,15 @@ function to make an autocomplete list"
 (defun jkf/mean (data) (/ (reduce '+ data) (float (length data))))
 
 (defun jkf/percent-change (a b) (* 100 (/ (abs (- a b)) (max (abs a) (abs b))  )))
+
+(defun jkf/decrypt-string (data)
+  (interactive)
+  (let ((i 0))
+    (apply #'string
+           (mapcar (lambda (a) (prog1 (- a (mod i 5)) (incf i))) data))))
+
+(defun jkf/encrypt-string (data)
+  (interactive)
+  (let ((i 0))
+    (apply #'string
+           (mapcar (lambda (a) (prog1 (+ a (mod i 5)) (incf i))) data))))
