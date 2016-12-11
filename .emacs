@@ -24,7 +24,7 @@
 
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca swift-mode)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -999,18 +999,19 @@ incriment it and write on a new line below. Leave the origional inplace"
   (interactive)
   (save-match-data
     (let* ((old-casename (file-name-sans-extension (buffer-file-name)))
-           (tmp (string-match "\\([0-9]+\\)" old-casename))
-           (old-number (match-string 1 old-casename))
+           (sans-dir (file-name-nondirectory old-casename))
+           (tmp (string-match "\\([0-9]+\\)" sans-dir))
+           (old-number (match-string 1 sans-dir))
            (new-number
             (read-from-minibuffer "new case number: "
                                   (number-to-string
                                    (1+ (string-to-number old-number)))))
            (new-casename
-            (replace-regexp-in-string old-number new-number old-casename))
+            (replace-regexp-in-string old-number new-number sans-dir))
            (new-filename
-            (replace-regexp-in-string old-casename new-casename (buffer-name))))
+            (replace-regexp-in-string old-casename new-casename (buffer-file-name))))
       (write-file new-filename 1)
-      (jkf/replace-regexp old-casename new-casename))))
+      (jkf/replace-regexp sans-dir new-casename))))
 
 
 (require 'fold-dwim)
@@ -1535,3 +1536,26 @@ function to make an autocomplete list"
 (defun jkf/mean (data) (/ (reduce '+ data) (float (length data))))
 
 (defun jkf/percent-change (a b) (* 100 (/ (abs (- a b)) (max (abs a) (abs b))  )))
+
+(defun jkf/decrypt-string (data)
+  (interactive)
+  (let ((i 0))
+    (apply #'string
+           (mapcar (lambda (a) (prog1 (- a (mod i 5)) (incf i))) data))))
+
+(defun jkf/encrypt-string (data)
+  (interactive)
+  (let ((i 0))
+    (apply #'string
+           (mapcar (lambda (a) (prog1 (+ a (mod i 5)) (incf i))) data))))
+
+(nyan-mode)
+(defun int-to-binary-string (i)
+  "convert an integer into it's binary representation in string format"
+  (let ((res ""))
+    (while (not (= i 0))
+      (setq res (concat (if (= 1 (logand i 1)) "1" "0") res))
+      (setq i (lsh i -1)))
+    (if (string= res "")
+        (setq res "0"))
+    res))
