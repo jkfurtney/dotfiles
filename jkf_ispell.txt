@@ -1,4 +1,4 @@
-personal_ws-1.1 en 27
+personal_ws-1.1 en 28
 Friedrichs
 Groveland
 polyhedra
@@ -15,6 +15,7 @@ Deviatoric
 deviatoric
 rebase
 Maurilio
+Fairhurst
 Courant
 isentropic
 borehole
