@@ -1,5 +1,6 @@
-personal_ws-1.1 en 28
+personal_ws-1.1 en 30
 Friedrichs
+Detournay
 Groveland
 polyhedra
 refactor
@@ -18,6 +19,7 @@ Fairhurst
 Courant
 isentropic
 borehole
+Xsite
 Geotechnical
 Grainger
 tetrahedralization

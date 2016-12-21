@@ -375,6 +375,10 @@ number of characters is written to the message area."
 (add-hook 'python-mode-hook (function (lambda ()
                                         (setq python-indent-offset 4))))
 
+(add-hook 'jedi-mode-hook (function (lambda ()
+                                      (define-key jedi-mode-map (kbd "C-c r") nil))))
+
+
 ;;;; Lisp Setup
 (require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
@@ -1559,3 +1563,7 @@ function to make an autocomplete list"
     (if (string= res "")
         (setq res "0"))
     res))
+
+(add-hook 'org-mode-hook
+          (lambda ()
+            (org-content 2)))
