@@ -409,7 +409,7 @@ number of characters is written to the message area."
 
 ;;;; Org-mode Setup
 ;(global-set-key (kbd "C-M-<return>") 'org-insert-subheading)
-
+(setq org-imenu-depth 3)
 (disable
  (require 'org-tree-slide)
  (define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
