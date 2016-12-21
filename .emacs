@@ -24,7 +24,7 @@
 
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -413,7 +413,7 @@ number of characters is written to the message area."
 
 ;;;; Org-mode Setup
 ;(global-set-key (kbd "C-M-<return>") 'org-insert-subheading)
-
+(setq org-imenu-depth 3)
 (disable
  (require 'org-tree-slide)
  (define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
