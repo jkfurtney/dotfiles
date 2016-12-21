@@ -64,6 +64,8 @@
 (smartparens-global-mode t)
 (diminish 'smartparens-mode)
 (diminish 'hs-minor-mode)
+(add-hook 'emacs-lisp-mode-hook (lambda() (setq mode-name "el")))
+
 
 ;;;; basic key bindings
 (require 'python)
@@ -1554,6 +1556,8 @@ function to make an autocomplete list"
            (mapcar (lambda (a) (prog1 (+ a (mod i 5)) (incf i))) data))))
 
 (nyan-mode)
+(setq nyan-bar-length 26)
+
 (defun int-to-binary-string (i)
   "convert an integer into it's binary representation in string format"
   (let ((res ""))
@@ -1567,3 +1571,5 @@ function to make an autocomplete list"
 (add-hook 'org-mode-hook
           (lambda ()
             (org-content 2)))
+
+(setq vc-handled-backends nil)
