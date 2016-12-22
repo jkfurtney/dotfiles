@@ -1570,6 +1570,7 @@ function to make an autocomplete list"
 
 (add-hook 'org-mode-hook
           (lambda ()
-            (org-content 2)))
+            (when (equal (buffer-name) "todo.org")
+             (org-content 2))))
 
 (setq vc-handled-backends nil)
