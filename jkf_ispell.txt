@@ -1,4 +1,4 @@
-personal_ws-1.1 en 30
+personal_ws-1.1 en 36
 Friedrichs
 Detournay
 Groveland
@@ -10,13 +10,15 @@ regolith
 advection
 Dropbox
 gridpointarray
+indices
 diagonalization
 Arlo
+Westworld
 Deviatoric
 deviatoric
 rebase
-Maurilio
 Fairhurst
+Maurilio
 Courant
 isentropic
 borehole
@@ -24,6 +26,7 @@ Xsite
 Geotechnical
 Grainger
 Sugarloaf
+minecraft
 tetrahedralization
 Yanhui
 openFOAM
@@ -31,3 +34,4 @@ Inkscape
 calorically
 Google
 googling
+programmatically
