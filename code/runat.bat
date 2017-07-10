@@ -1,0 +1,1 @@
+c:/Users/jfurtney/AppData/Local/Continuum/Anaconda/pythonw.exe c:/src/annt.py
