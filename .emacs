@@ -1577,3 +1577,18 @@ function to make an autocomplete list"
 
 (add-to-list 'auto-mode-alist (cons (rx ".js" eos) 'js2-mode))
 (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
+
+(defun jkf/miles-in-region (a b)
+  "sum of numbers in region after orgmode datestamps are removed."
+  (interactive "r")
+  (save-excursion
+    (kill-ring-save a b)
+    (with-temp-buffer
+      (yank)
+      (goto-char (point-min))
+      (replace-regexp "\s*-\s<....-..-..\s...>" "")
+      (goto-char (point-min))
+      (insert "(+ ")
+      (goto-char (point-max))
+      (insert ")")
+      (call-interactively 'eval-last-sexp))))
