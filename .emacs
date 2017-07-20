@@ -1592,3 +1592,9 @@ function to make an autocomplete list"
       (goto-char (point-max))
       (insert ")")
       (call-interactively 'eval-last-sexp))))
+
+
+(require 'ob-python)
+(org-babel-do-load-languages
+  'org-babel-load-languages
+  '((python . t)))

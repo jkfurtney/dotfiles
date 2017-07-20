@@ -1,4 +1,4 @@
-personal_ws-1.1 en 37
+personal_ws-1.1 en 38
 Friedrichs
 Detournay
 Groveland
@@ -13,6 +13,7 @@ gridpointarray
 indices
 lixiviant
 diagonalization
+podcast
 Arlo
 Westworld
 Deviatoric
