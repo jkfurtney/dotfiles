@@ -1598,3 +1598,16 @@ function to make an autocomplete list"
 (org-babel-do-load-languages
   'org-babel-load-languages
   '((python . t)))
+
+(defun jkf/fix-reveal-output ()
+  "set theme and remove extra ... and >>>"
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (jkf/replace-regexp "\\.\\.\\. " "")
+    (goto-char (point-min))
+    (jkf/replace-regexp "&gt;&gt;&gt; " "")
+    (goto-char (point-min))
+    (jkf/replace-regexp "moon\\.css" "white.css")))
+  (message "in post export hook"))
+(add-hook 'jkf/fix-reveal-output 'org-export-html-final-hook)
