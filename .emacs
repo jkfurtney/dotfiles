@@ -1088,7 +1088,8 @@ function to make an autocomplete list"
 ;;
 ;; For this to work SLIME has to be installed in Emacs.
 
-(setf blo-up-exe-name "c:/Program Files/HSBM/Blo-Up_2.7/exe64/bloup206_64.exe")
+;(setf blo-up-exe-name "c:/Program Files/HSBM/Blo-Up_2.7/exe64/bloup206_64.exe")
+(setf blo-up-exe-name "c:/src/svn_bu/binaries/x64Release/bloup206_64.exe")
 (setf blo-up-swank-location "c:/src/dotfiles/ecl-swank.lisp")
 
 ;;; This code finds the slime installation directory and sets it to an
