@@ -1610,5 +1610,5 @@ function to make an autocomplete list"
     (jkf/replace-regexp "&gt;&gt;&gt; " "")
     (goto-char (point-min))
     (jkf/replace-regexp "moon\\.css" "white.css")))
-  (message "in post export hook"))
+
 (add-hook 'jkf/fix-reveal-output 'org-export-html-final-hook)
