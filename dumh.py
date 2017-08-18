@@ -1,5 +1,5 @@
 import re
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 # aws s3 ls --human-readable --summarize s3://icgprojects --recursive > data.txt
 
 S3Object = namedtuple("S3Object", ['date', 'time', 'size', 'name'])
@@ -36,6 +36,7 @@ with open("data.txt", "r") as f:
 assert len(data) == count_check
 print size_check
 
+suffix_map = defaultdict(int)
 top_folders = {}
 total_size = 0
 for s3obj in data:
@@ -48,10 +49,14 @@ for s3obj in data:
         assert folder in top_folders, "top level folder error"
         top_folders[folder] += int(s3obj.size)
         total_size += int(s3obj.size)
+        base_name = s3obj.name.split("/")[-1]
+        if "." in base_name:
+            suffix = base_name.split(".")[-1]
+            suffix_map[suffix] += int(s3obj.size)
 
 def data_size(size):
     def fmt(i, scale, suffix):
-        return "{:.01f} {}".format(i/float(scale), suffix)
+        return i/float(scale), suffix
     if size > 1e12:
         return fmt(size, 1e12, "TB")
     if size > 1e9:
@@ -60,6 +65,13 @@ def data_size(size):
         return fmt(size, 1e6, "MB")
     if size > 1e3:
         return fmt(size, 1e3, "kB")
+    return fmt(size, 1, "Bytes")
 
 for k,v in top_folders.iteritems():
-    print "{:20.20} {:5.02f} %  {}".format(k, 100.0*v/total_size, data_size(v))
+    print "{:20.20} {:5.01f} % {:6.01f} {}".format(k, 100.0*v/total_size, *data_size(v))
+
+print
+print
+
+for k,v in suffix_map.iteritems():
+    print "{:20.20} {:5.01f} % {:6.01f} {}".format(k, 100.0*v/total_size, *data_size(v))
