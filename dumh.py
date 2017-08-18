@@ -62,4 +62,4 @@ def data_size(size):
         return fmt(size, 1e3, "kB")
 
 for k,v in top_folders.iteritems():
-    print k, "{:.02f}%".format(100.0*v/total_size), data_size(v)
+    print "{:20.20} {:5.02f} %  {}".format(k, 100.0*v/total_size, data_size(v))
