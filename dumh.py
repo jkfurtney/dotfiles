@@ -74,4 +74,5 @@ print
 print
 
 for k,v in suffix_map.iteritems():
-    print "{:20.20} {:5.01f} % {:6.01f} {}".format(k, 100.0*v/total_size, *data_size(v))
+    if 100.0*v/total_size > 1:
+        print "{:20.20} {:5.01f} % {:6.01f} {}".format(k, 100.0*v/total_size, *data_size(v))
