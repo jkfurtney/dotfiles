@@ -425,7 +425,8 @@ number of characters is written to the message area."
 (require 'org)
 (setq org-cycle-separator-lines 0)
 (define-key org-mode-map (kbd "C-M-k") 'kill-sentence)
-
+(define-key org-mode-map (kbd "C-c <up>") 'org-move-subtree-up)
+(define-key org-mode-map (kbd "C-c <down>") 'org-move-subtree-down)
 (setq org-src-fontify-natively t)
 ;(setq org-startup-truncated nil)
 
@@ -1089,7 +1090,7 @@ function to make an autocomplete list"
 ;; For this to work SLIME has to be installed in Emacs.
 
 ;(setf blo-up-exe-name "c:/Program Files/HSBM/Blo-Up_2.7/exe64/bloup206_64.exe")
-(setf blo-up-exe-name "c:/src/svn_bu/binaries/x64Release/bloup206_64.exe")
+(setf blo-up-exe-name "c:/src/bu_july17_x64Release/x64Release/bloup206_64.exe")
 (setf blo-up-swank-location "c:/src/dotfiles/ecl-swank.lisp")
 
 ;;; This code finds the slime installation directory and sets it to an
