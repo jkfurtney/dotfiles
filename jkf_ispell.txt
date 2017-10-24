@@ -1,4 +1,4 @@
-personal_ws-1.1 en 39
+personal_ws-1.1 en 40
 Friedrichs
 Detournay
 Groveland
@@ -7,6 +7,7 @@ refactor
 Hugoniot
 UDEC
 regolith
+vertices
 advection
 Dropbox
 gridpointarray
