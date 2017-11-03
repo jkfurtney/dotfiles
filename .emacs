@@ -426,7 +426,8 @@ number of characters is written to the message area."
 (require 'org)
 (setq org-cycle-separator-lines 0)
 (define-key org-mode-map (kbd "C-M-k") 'kill-sentence)
-
+(define-key org-mode-map (kbd "C-c <up>") 'org-move-subtree-up)
+(define-key org-mode-map (kbd "C-c <down>") 'org-move-subtree-down)
 (setq org-src-fontify-natively t)
 ;(setq org-startup-truncated nil)
 
@@ -1089,9 +1090,8 @@ function to make an autocomplete list"
 ;;
 ;; For this to work SLIME has to be installed in Emacs.
 
-;(setf blo-up-exe-name "c:/Program Files/HSBM/Blo-Up_2.7/exe64/bloup206_64.exe")
-(setf blo-up-exe-name "c:/src/bu_july17_x64Release/x64Release/bloup206_64.exe")
-
+(setf blo-up-exe-name "c:/Program Files/HSBM/Blo-Up_2.7/exe64/bloup206_64.exe")
+;(setf blo-up-exe-name "c:/src/bu_july17_x64Release/x64Release/bloup206_64.exe")
 (setf blo-up-swank-location "c:/src/dotfiles/ecl-swank.lisp")
 
 ;;; This code finds the slime installation directory and sets it to an
@@ -1584,3 +1584,37 @@ function to make an autocomplete list"
 (defun jkf/decrypt-string-clipboard () (interactive)
        (with-temp-buffer (yank) (jkf/decrypt-string (buffer-string))))
 ;(jkf/decrypt-string-clipboard)
+
+(defun jkf/miles-in-region (a b)
+  "sum of numbers in region after orgmode datestamps are removed."
+  (interactive "r")
+  (save-excursion
+    (kill-ring-save a b)
+    (with-temp-buffer
+      (yank)
+      (goto-char (point-min))
+      (replace-regexp "\s*-\s<....-..-..\s...>" "")
+      (goto-char (point-min))
+      (insert "(+ ")
+      (goto-char (point-max))
+      (insert ")")
+      (call-interactively 'eval-last-sexp))))
+
+
+(require 'ob-python)
+(org-babel-do-load-languages
+  'org-babel-load-languages
+  '((python . t)))
+
+(defun jkf/fix-reveal-output ()
+  "set theme and remove extra ... and >>>"
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (jkf/replace-regexp "\\.\\.\\. " "")
+    (goto-char (point-min))
+    (jkf/replace-regexp "&gt;&gt;&gt; " "")
+    (goto-char (point-min))
+    (jkf/replace-regexp "moon\\.css" "white.css")))
+
+(add-hook 'jkf/fix-reveal-output 'org-export-html-final-hook)
