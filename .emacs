@@ -1618,3 +1618,10 @@ function to make an autocomplete list"
     (jkf/replace-regexp "moon\\.css" "white.css")))
 
 (add-hook 'jkf/fix-reveal-output 'org-export-html-final-hook)
+
+(defun jkf/insert-random-string ()
+  (interactive)
+  (dotimes (_ 25)
+    (insert
+     (let ((x (random 36)))
+       (if (< x 10) (+ x ?0) (+ x (- ?a 10)))))))
