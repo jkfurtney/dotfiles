@@ -1612,3 +1612,12 @@ function to make an autocomplete list"
     (jkf/replace-regexp "moon\\.css" "white.css")))
 
 (add-hook 'jkf/fix-reveal-output 'org-export-html-final-hook)
+(defun jkf/decrypt-to-message () (interactive)
+       (message (jkf/decrypt-string (with-temp-buffer (yank) (buffer-string)))))
+
+(defun jkf/inplace-encrypt (x y) (interactive "r")
+       (kill-region x y)
+       (insert (jkf/encrypt-string (with-temp-buffer (yank) (buffer-string))))
+       (move-end-of-line nil)
+       (insert " // ")
+       (insert (yank)))
