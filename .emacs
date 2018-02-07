@@ -24,7 +24,7 @@
 
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode js2-mode)
+(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode js2-mode jinja2-mode)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -367,7 +367,8 @@ number of characters is written to the message area."
 
 (define-key python-mode-map (kbd "C-c M-c")
   'copy-run-buffer-filename-as-kill)
-(add-hook 'python-mode-hook 'jedi:setup)
+;(add-hook 'python-mode-hook 'jedi:setup)
+;(remove-hook 'python-mode-hook 'jedi-setup)
 (add-hook 'python-mode-hook 'hs-minor-mode)
 (add-hook 'python-mode-hook 'flyspell-prog-mode)
 
@@ -1089,8 +1090,8 @@ function to make an autocomplete list"
 ;;
 ;; For this to work SLIME has to be installed in Emacs.
 
-;(setf blo-up-exe-name "c:/Program Files/HSBM/Blo-Up_2.7/exe64/bloup206_64.exe")
-(setf blo-up-exe-name "c:/src/bu_july17_x64Release/x64Release/bloup206_64.exe")
+(setf blo-up-exe-name "c:/Program Files/HSBM/Blo-Up_2.7/exe64/bloup206_64.exe")
+;(setf blo-up-exe-name "c:/src/bu_july17_x64Release/x64Release/bloup206_64.exe")
 (setf blo-up-swank-location "c:/src/dotfiles/ecl-swank.lisp")
 
 ;;; This code finds the slime installation directory and sets it to an
@@ -1580,6 +1581,10 @@ function to make an autocomplete list"
 (add-to-list 'auto-mode-alist (cons (rx ".js" eos) 'js2-mode))
 (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
 
+(defun jkf/decrypt-string-clipboard () (interactive)
+       (with-temp-buffer (yank) (jkf/decrypt-string (buffer-string))))
+;(jkf/decrypt-string-clipboard)
+
 (defun jkf/miles-in-region (a b)
   "sum of numbers in region after orgmode datestamps are removed."
   (interactive "r")
@@ -1613,3 +1618,19 @@ function to make an autocomplete list"
     (jkf/replace-regexp "moon\\.css" "white.css")))
 
 (add-hook 'jkf/fix-reveal-output 'org-export-html-final-hook)
+(defun jkf/decrypt-to-message () (interactive)
+       (message (jkf/decrypt-string (with-temp-buffer (yank) (buffer-string)))))
+
+(defun jkf/inplace-encrypt (x y) (interactive "r")
+       (kill-region x y)
+       (insert (jkf/encrypt-string (with-temp-buffer (yank) (buffer-string))))
+       (move-end-of-line nil)
+       (insert " // ")
+       (insert (yank)))
+
+(defun jkf/insert-random-string ()
+  (interactive)
+  (dotimes (_ 25)
+    (insert
+     (let ((x (random 36)))
+       (if (< x 10) (+ x ?0) (+ x (- ?a 10)))))))
