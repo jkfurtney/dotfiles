@@ -1422,8 +1422,8 @@ function to make an autocomplete list"
 ; f /. to filter by extension
 
 
-(defmacro jkf/org-file (filename)
-  `(concat (file-name-directory jkf/journal-file) ,filename))
+(defun jkf/org-file (filename)
+  (concat (file-name-directory jkf/journal-file) ,filename))
 (setq org-capture-templates
       '(("s" "Sit" item (file+headline (jkf/org-file "sit.org") "Sitting")
          "%^t %^{time}" :immediate-finish t)
@@ -1618,6 +1618,7 @@ function to make an autocomplete list"
     (jkf/replace-regexp "moon\\.css" "white.css")))
 
 (add-hook 'jkf/fix-reveal-output 'org-export-html-final-hook)
+
 (defun jkf/decrypt-to-message () (interactive)
        (message (jkf/decrypt-string (with-temp-buffer (yank) (buffer-string)))))
 
@@ -1634,3 +1635,5 @@ function to make an autocomplete list"
     (insert
      (let ((x (random 36)))
        (if (< x 10) (+ x ?0) (+ x (- ?a 10)))))))
+
+; unicode slow cursor movement Windows inhibit-compacting-font-caches to non-nil
