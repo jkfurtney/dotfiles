@@ -24,11 +24,7 @@
 (require 'package)
 (package-initialize)
 
-;(add-to-list 'package-archives
-;             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-
-;dired+ dropdown-list
-(defvar my-packages '(ace-jump-mode    auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode js2-mode jinja2-mode)
+(defvar my-packages '(ace-jump-mode   auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode js2-mode jinja2-mode)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -74,7 +70,8 @@
 
 ;;;; basic key bindings
 (require 'python)
-;(require 'dired+)
+					;(require 'dired+)
+
 (global-set-key "\C-o" 'helm-find-files)
 (add-hook 'dired-mode-hook
           (function (lambda ()
@@ -1560,8 +1557,8 @@ function to make an autocomplete list"
 (defun jkf/encrypt-string (data)
   (interactive)
   (let ((i 0))
-    (apply #'string
-           (mapcar (lambda (a) (prog1 (+ a (mod i 5)) (incf i))) data))))
+    (kill-new (apply #'string
+            (mapcar (lambda (a) (prog1 (+ a (mod i 5)) (incf i))) data)))))
 
 (nyan-mode)
 (setq nyan-bar-length 26)
@@ -1641,7 +1638,8 @@ function to make an autocomplete list"
      (let ((x (random 36)))
        (if (< x 10) (+ x ?0) (+ x (- ?a 10)))))))
 
-                                        ; unicode slow cursor movement Windows inhibit-compacting-font-caches to non-nil
+
+ ; unicode slow cursor movement Windows inhibit-compacting-font-caches to non-nil
 
 (defun sign-buffer ()
   "this function reads an emacs buffer and inserts a comment with
@@ -1668,3 +1666,20 @@ function to make an autocomplete list"
     (loop for i below (length mys) do
           (aset mys i (+ (elt mys i) (% i 5))))
   (insert " " mys)))
+; unicode slow cursor movement Windows inhibit-compacting-font-caches to non-nil
+
+(defconst *inplace-prefix* "CloudCommunicator::decrypt_string(")
+(defconst *inplace-suffix* ")")
+(defun inplace-encrypt (x y)
+  (interactive "r")
+  (save-excursion
+    (kill-region x y)
+    (let* ((raw (substring-no-properties (car kill-ring)))
+           (inner (substring raw 1 (- (length raw) 1)))
+           (encr (jkf/encrypt-string inner))
+           (escaped (s-replace "\"" "\\\"" encr))
+           (wrapped (concat *inplace-prefix* "L\"" escaped "\"" *inplace-suffix*)))
+      (insert wrapped)
+      (move-end-of-line nil)
+      (insert (concat " // " inner))
+      (message wrapped))))
