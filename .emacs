@@ -1555,8 +1555,8 @@ function to make an autocomplete list"
 (defun jkf/encrypt-string (data)
   (interactive)
   (let ((i 0))
-    (apply #'string
-           (mapcar (lambda (a) (prog1 (+ a (mod i 5)) (incf i))) data))))
+    (kill-new (apply #'string
+            (mapcar (lambda (a) (prog1 (+ a (mod i 5)) (incf i))) data)))))
 
 (nyan-mode)
 (setq nyan-bar-length 26)
@@ -1637,3 +1637,19 @@ function to make an autocomplete list"
        (if (< x 10) (+ x ?0) (+ x (- ?a 10)))))))
 
 ; unicode slow cursor movement Windows inhibit-compacting-font-caches to non-nil
+this CloudCommunicator::decrypt_string(L"it\"dese\"dwd!cipseho$")  // is aasd asd aflsdfl
+(defconst *inplace-prefix* "CloudCommunicator::decrypt_string(")
+(defconst *inplace-suffix* ")")
+(defun inplace-encrypt (x y)
+  (interactive "r")
+  (save-excursion
+    (kill-region x y)
+    (let* ((raw (substring-no-properties (car kill-ring)))
+           (inner (substring raw 1 (- (length raw) 1)))
+           (encr (jkf/encrypt-string inner))
+           (escaped (s-replace "\"" "\\\"" encr))
+           (wrapped (concat *inplace-prefix* "L\"" escaped "\"" *inplace-suffix*)))
+      (insert wrapped)
+      (move-end-of-line nil)
+      (insert (concat " // " inner))
+      (message wrapped))))
