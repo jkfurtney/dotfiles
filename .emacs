@@ -18,18 +18,23 @@
 (setq magit-last-seen-setup-instructions "2.4.0")
 
 ;;;; packages
+(setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")
+                         ("gnu" . "http://elpa.gnu.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")))
 (require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode js2-mode jinja2-mode)
+;(add-to-list 'package-archives
+;             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+
+;dired+ dropdown-list
+(defvar my-packages '(ace-jump-mode    auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode js2-mode jinja2-mode)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
+
 
 ; for new installs
 (disable (progn
@@ -69,7 +74,7 @@
 
 ;;;; basic key bindings
 (require 'python)
-(require 'dired+)
+;(require 'dired+)
 (global-set-key "\C-o" 'helm-find-files)
 (add-hook 'dired-mode-hook
           (function (lambda ()
@@ -1139,8 +1144,8 @@ function to make an autocomplete list"
     (kill-sexp -1)
     (insert (format "%s" value))))
 
-(require 'ox-reveal)
-(require 'ob-python)
+;(require 'ox-reveal)
+;(require 'ob-python)
 
 (global-set-key (kbd "C-<down>") 'shrink-window)
 (global-set-key (kbd "C-<up>") 'enlarge-window)
@@ -1418,7 +1423,7 @@ function to make an autocomplete list"
 (add-hook 'org-mode-hook 'flyspell-mode)
 (setq org-startup-truncated nil)  ; linewrap for org-mode
 (setq org-log-done 'time)
-(define-key dired-mode-map (kbd "f") 'dired-filter-mode)
+;(define-key dired-mode-map (kbd "f") 'dired-filter-mode)
 ; f /. to filter by extension
 
 
@@ -1636,4 +1641,30 @@ function to make an autocomplete list"
      (let ((x (random 36)))
        (if (< x 10) (+ x ?0) (+ x (- ?a 10)))))))
 
-; unicode slow cursor movement Windows inhibit-compacting-font-caches to non-nil
+                                        ; unicode slow cursor movement Windows inhibit-compacting-font-caches to non-nil
+
+(defun sign-buffer ()
+  "this function reads an emacs buffer and inserts a comment with
+   a digest string at the top of the buffer. This digest is used
+   by Blo-Up to verify that the code is signed by Itasca and can
+   be run in secure mode."
+  (interactive)
+  (goto-char (point-min))
+  (when (string= ";signed-code " (buffer-substring
+                                  (point-at-bol)
+                                  (+ 13 (point-at-bol))))
+    (kill-line) (kill-line))
+  (insert "XBRf3IPiRcd6ILtaelEH fGaXGe4ORz7tyALX9RNY daP5P4qzSMh1bLzlNUq0")
+  (let ((digest (sha1 (current-buffer))))
+    (goto-char (point-min))
+    (delete-char 62)
+    (insert (format ";signed-code %s\n" digest))))
+
+
+(defun ienc (start end)
+  "rot 13 encoding for security error messages."
+  (interactive "r")
+  (let ((mys (buffer-substring start end)))
+    (loop for i below (length mys) do
+          (aset mys i (+ (elt mys i) (% i 5))))
+  (insert " " mys)))
