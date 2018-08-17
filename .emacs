@@ -1636,8 +1636,7 @@ function to make an autocomplete list"
      (let ((x (random 36)))
        (if (< x 10) (+ x ?0) (+ x (- ?a 10)))))))
 
-; unicode slow cursor movement Windows inhibit-compacting-font-caches to non-nil
-this CloudCommunicator::decrypt_string(L"it\"dese\"dwd!cipseho$")  // is aasd asd aflsdfl
+; unicode slow cursor movement Windows inhibit-compacting-font-caches to non-nilthis CloudCommunicator::decrypt_string(L"it\"dese\"dwd!cipseho$")  // is aasd asd aflsdfl
 (defconst *inplace-prefix* "CloudCommunicator::decrypt_string(")
 (defconst *inplace-suffix* ")")
 (defun inplace-encrypt (x y)
