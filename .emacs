@@ -1690,6 +1690,6 @@ function to make an autocomplete list"
                   org-level-3
                   org-level-4
                   org-level-5))
-    (set-face-attribute face nil :weight 'semi-bold :height 1.0)))
+    (set-face-attribute face nil :weight 'normal :height 1.0)))
 
 (add-hook 'org-mode-hook 'my/org-mode-hook)
