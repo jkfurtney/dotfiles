@@ -1423,7 +1423,7 @@ function to make an autocomplete list"
 
 
 (defun jkf/org-file (filename)
-  (concat (file-name-directory jkf/journal-file) ,filename))
+  (concat (file-name-directory jkf/journal-file) filename))
 (setq org-capture-templates
       '(("s" "Sit" item (file+headline (jkf/org-file "sit.org") "Sitting")
          "%^t %^{time}" :immediate-finish t)
@@ -1555,8 +1555,10 @@ function to make an autocomplete list"
 (defun jkf/encrypt-string (data)
   (interactive)
   (let ((i 0))
-    (apply #'string
-           (mapcar (lambda (a) (prog1 (+ a (mod i 5)) (incf i))) data))))
+    (kill-new (apply #'string
+           (mapcar (lambda (a) (prog1 (+ a (mod i 5)) (incf i))) data)))))
+
+
 
 (nyan-mode)
 (setq nyan-bar-length 26)
