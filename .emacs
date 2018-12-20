@@ -18,18 +18,19 @@
 (setq magit-last-seen-setup-instructions "2.4.0")
 
 ;;;; packages
+(setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")
+                         ("gnu" . "http://elpa.gnu.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")))
 (require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode dired+ dropdown-list  auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode js2-mode jinja2-mode)
+(defvar my-packages '(ace-jump-mode   auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode js2-mode jinja2-mode)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
+
 
 ; for new installs
 (disable (progn
@@ -69,7 +70,8 @@
 
 ;;;; basic key bindings
 (require 'python)
-(require 'dired+)
+                                        ;(require 'dired+)
+
 (global-set-key "\C-o" 'helm-find-files)
 (add-hook 'dired-mode-hook
           (function (lambda ()
@@ -1139,8 +1141,8 @@ function to make an autocomplete list"
     (kill-sexp -1)
     (insert (format "%s" value))))
 
-(require 'ox-reveal)
-(require 'ob-python)
+;(require 'ox-reveal)
+;(require 'ob-python)
 
 (global-set-key (kbd "C-<down>") 'shrink-window)
 (global-set-key (kbd "C-<up>") 'enlarge-window)
@@ -1418,7 +1420,7 @@ function to make an autocomplete list"
 (add-hook 'org-mode-hook 'flyspell-mode)
 (setq org-startup-truncated nil)  ; linewrap for org-mode
 (setq org-log-done 'time)
-(define-key dired-mode-map (kbd "f") 'dired-filter-mode)
+;(define-key dired-mode-map (kbd "f") 'dired-filter-mode)
 ; f /. to filter by extension
 
 
@@ -1559,7 +1561,6 @@ function to make an autocomplete list"
            (mapcar (lambda (a) (prog1 (+ a (mod i 5)) (incf i))) data)))))
 
 
-
 (nyan-mode)
 (setq nyan-bar-length 26)
 
@@ -1638,4 +1639,58 @@ function to make an autocomplete list"
      (let ((x (random 36)))
        (if (< x 10) (+ x ?0) (+ x (- ?a 10)))))))
 
-; unicode slow cursor movement Windows inhibit-compacting-font-caches to non-nil
+;; CloudCommunicator::decrypt_string(L"it\"dese\"dwd!cipseho$")  // is aasd asd aflsdfl
+
+(defun sign-buffer ()
+  "this function reads an emacs buffer and inserts a comment with
+   a digest string at the top of the buffer. This digest is used
+   by Blo-Up to verify that the code is signed by Itasca and can
+   be run in secure mode."
+  (interactive)
+  (goto-char (point-min))
+  (when (string= ";signed-code " (buffer-substring
+                                  (point-at-bol)
+                                  (+ 13 (point-at-bol))))
+    (kill-line) (kill-line))
+  (insert "XBRf3IPiRcd6ILtaelEH fGaXGe4ORz7tyALX9RNY daP5P4qzSMh1bLzlNUq0")
+  (let ((digest (sha1 (current-buffer))))
+    (goto-char (point-min))
+    (delete-char 62)
+    (insert (format ";signed-code %s\n" digest))))
+
+
+(defun ienc (start end)
+  "rot 13 encoding for security error messages."
+  (interactive "r")
+  (let ((mys (buffer-substring start end)))
+    (loop for i below (length mys) do
+          (aset mys i (+ (elt mys i) (% i 5))))
+  (insert " " mys)))
+
+
+(defconst *inplace-prefix* "CloudCommunicator::decrypt_string(")
+(defconst *inplace-suffix* ")")
+(defun inplace-encrypt (x y)
+  (interactive "r")
+  (save-excursion
+    (kill-region x y)
+    (let* ((raw (substring-no-properties (car kill-ring)))
+           (inner (substring raw 1 (- (length raw) 1)))
+           (encr (jkf/encrypt-string inner))
+           (escaped (s-replace "\"" "\\\"" encr))
+           (wrapped (concat *inplace-prefix* "L\"" escaped "\"" *inplace-suffix*)))
+      (insert wrapped)
+      (move-end-of-line nil)
+      (insert (concat " // " inner))
+      (message wrapped))))
+
+(defun my/org-mode-hook ()
+  "Stop the org-level headers from increasing in height relative to the other text."
+  (dolist (face '(org-level-1
+                  org-level-2
+                  org-level-3
+                  org-level-4
+                  org-level-5))
+    (set-face-attribute face nil :weight 'normal :height 1.0)))
+
+(add-hook 'org-mode-hook 'my/org-mode-hook)
