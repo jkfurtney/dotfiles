@@ -1427,15 +1427,12 @@ function to make an autocomplete list"
 (defun jkf/org-file (filename)
   (concat (file-name-directory jkf/journal-file) filename))
 (setq org-capture-templates
-      '(("s" "Sit" item (file+headline (jkf/org-file "sit.org") "Sitting")
-         "%^t %^{time}" :immediate-finish t)
+      '(
         ("r" "Run" item (file+headline (jkf/org-file "run.org") "Running")
          "%^t %^{distance}" :immediate-finish t)
-        ("g" "Gym" item (file+headline (jkf/org-file "gym.org")  "Gym")
-         "%^t" :immediate-finish t)
-        ("j" "Journal (today)" plain (file+datetree jkf/journal-file "")
+        ("j" "Journal (today)" plain (file+olp+datetree jkf/journal-file )
          "\n%?")
-        ("J" "Journal (other)" plain (file+datetree+prompt jkf/journal-file "")
+        ("J" "Journal (other)" plain (file+datetree+prompt jkf/journal-file)
          "\n%?")
         ("w" "Work TODO" entry (file+headline jkf/org-todo-file "Work")
          "** TODO %?\n    DEADLINE: %^{deadline}t")
