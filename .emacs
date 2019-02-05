@@ -589,6 +589,8 @@ number of characters is written to the message area."
 (setq jkf/org-note-file (concat jkf/dropbox-dir "/org/notes.org"))
 (setq jkf/org-todo-file (concat jkf/dropbox-dir "/org/todo.org"))
 (setq jkf/journal-file (concat jkf/dropbox-dir "/org/journal.org"))
+(setq jkf/run-file (concat jkf/dropbox-dir "/org/run.org"))
+
 
 (setq org-refile-targets `((nil :maxlevel . 3)
                            (,jkf/org-note-file :maxlevel . 3 )
@@ -1424,13 +1426,11 @@ function to make an autocomplete list"
 ; f /. to filter by extension
 
 
-(defun jkf/org-file (filename)
-  (concat (file-name-directory jkf/journal-file) filename))
 (setq org-capture-templates
       '(
-        ("r" "Run" item (file+headline (jkf/org-file "run.org") "Running")
+        ("r" "Run" item (file+headline jkf/run-file "Running")
          "%^t %^{distance}" :immediate-finish t)
-        ("j" "Journal (today)" plain (file+olp+datetree jkf/journal-file )
+        ("j" "Journal (today)" plain (file+olp+datetree jkf/journal-file)
          "\n%?")
         ("J" "Journal (other)" plain (file+datetree+prompt jkf/journal-file)
          "\n%?")
