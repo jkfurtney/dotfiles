@@ -590,6 +590,8 @@ number of characters is written to the message area."
 (setq jkf/org-note-file (concat jkf/dropbox-dir "/org/notes.org"))
 (setq jkf/org-todo-file (concat jkf/dropbox-dir "/org/todo.org"))
 (setq jkf/journal-file (concat jkf/dropbox-dir "/org/journal.org"))
+(setq jkf/run-file (concat jkf/dropbox-dir "/org/run.org"))
+
 
 (setq org-refile-targets `((nil :maxlevel . 3)
                            (,jkf/org-note-file :maxlevel . 3 )
@@ -1425,18 +1427,13 @@ function to make an autocomplete list"
 ; f /. to filter by extension
 
 
-(defun jkf/org-file (filename)
-  (concat (file-name-directory jkf/journal-file) ,filename))
 (setq org-capture-templates
-      '(("s" "Sit" item (file+headline (jkf/org-file "sit.org") "Sitting")
-         "%^t %^{time}" :immediate-finish t)
-        ("r" "Run" item (file+headline (jkf/org-file "run.org") "Running")
+      '(
+        ("r" "Run" item (file+headline jkf/run-file "Running")
          "%^t %^{distance}" :immediate-finish t)
-        ("g" "Gym" item (file+headline (jkf/org-file "gym.org")  "Gym")
-         "%^t" :immediate-finish t)
-        ("j" "Journal (today)" plain (file+datetree jkf/journal-file "")
+        ("j" "Journal (today)" plain (file+olp+datetree jkf/journal-file)
          "\n%?")
-        ("J" "Journal (other)" plain (file+datetree+prompt jkf/journal-file "")
+        ("J" "Journal (other)" plain (file+datetree+prompt jkf/journal-file)
          "\n%?")
         ("w" "Work TODO" entry (file+headline jkf/org-todo-file "Work")
          "** TODO %?\n    DEADLINE: %^{deadline}t")
@@ -1559,7 +1556,8 @@ function to make an autocomplete list"
   (interactive)
   (let ((i 0))
     (kill-new (apply #'string
-            (mapcar (lambda (a) (prog1 (+ a (mod i 5)) (incf i))) data)))))
+           (mapcar (lambda (a) (prog1 (+ a (mod i 5)) (incf i))) data)))))
+
 
 (nyan-mode)
 (setq nyan-bar-length 26)
@@ -1639,8 +1637,7 @@ function to make an autocomplete list"
      (let ((x (random 36)))
        (if (< x 10) (+ x ?0) (+ x (- ?a 10)))))))
 
-
- ; unicode slow cursor movement Windows inhibit-compacting-font-caches to non-nil
+;; CloudCommunicator::decrypt_string(L"it\"dese\"dwd!cipseho$")  // is aasd asd aflsdfl
 
 (defun sign-buffer ()
   "this function reads an emacs buffer and inserts a comment with
@@ -1667,7 +1664,7 @@ function to make an autocomplete list"
     (loop for i below (length mys) do
           (aset mys i (+ (elt mys i) (% i 5))))
   (insert " " mys)))
-; unicode slow cursor movement Windows inhibit-compacting-font-caches to non-nil
+
 
 (defconst *inplace-prefix* "CloudCommunicator::decrypt_string(")
 (defconst *inplace-suffix* ")")
@@ -1705,3 +1702,14 @@ function to make an autocomplete list"
   (setq web-mode-markup-indent-offset 2)
 )
 (add-hook 'web-mode-hook  'my-web-mode-hook)
+
+(defun my/org-mode-hook ()
+  "Stop the org-level headers from increasing in height relative to the other text."
+  (dolist (face '(org-level-1
+                  org-level-2
+                  org-level-3
+                  org-level-4
+                  org-level-5))
+    (set-face-attribute face nil :weight 'normal :height 1.0)))
+
+(add-hook 'org-mode-hook 'my/org-mode-hook)
