@@ -20,7 +20,8 @@
 ;;;; packages
 (setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")
                          ("gnu" . "http://elpa.gnu.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")))
+                         ))
+;("org" . "https://orgmode.org/elpa/")
 (require 'package)
 (package-initialize)
 
@@ -70,7 +71,7 @@
 
 ;;;; basic key bindings
 (require 'python)
-					;(require 'dired+)
+                                        ;(require 'dired+)
 
 (global-set-key "\C-o" 'helm-find-files)
 (add-hook 'dired-mode-hook
@@ -1683,3 +1684,24 @@ function to make an autocomplete list"
       (move-end-of-line nil)
       (insert (concat " // " inner))
       (message wrapped))))
+
+(defun uniquify-all-lines-region (start end)
+  "Find duplicate lines in region START to END keeping first occurrence."
+  (interactive "*r")
+  (save-excursion
+    (let ((lines) (end (copy-marker end)))
+      (goto-char start)
+      (while (and (< (point) (marker-position end))
+                  (not (eobp)))
+        (let ((line (buffer-substring-no-properties
+                     (line-beginning-position) (line-end-position))))
+          (if (member line lines)
+              (delete-region (point) (progn (forward-line 1) (point)))
+            (push line lines)
+            (forward-line 1)))))))
+
+(defun my-web-mode-hook ()
+  "Hooks for Web mode."
+  (setq web-mode-markup-indent-offset 2)
+)
+(add-hook 'web-mode-hook  'my-web-mode-hook)
