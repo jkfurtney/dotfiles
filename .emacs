@@ -109,7 +109,7 @@
 (global-set-key (kbd "C-c g") 'goto-line)
 (global-set-key (kbd "C-c r") 'replace-string)
 (global-set-key (kbd "C-c R") 'revert-buffer)
-(global-set-key (kbd "C-c t") (jkf/func-ff (concat jkf/dropbox-dir "/org/todo.org")))
+(global-set-key (kbd "C-c t") (jkf/func-ff (concat jkf/dropbox-dir "/org/todo.txt")))
 (global-set-key (kbd "C-c p") 'jkf/proselint-buffer)
 (global-set-key (kbd "C-c s") 'magit-status)
 (global-set-key (kbd "C-c +") 'jkf/increment-number-at-point)
@@ -587,9 +587,9 @@ number of characters is written to the message area."
 (add-to-list 'yas/snippet-dirs (concat jkf/src-dir "dotfiles/snippets"))
 (set-register ?e `(file . ,(concat jkf/src-dir "dotfiles/.emacs")))
 
-(setq jkf/org-note-file (concat jkf/dropbox-dir "/org/notes.org"))
-(setq jkf/org-todo-file (concat jkf/dropbox-dir "/org/todo.org"))
-(setq jkf/journal-file (concat jkf/dropbox-dir "/org/journal.org"))
+(setq jkf/org-note-file (concat jkf/dropbox-dir "/org/notes.txt"))
+(setq jkf/org-todo-file (concat jkf/dropbox-dir "/org/todo.txt"))
+(setq jkf/journal-file (concat jkf/dropbox-dir "/org/journal.txt"))
 (setq jkf/run-file (concat jkf/dropbox-dir "/org/run.org"))
 
 
@@ -1700,7 +1700,7 @@ function to make an autocomplete list"
 (defun my-web-mode-hook ()
   "Hooks for Web mode."
   (setq web-mode-markup-indent-offset 2)
-)
+  (setq web-mode-code-indent-offset 2))
 (add-hook 'web-mode-hook  'my-web-mode-hook)
 
 (defun my/org-mode-hook ()
