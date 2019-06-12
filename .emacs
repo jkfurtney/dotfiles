@@ -1713,3 +1713,5 @@ function to make an autocomplete list"
     (set-face-attribute face nil :weight 'normal :height 1.0)))
 
 (add-hook 'org-mode-hook 'my/org-mode-hook)
+(require 'blacken)
+(global-set-key (kbd "C-c b") 'blacken-buffer)
