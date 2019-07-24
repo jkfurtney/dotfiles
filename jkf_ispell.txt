@@ -55,7 +55,6 @@ Maurilio
 programmatically
 Fairhurst
 Sugarloaf
-=======
 Minnetonka
 tetrahedralization
 polyhedra
