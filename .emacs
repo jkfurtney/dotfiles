@@ -1574,7 +1574,7 @@ function to make an autocomplete list"
 
 (add-hook 'org-mode-hook
           (lambda ()
-            (when (equal (buffer-name) "todo.org")
+            (when (equal (buffer-name) "todo.txt")
              (org-content 2))))
 
 (setq vc-handled-backends nil)
