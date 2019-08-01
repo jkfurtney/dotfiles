@@ -2,8 +2,6 @@
 
 (defconst tough3-mode-keywords '(ROCKS START PARAM RPCAP ELEME CONNE INCON GENER FOFT GOFT OUTPU ENDCY SOLVR MULTI MESHMAKER1 ENDFI DIFFU COFT HYSTE TIMES INDOM TIMBC))
 
-
-
 (define-generic-mode 'tough3-mode
   '(";")
   (mapcar 'symbol-name tough3-mode-keywords)
@@ -38,7 +36,7 @@
 
 (defun ufine () (interactive)
        (font-lock-unfontify-region (point-at-bol) (point-at-eol)))
-(tough3-stripe-current-line '(3 2 5 5 3 2 10 10 10 10))
+;(tough3-stripe-current-line '(3 2 5 5 3 2 10 10 10 10))
 
 
 (defconst tough3-fmt-ELEM '(5 5 5 5 10 10 10 10 10 10 10 10 10))
