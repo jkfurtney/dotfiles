@@ -35,10 +35,15 @@
          (current-char 0)
          (show 0))
     (dotimes (i (length numbers))
-      (if (<= (+ (point) current-char (elt numbers i)) (point-at-eol))
-          (progn (tough3--highlight-region (cons (+ (point-at-bol) current-char) (+ (point-at-bol) current-char (elt numbers i)))
-                                           (if (evenp show) tough3-color-1 tough3-color-2))))
-      (incf show)
+      (when (< 0 (elt numbers i))
+        (when (<= (+ (point) current-char (elt numbers i)) (point-at-eol))
+                  (tough3--highlight-region
+                   (cons
+                    (+ (point-at-bol) current-char)
+                    (+ (point-at-bol) current-char (elt numbers i)))
+                   (if (evenp show) tough3-color-1 tough3-color-2)))
+            (incf show))
+
       (incf current-char (elt numbers i))))))
 
 ;(tough3-stripe-current-line '(3 2 5 5 3 2 10 10 10 10))
@@ -49,7 +54,7 @@
 (defconst tough3-fmt-CONNE '((6 5)  (5 10)))
 (defconst tough3-fmt-PARAM-1 '((2 2) (3 4) (24 1) (3 10)))
 (defconst tough3-fmt-ROCKS '((2 5) (7 10)))
-(defconst tough3-fmt-PARAM-2 '((4 10) (2 5) (3 10)))
+(defconst tough3-fmt-PARAM-2 '((4 10) 5 -5 (3 10)))
 (defconst tough3-fmt-PARAM-2.1 '((8 10)))
 (defconst tough3-fmt-PARAM-3 '((8 10)))
 (defconst tough3-fmt-PARAM-4 '((4 20)))
