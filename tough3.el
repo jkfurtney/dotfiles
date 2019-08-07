@@ -37,14 +37,13 @@
     (dotimes (i (length numbers))
       (when (< 0 (elt numbers i))
         (when (<= (+ (point) current-char (elt numbers i)) (point-at-eol))
-                  (tough3--highlight-region
-                   (cons
-                    (+ (point-at-bol) current-char)
-                    (+ (point-at-bol) current-char (elt numbers i)))
-                   (if (evenp show) tough3-color-1 tough3-color-2)))
-            (incf show))
-
-      (incf current-char (elt numbers i))))))
+          (tough3--highlight-region
+           (cons
+            (+ (point-at-bol) current-char)
+            (+ (point-at-bol) current-char (elt numbers i)))
+           (if (evenp show) tough3-color-1 tough3-color-2)))
+        (incf show))
+      (incf current-char (abs (elt numbers i)))))))
 
 ;(tough3-stripe-current-line '(3 2 5 5 3 2 10 10 10 10))
 ;(tough3-stripe-current-line tough3-fmt-ROCKS)
@@ -52,13 +51,13 @@
 
 (defconst tough3-fmt-ELEM '((4 5) (9 10)))
 (defconst tough3-fmt-CONNE '((6 5)  (5 10)))
-(defconst tough3-fmt-PARAM-1 '((2 2) (3 4) (24 1) (3 10)))
+(defconst tough3-fmt-PARAM-1 '((2 2) (3 4) (24 1) -10 (2 10)))
 (defconst tough3-fmt-ROCKS '((2 5) (7 10)))
 (defconst tough3-fmt-PARAM-2 '((4 10) 5 -5 (3 10)))
 (defconst tough3-fmt-PARAM-2.1 '((8 10)))
 (defconst tough3-fmt-PARAM-3 '((8 10)))
 (defconst tough3-fmt-PARAM-4 '((4 20)))
-(defconst tough3-fmt-SOLVR-1 '(1 (2 2) 3 2 (2 10)))
+(defconst tough3-fmt-SOLVR-1 '(1 -2 2 -3 2 (2 10)))
 (defconst tough3-fmt-GENER-1 '((2 5) (4 5) 5 4 1 (3 10)))
 (defconst tough3-fmt-FOFT-1 '((3 5)))
 (defconst tough3-fmt-MULTI-1 '((5 5)))
