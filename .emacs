@@ -26,7 +26,7 @@
 (require 'package)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode   auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize god-mode connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode js2-mode jinja2-mode)
+(defvar my-packages '(ace-jump-mode   auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize  connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode js2-mode jinja2-mode)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -211,7 +211,7 @@
 ;; (set-foreground-color "white")
 ;; (set-cursor-color "red")
 
-(setq ispell-program-name "aspell")
+
 (setq calendar-latitude 44.954109)
 (setq calendar-longitude -93.187408)
 (setq calendar-location-name "Minneapolis/St. Paul")
@@ -551,7 +551,8 @@ number of characters is written to the message area."
                      "\\\\\\1"
                      ad-return-value)))))
 
-      (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
+      ;; (setq ispell-program-name "aspell")
+      ;; (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
       (add-to-list 'exec-path "C:/Program Files (x86)/GnuWin32/bin/")
       (add-to-list 'exec-path "c:/Program Files/Git/bin/")
       (add-to-list 'exec-path "c:/Program Files (x86)/Git/bin/")
@@ -1716,3 +1717,31 @@ function to make an autocomplete list"
 (add-hook 'org-mode-hook 'my/org-mode-hook)
 (require 'blacken)
 (global-set-key (kbd "C-c b") 'blacken-buffer)
+
+(require 'ispell)
+
+(add-to-list 'exec-path "C:/unix_bin/hunspell-1.3.2-3-w32-bin/bin")
+(setq ispell-local-dictionary-alist '(
+
+       (nil
+           "[[:alpha:]]"
+           "[^[:alpha:]]"
+           "[']"
+           t
+           ("-d" "en_US" "-p" "D:\\hunspell\\share\\hunspell\\personal.en")
+           nil
+           iso-8859-1)
+
+       ("american"
+           "[[:alpha:]]"
+           "[^[:alpha:]]"
+           "[']"
+           t
+           ("-d" "en_US" "-p" "D:\\hunspell\\share\\hunspell\\personal.en")
+           nil
+           iso-8859-1)
+        ))
+
+(setq ispell-program-name (locate-file "hunspell"
+                                       exec-path exec-suffixes 'file-executable-p))
+;https://lists.gnu.org/archive/html/help-gnu-emacs/2014-04/msg00030.html
