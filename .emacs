@@ -20,8 +20,9 @@
 ;;;; packages
 (setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")
                          ("gnu" . "http://elpa.gnu.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")
                          ))
-;("org" . "https://orgmode.org/elpa/")
+;
 (require 'package)
 (package-initialize)
 
