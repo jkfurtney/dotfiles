@@ -22,7 +22,7 @@
                          ("gnu" . "http://elpa.gnu.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
                          ))
-;("org" . "https://orgmode.org/elpa/")
+;
 (require 'package)
 (package-initialize)
 
@@ -1162,18 +1162,18 @@ function to make an autocomplete list"
 
 (define-key rst-mode-map (kbd "C-c C-c") 'rst-adjust)
 
-(disable (require 'god-mode)
-         (global-set-key (kbd "<home>") 'god-mode-all)
-         (global-set-key (kbd "<insert>") 'god-mode-all)
-         (defun my-update-cursor ()
-           (setq cursor-type (if (or god-local-mode buffer-read-only)
-                                 'hbox
-                               'box)))
-         (add-hook 'god-mode-enabled-hook 'my-update-cursor)
-         (add-hook 'god-mode-disabled-hook 'my-update-cursor)
-         (define-key god-local-mode-map (kbd "i") 'god-local-mode)
-         (define-key god-local-mode-map (kbd "C-<tab>") 'god-local-mode)
-         (global-set-key (kbd "C-<tab>") 'god-local-mode))
+;(require 'god-mode)
+;(global-set-key (kbd "<home>") 'god-mode-all)
+;(global-set-key (kbd "<insert>") 'god-mode-all)
+;; (defun my-update-cursor ()
+;;   (setq cursor-type (if (or god-local-mode buffer-read-only)
+;;                         'hbox
+;;                       'box)))
+;; (add-hook 'god-mode-enabled-hook 'my-update-cursor)
+;; (add-hook 'god-mode-disabled-hook 'my-update-cursor)
+;; (define-key god-local-mode-map (kbd "i") 'god-local-mode)
+;; (define-key god-local-mode-map (kbd "C-<tab>") 'god-local-mode)
+;; (global-set-key (kbd "C-<tab>") 'god-local-mode)
 
 (setq c-default-style "linux"
           c-basic-offset 4)
@@ -1728,7 +1728,7 @@ function to make an autocomplete list"
            "[^[:alpha:]]"
            "[']"
            t
-           ("-d" "en_US" "-p" "D:\\hunspell\\share\\hunspell\\personal.en")
+           ("-d" "en_US" "-p" "C:\\hunspell\\share\\hunspell\\personal.en")
            nil
            iso-8859-1)
 
@@ -1737,7 +1737,7 @@ function to make an autocomplete list"
            "[^[:alpha:]]"
            "[']"
            t
-           ("-d" "en_US" "-p" "D:\\hunspell\\share\\hunspell\\personal.en")
+           ("-d" "en_US" "-p" "C:\\hunspell\\share\\hunspell\\personal.en")
            nil
            iso-8859-1)
         ))
