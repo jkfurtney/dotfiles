@@ -1728,7 +1728,7 @@ function to make an autocomplete list"
            "[^[:alpha:]]"
            "[']"
            t
-           ("-d" "en_US" "-p" "D:\\hunspell\\share\\hunspell\\personal.en")
+           ("-d" "en_US" "-p" "C:\\unix_bin\\hunspell-1.3.2-3-w32-bin\\share\\hunspell\\personal.en")
            nil
            iso-8859-1)
 
@@ -1737,7 +1737,7 @@ function to make an autocomplete list"
            "[^[:alpha:]]"
            "[']"
            t
-           ("-d" "en_US" "-p" "D:\\hunspell\\share\\hunspell\\personal.en")
+           ("-d" "en_US" "-p" "C:\\unix_bin\\hunspell-1.3.2-3-w32-bin\\share\\hunspell\\personal.en")
            nil
            iso-8859-1)
         ))
