@@ -1,2 +1,3 @@
+import matplotlib, os; matplotlib.rcParams["savefig.directory"] = "."
 import numpy as np
 import pylab as plt

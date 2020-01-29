@@ -43,7 +43,7 @@
             (+ (point-at-bol) current-char (elt numbers i)))
            (if (evenp show) tough3-color-1 tough3-color-2)))
         (incf show))
-      (incf current-char (abs (elt numbers i)))))))
+      (incf current-char (abs (elt numbers i))))))
 
 ;(tough3-stripe-current-line '(3 2 5 5 3 2 10 10 10 10))
 ;(tough3-stripe-current-line tough3-fmt-ROCKS)
