@@ -22,7 +22,7 @@
                          ("gnu" . "http://elpa.gnu.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
                          ))
-;
+
 (require 'package)
 (package-initialize)
 
@@ -626,6 +626,9 @@ number of characters is written to the message area."
   ("UNSER"        ; old work computer
    (setq initial-frame-alist '((width . 80) (height . 41)))
    (set-face-attribute 'default nil :height 140))
+
+  ("FUNKY"
+   (set-face-attribute 'default nil :height 100))
 
 
   ("u64" ; vaio Ubuntu virtual machine
