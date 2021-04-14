@@ -18,15 +18,16 @@
 (setq magit-last-seen-setup-instructions "2.4.0")
 
 ;;;; packages
-(setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")
-                         ("gnu" . "http://elpa.gnu.org/packages/")
+(setq package-archives '(("melpa" . "https://melpa.milkbox.net/packages/")
+                         ("gnu" . "https://elpa.gnu.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
                          ))
 
 (require 'package)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode   auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize  connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode js2-mode jinja2-mode google-translate)
+
+(defvar my-packages '(ace-jump-mode auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize  connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode js2-mode jinja2-mode web-mode define-word google-translate)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)

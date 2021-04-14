@@ -1,20 +1,11 @@
 alias gs='git status'
 alias gk='gitk --all'
-alias fcpp='find . -name "*.cpp"'
-#alias ip='ipython -i'
-alias ipp='~/.local/bin/ipython -i'
+alias ip='ipython -i'
 set -o ignoreeof
 alias rm='rm -i'
 alias mv='mv -i'
 alias gd='git diff'
 alias gba='git branch -a'
-#alias gut='git ls-files --other --exclude-standard'
-PATH=.:~/bin/:~/.local/bin/:$PATH
-alias ipnb='~/.local/bin/ipython notebook --pylab inline'
-alias kp='~/.local/bin/kernprof.py'
-alias ptest='python tests/test_fmm.py'
-alias pbuild='python setup.py install --user --record install.log && ptest'
-alias nt='nosetests -v'
-alias ipnb='python /c/python27/scripts/ipython-script.py notebook --pylab inline'
+PATH=.:~/bin/:~/.local/bin/:/c/Users/jfurtney/AppData/Local/Continuum/anaconda3:/c/Users/jfurtney/AppData/Local/Continuum/anaconda3/Library/mingw-w64/bin:/c/Users/jfurtney/AppData/Local/Continuum/anaconda3/Library/usr/bin:/c/Users/jfurtney/AppData/Local/Continuum/anaconda3/Library/bin:/c/Users/jfurtney/AppData/Local/Continuum/anaconda3/Scripts:/c/Users/jfurtney/AppData/Local/Continuum/anaconda3/bin:/c/Users/jfurtney/AppData/Local/Continuum/anaconda3/condabin:$PATH
 alias exit=''
-alias oopen='xdg-open '
+CONDA_DLL_SEARCH_MODIFICATION_ENABLE=1

@@ -1,3 +1,4 @@
-import matplotlib, os; matplotlib.rcParams["savefig.directory"] = "."
 import numpy as np
-import pylab as plt
+import pandas as pd
+import matplotlib; matplotlib.rcParams["savefig.directory"] = "."
+from matplotlib import pyplot as plt
