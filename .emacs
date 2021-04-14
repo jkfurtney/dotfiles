@@ -22,11 +22,11 @@
                          ("gnu" . "http://elpa.gnu.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
                          ))
-;
+
 (require 'package)
 (package-initialize)
 
-(defvar my-packages '(ace-jump-mode   auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize  connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode js2-mode jinja2-mode)
+(defvar my-packages '(ace-jump-mode   auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize  connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode js2-mode jinja2-mode google-translate)
   "A list of packages to ensure are installed at launch.")
 
 (dolist (p my-packages)
@@ -583,7 +583,7 @@ number of characters is written to the message area."
       ;; windows specific font stuff
       (setq w32-get-true-file-attributes nil)
       (set-frame-font
-       "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1")
+       "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1" t nil)
       (set-face-attribute 'default nil :height 140)))
 
 (add-to-list 'yas/snippet-dirs (concat jkf/src-dir "dotfiles/snippets"))
@@ -626,6 +626,9 @@ number of characters is written to the message area."
   ("UNSER"        ; old work computer
    (setq initial-frame-alist '((width . 80) (height . 41)))
    (set-face-attribute 'default nil :height 140))
+
+  ("FUNKY"
+   (set-face-attribute 'default nil :height 100))
 
 
   ("u64" ; vaio Ubuntu virtual machine
@@ -1745,3 +1748,24 @@ function to make an autocomplete list"
 (setq ispell-program-name (locate-file "hunspell"
                                        exec-path exec-suffixes 'file-executable-p))
 ;https://lists.gnu.org/archive/html/help-gnu-emacs/2014-04/msg00030.html
+
+(setq google-translate-default-source-language "fr")
+(setq google-translate-default-target-language "en")
+(defun google-translate-json-suggestion (json)
+  "Retrieve from JSON (which returns by the
+`google-translate-request' function) suggestion. This function
+does matter when translating misspelled word. So instead of
+translation it is possible to get suggestion."
+  (let ((info (aref json 7)))
+    (if (and info (> (length info) 0))
+        (aref info 1)
+      nil)))
+
+
+(defun jkf/translate-fr-en-insert (a b)
+  (interactive "r")
+  (save-excursion
+    (google-translate-translate "fr" "en" (buffer-substring a b) 'kill-ring)
+    (yank)))
+
+(with-temp-buffer (google-translate-translate "fr" "en" "Regularite de la sauvegarde" 'kill-ring))
