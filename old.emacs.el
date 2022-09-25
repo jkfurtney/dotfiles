@@ -1,62 +1,24 @@
 (setq package-archives '(("melpa" . "http://melpa.org/packages/")
                          ("gnu" . "https://elpa.gnu.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")))
-
+                         ("org" . "https://orgmode.org/elpa/")
+                         ))
 (require 'package)
 (package-initialize)
 (unless (package-installed-p 'use-package) (package-install 'use-package))
 
-(use-package vertico
-  :ensure t
-  :config (vertico-mode))
-
+(use-package vertico)
 (use-package vertico-directory
   :after vertico
   :ensure nil
-  ;; More convenient directory navigation commands
   :bind (:map vertico-map
               ("RET" . vertico-directory-enter)
               ("DEL" . vertico-directory-delete-char)
               ("M-DEL" . vertico-directory-delete-word))
-  ;; Tidy shadowed file names
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 
 (use-package vertico-buffer
   :after vertico
-  :ensure nil
-  :config (vertico-buffer-mode))
-
-(use-package all-the-icons
-  :ensure t
-  :config (all-the-icons-completion-mode))
-
-(use-package orderless
-  :ensure t
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles basic partial-completion)))))
-
-(use-package marginalia
-  :ensure t
-  :config
-  (marginalia-mode))
-
-(use-package embark
-  :ensure t
-  :bind
-  (("C-." . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-dwim)        ;; good alternative: M-.
-   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-  :init
-  ;; Optionally replace the key help with a completing-read interface
-  (setq prefix-help-command #'embark-prefix-help-command)
-  :config
-  ;; Hide the mode line of the Embark live/completions buffers
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-                 (window-parameters (mode-line-format . none)))))
-
+  :ensure nil)
 
 (defvar dotfile-dir nil "location of .emacs and other stuff")
 (defvar jkf/src-dir nil "location of src folder")
@@ -78,7 +40,8 @@
 
 ;;;; packages
 
-(defvar my-packages '(ace-jump-mode auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize  connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode js2-mode jinja2-mode web-mode define-word google-translate)
+
+(defvar my-packages '(ace-jump-mode auto-complete helm  macrostep  smartparens popup dash s  yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors cyberpunk-theme cython-mode  w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word google-translate)
   "A list of packages to ensure are installed at launch.")
 
 (disable (dolist (p my-packages)
@@ -103,7 +66,7 @@
     (error "package not installed")))
 
                                         ; install org and org-plus-extras from here:
-;(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
                                         ; then install ox-reveal
 
 
@@ -1472,18 +1435,10 @@ function to make an autocomplete list"
 (defun jkf/active-minor-modes () (interactive)
        (--filter (and (boundp it) (symbol-value it)) minor-mode-list))
 
-(disable (powerline-default-theme)
-(set-face-attribute 'mode-line nil
-                    :foreground "Black"
-                    :background "DarkOrange"
-                    :box nil))
-;(add-hook 'desktop-after-read-hook 'powerline-reset)
 
 (add-hook 'org-mode-hook 'flyspell-mode)
 (setq org-startup-truncated nil)  ; linewrap for org-mode
 (setq org-log-done 'time)
-;(define-key dired-mode-map (kbd "f") 'dired-filter-mode)
-; f /. to filter by extension
 
 
 (setq org-capture-templates
