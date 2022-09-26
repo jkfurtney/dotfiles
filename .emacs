@@ -121,7 +121,7 @@
 (add-hook 'emacs-lisp-mode-hook (lambda() (setq mode-name "el")))
 
 
-(require 'python)
+;;(require 'python)
 ;;;; basic key bindings
 
 (global-set-key "\C-o" 'find-file)
@@ -153,7 +153,7 @@
 (global-set-key (kbd "C-c =") 'jkf/calc-eval-line-and-insert)
 (global-set-key (kbd "C-c k") 'jkf/kill-all-buffers)
 (global-set-key (kbd "C-c K") 'jkf/kill-other-buffers)
-;(global-set-key (kbd "C-c i") 'helm-imenu)
+(global-set-key (kbd "C-c i") 'imenu)
 (global-set-key (kbd "C-c g") 'goto-line)
 (global-set-key (kbd "C-c r") 'replace-string)
 (global-set-key (kbd "C-c R") 'revert-buffer)
@@ -542,7 +542,7 @@
    (set-face-attribute 'default nil :height 140))
 
   ("FUNKY"
-   (set-face-attribute 'default nil :height 100))
+   (set-face-attribute 'default nil :height 140))
 
 
   ("u64" ; vaio Ubuntu virtual machine
@@ -743,8 +743,11 @@ Useful when editing a datafile in emacs and loading it a lisp."
 
 ;(global-set-key (kbd "M-x") 'helm-M-x)
 
-(require 'multiple-cursors)
-(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(use-package multiple-cursors
+  :ensure t
+  :config
+  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines))
+
 
 ; on windows the magit process hangs constantly
 
