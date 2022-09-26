@@ -1,7 +1,5 @@
 (setq package-archives '(("melpa" . "http://melpa.org/packages/")
-                         ("gnu" . "https://elpa.gnu.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")))
-
+                         ("gnu" . "https://elpa.gnu.org/packages/")))
 (require 'package)
 (package-initialize)
 (unless (package-installed-p 'use-package) (package-install 'use-package))
@@ -27,8 +25,12 @@
   :config (vertico-buffer-mode))
 
 (use-package all-the-icons
+  :ensure t)
+
+(use-package all-the-icons-completion
   :ensure t
   :config (all-the-icons-completion-mode))
+
 
 (use-package orderless
   :ensure t
@@ -78,7 +80,7 @@
 
 ;;;; packages
 
-(defvar my-packages '(ace-jump-mode auto-complete helm helm-descbinds macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key powerline itasca nyan-mode js2-mode jinja2-mode web-mode define-word)
+(defvar my-packages '(ace-jump-mode auto-complete helm helm-descbinds macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word)
   "A list of packages to ensure are installed at launch.")
 ; minimap
 (disable (dolist (p my-packages)
@@ -101,10 +103,6 @@
       (file-name-as-directory
        (package-desc-dir (cadr (assq pname package-alist))))
     (error "package not installed")))
-
-                                        ; install org and org-plus-extras from here:
-;(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-                                        ; then install ox-reveal
 
 
 (defun jkf/replace-regexp (from to)
@@ -1314,3 +1312,21 @@ incriment it and write on a new line below. Leave the origional inplace"
 (setq minimap-window-location 'right)
 (add-to-list 'auto-mode-alist '("\\.C\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.H\\'" . c++-mode))
+
+(use-package doom-themes
+  :ensure t
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-one t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Enable custom neotree theme (all-the-icons must be installed!)
+  (doom-themes-neotree-config)
+  ;; or for treemacs users
+  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+  (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
