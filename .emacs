@@ -78,9 +78,9 @@
 
 ;;;; packages
 
-(defvar my-packages '(ace-jump-mode auto-complete helm helm-descbinds  macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors ac-slime jedi cyberpunk-theme fold-dwim htmlize  connection  cython-mode nsis-mode w32-browser guide-key powerline itasca nyan-mode swift-mode js2-mode jinja2-mode web-mode define-word google-translate)
+(defvar my-packages '(ace-jump-mode auto-complete helm helm-descbinds macrostep markdown-mode magit smartparens popup dash request s slime uuid websocket yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key powerline itasca nyan-mode js2-mode jinja2-mode web-mode define-word)
   "A list of packages to ensure are installed at launch.")
-
+; minimap
 (disable (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p))))
@@ -123,9 +123,8 @@
 (add-hook 'emacs-lisp-mode-hook (lambda() (setq mode-name "el")))
 
 
-;;;; basic key bindings
 (require 'python)
-                                        ;(require 'dired+)
+;;;; basic key bindings
 
 (global-set-key "\C-o" 'find-file)
 (add-hook 'dired-mode-hook
@@ -134,13 +133,9 @@
                       (local-unset-key (kbd "<f1>"))
                       (local-unset-key (kbd "C-o")))))
 
-(add-hook 'swift-mode-hook
-          (function (lambda ()
-                      (local-unset-key (kbd "M-j")))))
 (add-hook 'c++-mode-hook
           (function (lambda ()
                       (local-unset-key (kbd "M-j")))))
-
 
 
 (global-set-key (kbd "M-/") 'hippie-expand)
@@ -158,17 +153,13 @@
 (global-set-key (kbd "C-c ;") 'comment-region)
 (global-set-key (kbd "C-c a") 'org-agenda)
 (global-set-key (kbd "C-c =") 'jkf/calc-eval-line-and-insert)
-(global-set-key (kbd "C-c l") 'jkf/toggle-slime)
-(global-set-key (kbd "C-c L") 'jkf/launch-blo-up-swank)
 (global-set-key (kbd "C-c k") 'jkf/kill-all-buffers)
 (global-set-key (kbd "C-c K") 'jkf/kill-other-buffers)
-(global-set-key (kbd "C-c i") 'helm-imenu)
+;(global-set-key (kbd "C-c i") 'helm-imenu)
 (global-set-key (kbd "C-c g") 'goto-line)
 (global-set-key (kbd "C-c r") 'replace-string)
 (global-set-key (kbd "C-c R") 'revert-buffer)
 (global-set-key (kbd "C-c t") (jkf/func-ff (concat jkf/dropbox-dir "/org/todo.txt")))
-(global-set-key (kbd "C-c p") 'jkf/proselint-buffer)
-(global-set-key (kbd "C-c s") 'magit-status)
 (global-set-key (kbd "C-c +") 'jkf/increment-number-at-point)
 
 
@@ -177,7 +168,6 @@
 (global-set-key (kbd "C-c w b") 'jkf/open-bash-here)
 (global-set-key (kbd "C-c w w") 'helm-w32-launcher)
 
-
 ;; org-mode C-c bindings
 (defun jkf/open-notes () (interactive)
        (find-file (concat jkf/dropbox-dir "/org/notes.org"))
@@ -185,16 +175,11 @@
        (org-overview))
 (global-set-key (kbd "C-c o o") 'org-capture)
 (global-set-key (kbd "C-c o n") 'jkf/open-notes)
-(global-set-key (kbd "C-c o i") 'helm-org-agenda-files-headings)
-(global-set-key (kbd "C-c C-x C-o") 'org-clock-out)
-
-(define-key python-mode-map (kbd "C-c d") 'jedi:show-doc)
 
 (global-set-key (kbd "C-c f") 'fold-dwim-toggle)
 (global-set-key (kbd "C-c M-f") 'fold-dwim-hide-all)
 (global-set-key (kbd "C-c M-F") 'fold-dwim-show-all)
 
-(global-set-key (kbd "C-c M-l") 'jkf/launch-blo-up)
 (global-set-key (kbd "C-c M-c") 'jkf/copy-buffer-file-name-as-kill)
 
 ; emacs lisp specific
@@ -315,62 +300,6 @@
 (add-hook 'rst-mode-hook 'flyspell-mode)
 (add-hook 'text-mode-hook 'flyspell-mode)
 
-;;;; Sphinx reStructuredText Setup
-(disable
- (defun jkf/chunk--start ()
-   "move point to begining of white-space seperated chunk"
-   (interactive)
-   (search-backward-regexp "\\s-")
-   (forward-char))
- (defun jkf/chunk--end ()
-   "move point to end of white-space separated chunk"
-   (interactive)
-   (search-forward-regexp "\\s-")
-   (backward-char))
- (defun jkf/rest-wrap-math ()
-   "wrap :math:`__` around the current word"
-   (interactive)
-   (jkf/chunk--start)
-   (insert ":math:`")
-   (jkf/chunk--end)
-   (insert "`"))
-
- (defun jkf/sphinx--compile-cmd (cmd)
-   "build sphinx documentation. First call prompts for a directory"
-   (interactive)
-   (unless (boundp 'sphinx-build-dir)
-     (setq sphinx-build-dir (read-directory-name "sphinx build dir ")))
-   (let ((default-directory sphinx-build-dir))
-     (compile cmd)))
- (defun jkf/sphinx-html-compile () (interactive)
-        (jkf/sphinx--compile-cmd "make html"))
- (defun jkf/sphinx-pdf-compile () (interactive)
-        (jkf/sphinx--compile-cmd "make latexpdf"))
-
- (defun jkf/sphinx-reset () (interactive) (makunbound 'sphinx-build-dir))
-
- (defun jkf/sphinx-open-pdf-windows () (interactive)
-        (when (boundp 'sphinx-build-dir)
-          (w32-browser (car (file-expand-wildcards
-                             (concat sphinx-build-dir "build/latex/*.pdf"))))))
-
- (define-key rst-mode-map (kbd "C-c p") 'jkf/sphinx-open-pdf-windows)
- (define-key rst-mode-map (kbd "C-c C") 'jkf/sphinx-html-compile)
- (define-key rst-mode-map (kbd "C-c c") 'jkf/sphinx-pdf-compile)
- (define-key rst-mode-map (kbd "C-c m") 'jkf/rest-wrap-math))
-
-;;;; FORTRAN Setup
-(add-to-list 'auto-mode-alist '("\\.inc\\'" . fortran-mode))
-
-(defun jkf/udec-string (s)
-  "Prompt for a string and insert it at point as a FORTRAN char
-array literal. A training space character is added, the total
-number of characters is written to the message area."
-  (interactive "Mstring for conversion: ")
-  (dolist (c (string-to-list s))
-    (insert (format "'%c'," c)))
-  (insert "' ',")
-  (message "%i chars " (1+ (length s))))
 
 ;;;; C/C++ Setup
 (defun jkf/filename-comment ()
@@ -400,7 +329,6 @@ number of characters is written to the message area."
  (find-file fname)
  (yank))
 
-;(setq before-save-hook nil)
 (add-hook 'before-save-hook
                    (lambda ()
                      (unless
@@ -409,36 +337,11 @@ number of characters is written to the message area."
 
 ;;;; Python Setup
 (require 'cython-mode)
-(setq python-check-command "pep8 -r --ignore=E221")
 (add-to-list 'auto-mode-alist '("\\.pyx\\'" . cython-mode))
-
-(defvar jkf/python-build-dir nil)
-(defun jkf/python-extension-compile ()
-  "build python extension module. First call prompts for a directory"
-  (interactive)
-  (unless jkf/python-build-dir
-    (setq jkf/python-build-dir (read-directory-name "python build dir ")))
-  (let ((default-directory jkf/python-build-dir)
-        (extra-arg (if (eq  system-type 'windows-nt)
-                       " " " --user")))
-    (compile (concat "python setup.py install" extra-arg))))
-
-(define-key python-mode-map (kbd "C-c M-c")
-  'copy-run-buffer-filename-as-kill)
-;(add-hook 'python-mode-hook 'jedi:setup)
-;(remove-hook 'python-mode-hook 'jedi-setup)
 (add-hook 'python-mode-hook 'hs-minor-mode)
 (add-hook 'python-mode-hook 'flyspell-prog-mode)
-
-
-(setq jedi:setup-keys t)
-(setq jedi:complete-on-dot t)
 (add-hook 'python-mode-hook (function (lambda ()
                                         (setq python-indent-offset 4))))
-
-(add-hook 'jedi-mode-hook (function (lambda ()
-                                      (define-key jedi-mode-map (kbd "C-c r") nil))))
-
 
 ;;;; Lisp Setup
 (require 'rainbow-delimiters)
@@ -454,17 +357,6 @@ number of characters is written to the message area."
 (add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
 (setq edebug-trace nil)
 
-(require 'ac-slime)
-(require 'slime-autoloads)
-(defun jkf/setup-slime ()
-  (interactive)
-  (slime-setup '(slime-fancy slime-banner slime-autodoc))
-  (add-hook 'slime-mode-hook 'set-up-slime-ac)
-  (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
-  (add-to-list 'ac-modes 'slime-repl-mode)
-  (add-to-list 'ac-modes 'slime-mode))
-(jkf/setup-slime)
-
 ;; .emacs section navigation by ;;;; Section name
 (defun jkf/imenu-elisp-sections ()
   (setq imenu-prev-index-position-function nil)
@@ -473,17 +365,12 @@ number of characters is written to the message area."
 (add-hook 'emacs-lisp-mode-hook 'jkf/imenu-elisp-sections)
 
 ;;;; Org-mode Setup
-;(global-set-key (kbd "C-M-<return>") 'org-insert-subheading)
+
 (setq org-imenu-depth 3)
-(disable
- (require 'org-tree-slide)
- (define-key org-mode-map (kbd "<f8>") 'org-tree-slide-mode)
- (define-key org-mode-map (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
- (setq org-tree-slide-slide-in-effect nil))
+
 
 (require 'org)
 (setq org-cycle-separator-lines 0)
-(define-key org-mode-map (kbd "C-M-k") 'kill-sentence)
 (define-key org-mode-map (kbd "C-c <up>") 'org-move-subtree-up)
 (define-key org-mode-map (kbd "C-c <down>") 'org-move-subtree-down)
 (setq org-src-fontify-natively t)
@@ -577,21 +464,6 @@ number of characters is written to the message area."
       (require 'w32-win)
       (setq jkf/src-dir "c:/src/")
       (setq jkf/dropbox-dir (jkf/windows-get-dropbox-folder))
-
-;;;; Jedi setup
-      ;;; hack because we use Anaconda which does not have virtual env
-      (setq jedi:server-command
-            `("python"
-              ,(concat (jkf/get-package-dir 'jedi-core)
-                      "jediepcserver.py")))
-
-      (if (file-exists-p "C:/Program Files (x86)/Git/bin/bash.exe")
-          (setq explicit-shell-file-name
-                "C:/Program Files (x86)/Git/bin/bash.exe")
-        (setq explicit-shell-file-name
-                "C:/Program Files/Git/bin/bash.exe"))
-      (setq shell-file-name explicit-shell-file-name)
-
                                         ; to get grep working?
       (defadvice shell-quote-argument
         (after windows-nt-special-quote (argument) activate)
@@ -605,8 +477,6 @@ number of characters is written to the message area."
                      "\\\\\\1"
                      ad-return-value)))))
 
-      ;; (setq ispell-program-name "aspell")
-      ;; (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/")
       (add-to-list 'exec-path "C:/Program Files (x86)/GnuWin32/bin/")
       (add-to-list 'exec-path "c:/Program Files/Git/bin/")
       (add-to-list 'exec-path "c:/Program Files (x86)/Git/bin/")
@@ -626,14 +496,6 @@ number of characters is written to the message area."
       (setq eshell-rc-script "c:/src/dotfiles/eshellrc")
 
                                         ; windows specific magit init
-      (disable
-       (defun magit-escape-for-shell (str)
-         (if (or (string= str "git")
-                 (string-match "^--" str))
-             str
-           (concat "'" (replace-regexp-in-string "'" "'\\''" str) "'")))
-       (setq magit-git-executable "C:\\Program Files\\Git\\bin\\git"))
-
       ;; windows specific font stuff
       (setq w32-get-true-file-attributes nil)
       (set-frame-font
@@ -761,62 +623,7 @@ file with a2ps"
       '((:eval (if (buffer-file-name)
                    (abbreviate-file-name (buffer-file-name))
                  "%b"))))
-;; (setq header-line-format
-;;       '((:eval (if (buffer-file-name)
-;;                    (abbreviate-file-name (buffer-file-name))
-;;                  "%b"))))
-;; (add-hook 'buffer-list-update-hook
-;;        (lambda nil (setq header-line-format (abbreviate-file-name (buffer-file-name)))))
 
-
-(progn
-  (defmacro with-face (str &rest properties)
-  `(propertize ,str 'face (list ,@properties)))
-  (defun sl/make-header ()
-    ""
-    (let* ((sl/full-header (abbreviate-file-name buffer-file-name))
-           (sl/header (file-name-directory sl/full-header))
-           (sl/drop-str "[...]"))
-      (if (> (length sl/full-header)
-             (window-body-width))
-          (if (> (length sl/header)
-                 (window-body-width))
-              (progn
-                (concat (with-face sl/drop-str
-                                   :background "blue"
-                                   :weight 'bold
-                                   )
-                        (with-face (substring sl/header
-                                              (+ (- (length sl/header)
-                                                    (window-body-width))
-                                                 (length sl/drop-str))
-                                              (length sl/header))
-                                   ;; :background "red"
-                                   :weight 'bold
-                                   )))
-            (concat (with-face sl/header
-                               ;; :background "red"
-                               :foreground "#8fb28f"
-                               :weight 'bold
-                               )))
-        (concat (with-face sl/header
-                           ;; :background "green"
-                           ;; :foreground "black"
-                           :weight 'bold
-                           :foreground "#8fb28f"
-                           )
-                (with-face (file-name-nondirectory buffer-file-name)
-                           :weight 'bold
-                           ;; :background "red"
-                           )))))
-  (defun sl/display-header ()
-    (setq header-line-format
-          '("" ;; invocation-name
-            (:eval (if (buffer-file-name)
-                       (sl/make-header)
-                     "%b")))))
-(add-hook 'buffer-list-update-hook
-          'sl/display-header))
 
 (defun jkf/move-line-up ()
   "Move up the current line."
@@ -873,12 +680,8 @@ file with a2ps"
   (remq 'process-kill-buffer-query-function
          kill-buffer-query-functions))
 
-;(which-function-mode 1)
-
-(setq erc-hide-list '("JOIN" "PART" "QUIT"))
 
 (yas-reload-all)
-
 
 (global-set-key (kbd "M-j")
             (lambda ()
@@ -940,16 +743,12 @@ Useful when editing a datafile in emacs and loading it a lisp."
 
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
-(global-set-key (kbd "M-x") 'helm-M-x)
+;(global-set-key (kbd "M-x") 'helm-M-x)
 
 (require 'multiple-cursors)
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
 
 ; on windows the magit process hangs constantly
-(defun jkf/kill-magit ()
-  "Kill the Magit process buffer"
-  (interactive)
-  (delete-process "*magit-process*"))
 
 (defun jkf/=-transpose ()
   "Transpose the text before and after the first equals sign"
@@ -1087,104 +886,6 @@ incriment it and write on a new line below. Leave the origional inplace"
 
 
 (require 'fold-dwim)
-
-(defun jkf/extract-bu-ac () (interactive)
-  "paste Blo-Up lisp documentation dump in a buffer and call this
-function to make an autocomplete list"
-  (keep-lines "^\.\. func.*")
-  (jkf/replace-regexp "(.*$" "")
-  (goto-char (point-min))
-  (jkf/replace-regexp ".. function:: " ""))
-
-(defun jkf/setup-slime-live ()
-     (interactive)
-     (rainbow-delimiters-mode 1)
-     (define-key slime-mode-map (kbd "M-n") nil)
-     (define-key slime-mode-map (kbd "M-p") nil)
-     (define-key slime-mode-map (kbd "C-M-.") nil)
-     (diminish 'slime-mode " SL"))
-(add-hook 'slime-mode-hook 'jkf/setup-slime-live)
-
-(defun jkf/lisp-code-to-c-comment (start end)
-  (interactive "r")
-  (save-excursion
-    (jkf/replace-regexp "\"" "\\\"")
-    (jkf/replace-regexp "^" "\"  ")
-    (jkf/replace-regexp "$" "  \\\\n\"")))
-
-(defadvice slime-compilation-finished (after jkf/post-slime-compile-defun (result))
-  "open the intermediate C file generated by ECL when compiling a defun."
-  (jkf/show-ecl-defun-c-code))
-(ad-activate 'slime-compilation-finished)
-
-(defun jkf--sort-file-modification-times (a b)
-  (let* ((a-time (fifth (file-attributes a)))
-         (b-time (fifth (file-attributes b)))
-         (a-0 (first a-time))
-         (a-1 (second a-time))
-         (a-2 (third a-time))
-         (b-0 (first b-time))
-         (b-1 (second b-time))
-         (b-2 (third b-time)))
-    (if (> a-0 b-0) t (if (> a-1 b-1) t (if (> a-2 b-2) t) nil))))
-
-;; this was a hack used when debugging the ecl compiler
-(defun jkf--find-last-modified-temporary-c-file ()
-  (interactive)
-  (first (sort
-          (directory-files temporary-file-directory t "\\.c$")
-          'jkf--sort-file-modification-times)))
-(defun jkf/show-ecl-defun-c-code ()
-  (interactive)
-  (find-file
-   (jkf--find-last-modified-temporary-c-file)))
-
-(defun jkf/toggle-slime ()
-  (interactive)
-  (if (slime-connected-p)
-      (slime-disconnect)
-    (slime-connect "127.0.0.1" 4005)))
-
-
-;;; Blo-Up SLIME Emacs integration.
-;;;
-;;; Starting Blo-Up with -test -swank -script <location of ecl-boot
-;;; code> runs the ecl boot code which initializes the swank server,
-;;; Emacs/SLIME then trys to connect to the swank server running inside Blo-Up.
-;;
-;; For this to work SLIME has to be installed in Emacs.
-
-(setf blo-up-exe-name "c:/Program Files/HSBM/Blo-Up_2.7/exe64/bloup206_64.exe")
-;(setf blo-up-exe-name "c:/src/bu_july17_x64Release/x64Release/bloup206_64.exe")
-(setf blo-up-swank-location "c:/src/dotfiles/ecl-swank.lisp")
-
-;;; This code finds the slime installation directory and sets it to an
-;;; environmental variable the child process can read.
-(setenv "BLOUP_SWANK"
-        (concat (jkf/get-package-dir 'slime)
-                "swank-loader.lisp"))
- ;;; (file-exists-p (getenv "BLOUP_SWANK"))
-
- (defun jkf/launch-blo-up-swank ()
-   (interactive)
-   (start-process "Blo-Up" "bub"
-                  blo-up-exe-name
-                  "-test"
-                  "-swank"
-                  "-script"
-                  blo-up-swank-location)
-                                        ; need to poll here with idle timer
-   (sleep-for 2)
-   (jkf/toggle-slime))
-
-(defun jkf/launch-blo-up ()
-  (interactive)
-  (start-process "Blo-Up" "bub"
-                 blo-up-exe-name
-                 "-test"
-                 "-script"
-                 blo-up-swank-location))
-
 (defun jkf/increment-number-at-point ()
   "incriment integer at point"
   (interactive)
@@ -1203,34 +904,12 @@ function to make an autocomplete list"
     (kill-sexp -1)
     (insert (format "%s" value))))
 
-;(require 'ox-reveal)
-;(require 'ob-python)
 
 (global-set-key (kbd "C-<down>") 'shrink-window)
 (global-set-key (kbd "C-<up>") 'enlarge-window)
 (setq org-confirm-babel-evaluate nil)
 
-(defun jkf/wrap-code-org ()
-  "wrap the current word in =word="
-  (interactive)
-  (insert "=")
-  (forward-word)
-  (insert "="))
-
 (define-key rst-mode-map (kbd "C-c C-c") 'rst-adjust)
-
-;(require 'god-mode)
-;(global-set-key (kbd "<home>") 'god-mode-all)
-;(global-set-key (kbd "<insert>") 'god-mode-all)
-;; (defun my-update-cursor ()
-;;   (setq cursor-type (if (or god-local-mode buffer-read-only)
-;;                         'hbox
-;;                       'box)))
-;; (add-hook 'god-mode-enabled-hook 'my-update-cursor)
-;; (add-hook 'god-mode-disabled-hook 'my-update-cursor)
-;; (define-key god-local-mode-map (kbd "i") 'god-local-mode)
-;; (define-key god-local-mode-map (kbd "C-<tab>") 'god-local-mode)
-;; (global-set-key (kbd "C-<tab>") 'god-local-mode)
 
 (setq c-default-style "linux"
           c-basic-offset 4)
@@ -1363,7 +1042,6 @@ function to make an autocomplete list"
         (backward-delete-char 1)))))
 
 (require 'ox-latex)
-(setq ido-file-extension-order '(".py" ".dat" ".f3dat" ".lisp"))
 
 (defun jkf/open-temp-file ()
   "opens a new temporary file in c:\src "
@@ -1379,13 +1057,6 @@ function to make an autocomplete list"
 (defun jkf/clear-ispell-local-words ()
   (interactive)
   (setq ispell-buffer-session-localwords nil))
-
-
-(autoload 'nsis-mode "nsis-mode" "NSIS mode" t)
-(setq auto-mode-alist (append '(("\\.\\([Nn][Ss][Ii]\\)$" .
-                                 nsis-mode)) auto-mode-alist))
-(setq auto-mode-alist (append '(("\\.\\([Nn][Ss][Hh]\\)$" .
-                                 nsis-mode)) auto-mode-alist))
 
 (defun jkf/journal ()
   (interactive)
@@ -1449,42 +1120,14 @@ function to make an autocomplete list"
 
 
 
-(defun jkf/open-bash-here ()
-  (interactive)
-  ;; but how to start in the current working directory
-  (w32-browser "c:/Program Files (x86)/Git/Git Bash.vbs"))
-
-(disable (flycheck-define-checker proselint
-                                  "A linter for prose."
-                                  :command ("proselint" source-inplace)
-                                  :error-patterns
-                                  ((warning line-start (file-name) ":" line ":" column ": "
-                                            (id (one-or-more (not (any " "))))
-                                            (message) line-end))
-                                  :modes (text-mode markdown-mode gfm-mode))
-
-         (add-to-list 'flycheck-checkers 'proselint))
-
-(defun jkf/proselint-buffer () (interactive)
-       (compile (format "proselint.exe %s" (buffer-file-name))))
 (put 'narrow-to-region 'disabled nil)
 
 (defun jkf/active-minor-modes () (interactive)
        (--filter (and (boundp it) (symbol-value it)) minor-mode-list))
 
-(disable (powerline-default-theme)
-(set-face-attribute 'mode-line nil
-                    :foreground "Black"
-                    :background "DarkOrange"
-                    :box nil))
-;(add-hook 'desktop-after-read-hook 'powerline-reset)
-
 (add-hook 'org-mode-hook 'flyspell-mode)
 (setq org-startup-truncated nil)  ; linewrap for org-mode
 (setq org-log-done 'time)
-;(define-key dired-mode-map (kbd "f") 'dired-filter-mode)
-; f /. to filter by extension
-
 
 (setq org-capture-templates
       '(
@@ -1517,7 +1160,6 @@ function to make an autocomplete list"
 (setq org-todo-keywords
       '((sequence "TODO(t)" "SOMEDAY(s)" "DONE(d)" "WAITING(w)")))
 (setq org-tags-column 50)
-(global-set-key (kbd "C-c C-x C-o") 'org-clock-out)
 
 
 ;; helm patch to put filename into kill ring
@@ -1532,50 +1174,6 @@ function to make an autocomplete list"
            (cons "Insert full path of file into kill ring"
                  #'helm-ff-insert-file-full-path-into-killring ))))
 
-; easy way to clock into a job
-(global-set-key (kbd "C-c o i") 'jkf/work-clock-in)
-(setq jkf/clock-into-work-helm-source
-      '((name . "Clock into which job?")
-        (candidates . jkf/get-headers)
-        (action . (lambda (candidate)
-                    (progn
-                      (find-file jkf/org-todo-file)
-                      (message "%s" candidate)
-                      (goto-line candidate)
-                      (org-clock-in))))))
-(defun jkf/work-clock-in ()
-  (interactive)
-  (helm :sources '(jkf/clock-into-work-helm-source)))
-(defun jkf/get-line-and-number ()
-  (interactive)
-  (save-excursion
-    (save-restriction
-      (widen)
-      (cons (buffer-substring-no-properties (point-at-bol) (point-at-eol))
-            (line-number-at-pos)))))
-(defun jkf/get-headers ()
-  (interactive)
-  (with-temp-buffer
-    (insert-file-contents jkf/org-todo-file)
-    (org-mode)
-    (goto-char (point-min))
-    ;(search-forward-regexp "^\\* work")
-    (move-beginning-of-line 1)
-    ;(org-map-entries 'jkf/get-line-and-number nil 'tree)
-    (org-map-entries 'jkf/get-line-and-number nil nil)))
-
-(disable (defun jkf/scale-stl ()
-   (interactive)
-   (jkf/replace-regexp "E-06" "E-09")
-   (jkf/replace-regexp "E-05" "E-08")
-   (jkf/replace-regexp "E-04" "E-07")
-   (jkf/replace-regexp "E-03" "E-06")
-   (jkf/replace-regexp "E-02" "E-05")
-   (jkf/replace-regexp "E-01" "E-04")
-   (jkf/replace-regexp "E+00" "E-03")
-   (jkf/replace-regexp "E+01" "E-02")
-   (jkf/replace-regexp "E+02" "E-01")
-   (jkf/replace-regexp "E+03" "E+00")))
 
 (let* ((fname (concat jkf/dropbox-dir "/org/itasca-telephone.el")))
   (when (file-exists-p fname)
@@ -1583,12 +1181,6 @@ function to make an autocomplete list"
     (global-set-key (kbd "C-c o t") 'jkf/itasca-phone-book)))
 (setq ispell-personal-dictionary "c:/src/dotfiles/jkf_ispell.txt")
 
-
-;; (setq default-abbrev-mode t)
-;; (define-abbrev-table
-;;   'global-abbrev-table '(("mbf" "\\mathbf{}" nil 1)))
-
-;;; (setq byte-compile-error-on-warn t)
 
 (defun wc (&optional start end)
    "Prints number of lines, words and characters in region or whole buffer."
@@ -1604,19 +1196,6 @@ function to make an autocomplete list"
 (defun jkf/mean (data) (/ (reduce '+ data) (float (length data))))
 
 (defun jkf/percent-change (a b) (* 100 (/ (abs (- a b)) (max (abs a) (abs b))  )))
-
-(defun jkf/decrypt-string (data)
-  (interactive)
-  (let ((i 0))
-    (apply #'string
-           (mapcar (lambda (a) (prog1 (- a (mod i 5)) (cl-incf i))) data))))
-
-(defun jkf/encrypt-string (data)
-  (interactive)
-  (let ((i 0))
-    (kill-new (apply #'string
-           (mapcar (lambda (a) (prog1 (+ a (mod i 5)) (cl-incf i))) data)))))
-
 
 (nyan-mode)
 (setq nyan-bar-length 26)
@@ -1641,24 +1220,8 @@ function to make an autocomplete list"
 (add-to-list 'auto-mode-alist (cons (rx ".js" eos) 'js2-mode))
 (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
 
-(defun jkf/decrypt-string-clipboard () (interactive)
-       (with-temp-buffer (yank) (jkf/decrypt-string (buffer-string))))
-;(jkf/decrypt-string-clipboard)
 
-(defun jkf/miles-in-region (a b)
-  "sum of numbers in region after orgmode datestamps are removed."
-  (interactive "r")
-  (save-excursion
-    (kill-ring-save a b)
-    (with-temp-buffer
-      (yank)
-      (goto-char (point-min))
-      (replace-regexp "\s*-\s<....-..-..\s...>" "")
-      (goto-char (point-min))
-      (insert "(+ ")
-      (goto-char (point-max))
-      (insert ")")
-      (call-interactively 'eval-last-sexp))))
+
 
 
 (require 'ob-python)
@@ -1679,15 +1242,6 @@ function to make an autocomplete list"
 
 (add-hook 'jkf/fix-reveal-output 'org-export-html-final-hook)
 
-(defun jkf/decrypt-to-message () (interactive)
-       (message (jkf/decrypt-string (with-temp-buffer (yank) (buffer-string)))))
-
-(defun jkf/inplace-encrypt (x y) (interactive "r")
-       (kill-region x y)
-       (insert (jkf/encrypt-string (with-temp-buffer (yank) (buffer-string))))
-       (move-end-of-line nil)
-       (insert " // ")
-       (insert (yank)))
 
 (defun jkf/insert-random-string ()
   (interactive)
@@ -1696,50 +1250,6 @@ function to make an autocomplete list"
      (let ((x (random 36)))
        (if (< x 10) (+ x ?0) (+ x (- ?a 10)))))))
 
-;; CloudCommunicator::decrypt_string(L"it\"dese\"dwd!cipseho$")  // is aasd asd aflsdfl
-
-(defun sign-buffer ()
-  "this function reads an emacs buffer and inserts a comment with
-   a digest string at the top of the buffer. This digest is used
-   by Blo-Up to verify that the code is signed by Itasca and can
-   be run in secure mode."
-  (interactive)
-  (goto-char (point-min))
-  (when (string= ";signed-code " (buffer-substring
-                                  (point-at-bol)
-                                  (+ 13 (point-at-bol))))
-    (kill-line) (kill-line))
-  (insert "XBRf3IPiRcd6ILtaelEH fGaXGe4ORz7tyALX9RNY daP5P4qzSMh1bLzlNUq0")
-  (let ((digest (sha1 (current-buffer))))
-    (goto-char (point-min))
-    (delete-char 62)
-    (insert (format ";signed-code %s\n" digest))))
-
-
-(defun ienc (start end)
-  "rot 13 encoding for security error messages."
-  (interactive "r")
-  (let ((mys (buffer-substring start end)))
-    (cl-loop for i below (length mys) do
-          (aset mys i (+ (elt mys i) (% i 5))))
-  (insert " " mys)))
-
-
-(defconst *inplace-prefix* "CloudCommunicator::decrypt_string(")
-(defconst *inplace-suffix* ")")
-(defun inplace-encrypt (x y)
-  (interactive "r")
-  (save-excursion
-    (kill-region x y)
-    (let* ((raw (substring-no-properties (car kill-ring)))
-           (inner (substring raw 1 (- (length raw) 1)))
-           (encr (jkf/encrypt-string inner))
-           (escaped (s-replace "\"" "\\\"" encr))
-           (wrapped (concat *inplace-prefix* "L\"" escaped "\"" *inplace-suffix*)))
-      (insert wrapped)
-      (move-end-of-line nil)
-      (insert (concat " // " inner))
-      (message wrapped))))
 
 (defun uniquify-all-lines-region (start end)
   "Find duplicate lines in region START to END keeping first occurrence."
@@ -1774,7 +1284,6 @@ function to make an autocomplete list"
 (add-hook 'org-mode-hook 'my/org-mode-hook)
 
 (require 'ispell)
-
 (add-to-list 'exec-path "C:/unix_bin/hunspell-1.3.2-3-w32-bin/bin")
 (setq ispell-local-dictionary-alist '(
 
@@ -1801,28 +1310,7 @@ function to make an autocomplete list"
                                        exec-path exec-suffixes 'file-executable-p))
 ;https://lists.gnu.org/archive/html/help-gnu-emacs/2014-04/msg00030.html
 
-(setq google-translate-default-source-language "fr")
-(setq google-translate-default-target-language "en")
-(defun google-translate-json-suggestion (json)
-  "Retrieve from JSON (which returns by the
-`google-translate-request' function) suggestion. This function
-does matter when translating misspelled word. So instead of
-translation it is possible to get suggestion."
-  (let ((info (aref json 7)))
-    (if (and info (> (length info) 0))
-        (aref info 1)
-      nil)))
-
-
-(defun jkf/translate-fr-en-insert (a b)
-  (interactive "r")
-  (save-excursion
-    (google-translate-translate "fr" "en" (buffer-substring a b) 'kill-ring)
-    (yank)))
 
 (setq minimap-window-location 'right)
 (add-to-list 'auto-mode-alist '("\\.C\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.H\\'" . c++-mode))
-
-;"<\\([[:alnum:].]*@[[:alnum:]]*\.[[:alpha:].]*\\)>"
-; <img src="https://render.githubusercontent.com/render/math?">
