@@ -1,8 +1,9 @@
+(defmacro disable (&rest body))
 (setq package-archives '(("melpa" . "http://melpa.org/packages/")
                          ("gnu" . "https://elpa.gnu.org/packages/")))
-(require 'package)
-(package-initialize)
-(unless (package-installed-p 'use-package) (package-install 'use-package))
+(disable (require 'package)
+         (package-initialize)
+         (unless (package-installed-p 'use-package) (package-install 'use-package)))
 
 (use-package vertico
   :ensure t
@@ -28,8 +29,9 @@
   :ensure t)
 
 (use-package all-the-icons-completion
+  :after all-the-icons
   :ensure t
-  :config (all-the-icons-completion-mode))
+  :config (all-the-icons-completion-mode 1))
 
 
 (use-package orderless
@@ -71,7 +73,7 @@
 (require 'pair-jump-mode)
 (pair-jump-mode 1)
 
-(defmacro disable (&rest body))
+
 
 (setq-default inhibit-startup-screen t)
 (tool-bar-mode 0)
@@ -80,7 +82,7 @@
 
 ;;;; packages
 
-(defvar my-packages '(ace-jump-mode auto-complete helm helm-descbinds macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word)
+(defvar my-packages '( auto-complete helm macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word)
   "A list of packages to ensure are installed at launch.")
 ; minimap
 (disable (dolist (p my-packages)
@@ -149,7 +151,6 @@
 (global-set-key (kbd "C-c j") 'jkf/journal)
 (global-set-key (kbd "C-c n") 'jkf/open-temp-file)
 (global-set-key (kbd "C-c ;") 'comment-region)
-(global-set-key (kbd "C-c a") 'org-agenda)
 (global-set-key (kbd "C-c =") 'jkf/calc-eval-line-and-insert)
 (global-set-key (kbd "C-c k") 'jkf/kill-all-buffers)
 (global-set-key (kbd "C-c K") 'jkf/kill-other-buffers)
@@ -164,7 +165,6 @@
 ;; windows specific interaction
 (global-set-key (kbd "C-c w e") 'w32explore)
 (global-set-key (kbd "C-c w b") 'jkf/open-bash-here)
-(global-set-key (kbd "C-c w w") 'helm-w32-launcher)
 
 ;; org-mode C-c bindings
 (defun jkf/open-notes () (interactive)
@@ -197,7 +197,7 @@
 
 ; C-i for search forward
 (define-key input-decode-map (kbd "C-i") (kbd "H-i")); hack needed to unset tab
-(global-set-key (kbd "H-i") 'isearch-forward)
+(global-set-key (kbd "H-i") 'consult-line)
 (define-key isearch-mode-map (kbd "H-i") 'isearch-repeat-forward)
 
 (global-set-key (kbd "M-s") 'ispell-word)
@@ -210,15 +210,8 @@
 (global-set-key (kbd "M-3") 'split-window-right)
 (global-set-key (kbd "<f1>") 'kill-this-buffer)
 (global-set-key (kbd "<f12>") 'other-window)
-;(global-set-key (kbd "<apps> /") 'ido-switch-buffer)
-(global-set-key (kbd "<apps> /") 'helm-buffers-list)
-;(global-set-key (kbd "M-<apps>") 'ido-switch-buffer)
-(global-set-key (kbd "M-<apps>") 'helm-buffers-list)
 (global-set-key (kbd "C-<apps>") 'other-window)
-;(global-set-key (kbd "C-<lwindow>") 'smex)
 (global-set-key (kbd "M-<lwindow>") 'other-window)
-;(global-set-key (kbd "<apps> .") 'smex)
-;(global-set-key (kbd "C-S-x") 'ido-switch-buffer)
 (global-set-key (kbd "M-k") ; kill the entire line
                 '(lambda () (interactive)
                   (move-beginning-of-line nil)
@@ -334,7 +327,7 @@
                        (untabify (point-min) (point-max)))))
 
 ;;;; Python Setup
-(require 'cython-mode)
+;(require 'cython-mode)
 (add-to-list 'auto-mode-alist '("\\.pyx\\'" . cython-mode))
 (add-hook 'python-mode-hook 'hs-minor-mode)
 (add-hook 'python-mode-hook 'flyspell-prog-mode)
@@ -364,14 +357,18 @@
 
 ;;;; Org-mode Setup
 
-(setq org-imenu-depth 3)
 
 
-(require 'org)
-(setq org-cycle-separator-lines 0)
-(define-key org-mode-map (kbd "C-c <up>") 'org-move-subtree-up)
-(define-key org-mode-map (kbd "C-c <down>") 'org-move-subtree-down)
-(setq org-src-fontify-natively t)
+
+(use-package org
+  :config
+  (setq org-imenu-depth 3)
+  (setq org-cycle-separator-lines 0)
+  (define-key org-mode-map (kbd "C-c <up>") 'org-move-subtree-up)
+  (define-key org-mode-map (kbd "C-c <down>") 'org-move-subtree-down)
+  (setq org-src-fontify-natively t)
+  (setq org-confirm-babel-evaluate nil))
+
 ;(setq org-startup-truncated nil)
 
                   ; Show full paths for refiling
@@ -423,13 +420,6 @@
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
       (setq jkf/dropbox-dir "~/Dropbox")
       (global-unset-key (kbd "<menu>"))
-      (global-set-key (kbd "M-<menu>") 'helm-buffers-list)
-      (global-set-key (kbd "<menu> /") 'helm-M-x)
-
-      ; this is OK when you remap menu....
-      ;(global-set-key (kbd "s-/") 'ido-switch-buffer)
-      ;(global-set-key (kbd "s-.") 'smex)
-
       (add-to-list 'yas/snippet-dirs "~/src/dotfiles/snippets")
       (setq eshell-rc-script "~/src/dotfiles/eshellrc")))
 
@@ -438,7 +428,6 @@
     (progn
       (setq jkf/src-dir "~/src/")
       (setq jkf/dropbox-dir "~/Dropbox")
-      (global-set-key (kbd "<M-268632080>") 'helm-buffers-list)
       (set-face-attribute 'default nil :family "Monaco"
                           :height 145 :weight 'normal)
       (setq eshell-rc-script "~/src/dotfiles/eshellrc_osx")
@@ -595,25 +584,15 @@ file with a2ps"
 
 ;(require 'magit)
 
-(require 'ido)
-;; (require 'ido-ubiquitous)
-;; (require 'ido-vertical-mode)
-;; (ido-mode t)
-;; (setq ido-enable-flex-matching t)
-;; (setq ido-everywhere t)
-;; (setq ido-create-new-buffer 'always)
-;; (setq ido-case-fold t)
 
-(require 'ace-jump-mode)
-(autoload
-  'ace-jump-mode-pop-mark
-  "ace-jump-mode"
-  "Ace jump back:-)"
-  t)
-(eval-after-load "ace-jump-mode"
-  '(ace-jump-mode-enable-mark-sync))
-(define-key global-map (kbd "C-M-z") 'ace-jump-mode-pop-mark)
-(define-key global-map (kbd "C-z") 'ace-jump-mode)
+(use-package ace-jump-mode
+  :ensure t
+  :config
+  (ace-jump-mode-enable-mark-sync)
+  (define-key global-map (kbd "C-M-z") 'ace-jump-mode-pop-mark)
+  (define-key global-map (kbd "C-z") 'ace-jump-mode))
+
+
 
 ; Display Visited Files Path in the Frame Title
 ; via emacs Redux
@@ -641,34 +620,19 @@ file with a2ps"
 (define-key global-map (kbd "C-S-n") 'jkf/move-line-down)
 (define-key global-map (kbd "C-S-p") 'jkf/move-line-up)
 
-(require 'helm-config)
-(require 'helm-descbinds)
-(helm-mode 1)
-(global-set-key (kbd "C-h b") 'helm-descbinds)
-(setq helm-ff-newfile-prompt-p nil)
+(use-package recentf
+  :ensure t
+  :config
+  (recentf-mode 1)
+  (run-at-time nil 600 'recentf-save-list)
+  (setq recentf-max-menu-items 250))
 
-;;; see http://emacs.stackexchange.com/questions/3798/how-do-i-make-pressing-ret-in-helm-find-files-open-the-directory
-(setq helm-boring-file-regexp-list '("\\.$" "\\.\\.$"))
-(setf helm-ff-skip-boring-files t)
-
-(defun fu/helm-find-files-navigate-forward (orig-fun &rest args)
-  (if (file-directory-p (helm-get-selection))
-      (apply orig-fun args)
-    (helm-maybe-exit-minibuffer)))
-(advice-add 'helm-execute-persistent-action :around #'fu/helm-find-files-navigate-forward)
-(define-key helm-find-files-map (kbd "<return>") 'helm-execute-persistent-action)
-(define-key helm-find-files-map (kbd "C-j") 'helm-maybe-exit-minibuffer)
-
-(defun fu/helm-find-files-navigate-back (orig-fun &rest args)
-  (if (= (length helm-pattern) (length (helm-find-files-initial-input)))
-      (helm-find-files-up-one-level 1)
-    (apply orig-fun args)))
-(advice-add 'helm-ff-delete-char-backward :around #'fu/helm-find-files-navigate-back)
-
-(require 'recentf)
-(recentf-mode 1)
-(setq recentf-max-menu-items 100)
-(global-set-key (kbd "C-S-o") 'helm-recentf)
+(use-package consult
+  :ensure t
+  :config
+  (global-set-key (kbd "C-S-o") 'consult-recent-file)
+  (global-set-key (kbd "C-x b") 'consult-buffer))
+; consult-yank-from-kill-ring
 
 (define-key global-map (kbd "<RET>") 'newline-and-indent)
 
@@ -696,7 +660,6 @@ file with a2ps"
 (diminish 'auto-complete-mode)
 (diminish 'auto-fill-function)
 (diminish 'abbrev-mode)
-(diminish 'helm-mode)
 (diminish 'flyspell-mode)
 
 (define-key ac-completing-map (kbd "C-n") 'ac-next)
@@ -741,7 +704,6 @@ Useful when editing a datafile in emacs and loading it a lisp."
 
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
-;(global-set-key (kbd "M-x") 'helm-M-x)
 
 (use-package multiple-cursors
   :ensure t
@@ -908,7 +870,7 @@ incriment it and write on a new line below. Leave the origional inplace"
 
 (global-set-key (kbd "C-<down>") 'shrink-window)
 (global-set-key (kbd "C-<up>") 'enlarge-window)
-(setq org-confirm-babel-evaluate nil)
+
 
 (define-key rst-mode-map (kbd "C-c C-c") 'rst-adjust)
 
@@ -921,8 +883,6 @@ incriment it and write on a new line below. Leave the origional inplace"
 (add-hook 'c++-mode-hook 'my-c++-mode-hook)
 
 (setq org-latex-table-scientific-notation "%s\\times10^{%s}")
-
-(define-key python-mode-map (kbd "C-c M-c") 'itasca-python-copy-as-execfile)
 
 (defun jkf/unix-file ()
       "Change the current buffer to Latin 1 with Unix line-ends."
@@ -1042,7 +1002,7 @@ incriment it and write on a new line below. Leave the origional inplace"
               (insert (format "%s = %s\n" (chomp l) (chomp r))))
         (backward-delete-char 1)))))
 
-(require 'ox-latex)
+;(use-package ox-latex)
 
 (defun jkf/open-temp-file ()
   "opens a new temporary file in c:\src "
@@ -1132,18 +1092,10 @@ incriment it and write on a new line below. Leave the origional inplace"
 
 (setq org-capture-templates
       '(
-        ("r" "Run" item (file+headline jkf/run-file "Running")
-         "%^t %^{distance}" :immediate-finish t)
         ("j" "Journal (today)" plain (file+olp+datetree jkf/journal-file)
          "\n%?")
         ("J" "Journal (other)" plain (file+datetree+prompt jkf/journal-file)
-         "\n%?")
-        ("w" "Work TODO" entry (file+headline jkf/org-todo-file "Work")
-         "** TODO %?\n    DEADLINE: %^{deadline}t")
-        ("f" "free software TODO" entry (file+headline jkf/org-todo-file "free software")
-         "** SOMEDAY %?\n    ")
-        ("h" "Home TODO" entry (file+headline jkf/org-todo-file "Home")
-         "** TODO %?\n    DEADLINE: %^{deadline}t")))
+         "\n%?")))
 
 (setq org-agenda-skip-scheduled-if-done t)
 (setq org-agenda-custom-commands
@@ -1161,19 +1113,6 @@ incriment it and write on a new line below. Leave the origional inplace"
 (setq org-todo-keywords
       '((sequence "TODO(t)" "SOMEDAY(s)" "DONE(d)" "WAITING(w)")))
 (setq org-tags-column 50)
-
-
-;; helm patch to put filename into kill ring
-(defun helm-ff-insert-file-full-path-into-killring (filename) (kill-new filename))
-(defun helm-ff-insert-file-basename-into-killring (filename)
-  (kill-new (file-name-nondirectory filename)))
-(eval-after-load 'helm-files
-  '(nconc helm-find-files-actions
-          (list
-           (cons "Insert file base name into kill ring"
-                 #'helm-ff-insert-file-basename-into-killring )
-           (cons "Insert full path of file into kill ring"
-                 #'helm-ff-insert-file-full-path-into-killring ))))
 
 
 (let* ((fname (concat jkf/dropbox-dir "/org/itasca-telephone.el")))
@@ -1312,7 +1251,11 @@ incriment it and write on a new line below. Leave the origional inplace"
 ;https://lists.gnu.org/archive/html/help-gnu-emacs/2014-04/msg00030.html
 
 
-(setq minimap-window-location 'right)
+(use-package minimap
+  :ensure t
+  :config
+  (setq minimap-window-location 'right))
+
 (add-to-list 'auto-mode-alist '("\\.C\\'" . c++-mode))
 (add-to-list 'auto-mode-alist '("\\.H\\'" . c++-mode))
 
@@ -1333,3 +1276,7 @@ incriment it and write on a new line below. Leave the origional inplace"
   (doom-themes-treemacs-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
+
+; for some reason this has to be toggled to actually work??
+(all-the-icons-completion-mode 0)
+(all-the-icons-completion-mode 1)
