@@ -1280,3 +1280,20 @@ incriment it and write on a new line below. Leave the origional inplace"
 ; for some reason this has to be toggled to actually work??
 (all-the-icons-completion-mode 0)
 (all-the-icons-completion-mode 1)
+
+(defun jkf/seconds-to-hms (secs)
+  (interactive "nSeconds:")
+  (let* ((hours (/ secs 3600))
+           (minutes (/ (% secs 3600) 60))
+           (seconds (% secs 60)))
+      (message "%s%s%s h:m:s"
+              (if (> hours 0)
+                  (format "%s:" hours)
+                "")
+              (if (> minutes 0)
+                  (format "%s:" minutes)
+                "")
+              (if (> seconds 0)
+                  (format "%s" seconds)
+                ""))
+      (list hours minutes seconds)))
