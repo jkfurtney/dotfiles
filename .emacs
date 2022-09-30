@@ -84,19 +84,10 @@
 
 (defvar my-packages '( auto-complete helm macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word)
   "A list of packages to ensure are installed at launch.")
-; minimap
-(disable (dolist (p my-packages)
-  (when (not (package-installed-p p))
-    (package-install p))))
+
 
 
 ; for new installs
-
-(disable (progn
-           (package-install "ace-jump-mode")
-           (dolist (p my-packages)
-             (when (not (package-installed-p p))
-               (package-install p)))))
 
 (defun jkf/get-package-dir (pname)
   (interactive)
@@ -1078,6 +1069,7 @@ incriment it and write on a new line below. Leave the origional inplace"
        (add-to-list 'ispell-buffer-session-localwords
                     (substring-no-properties (word-at-point))))
 (flyspell-mode 1)
+(define-key flyspell-mode-map (kbd "C-.") nil)
 
 
 
@@ -1297,3 +1289,17 @@ incriment it and write on a new line below. Leave the origional inplace"
                   (format "%s" seconds)
                 ""))
       (list hours minutes seconds)))
+
+; i does this actually... but this is an example of adding an embark action
+;; (defun jkf/embark-insert-full-path (file)
+;;   "Insert full path to FILE."
+;;   (interactive "FFile: ")
+;;   (insert (file-truename (substitute-in-file-name file))))
+
+;; (defun jkf/embark-save-full-path (file)
+;;   "Save the fill path to FILE in the kill ring."
+;;   (interactive "FFile: ")
+;;   (kill-new (file-truename (substitute-in-file-name file))))
+
+;; (define-key embark-file-map (kbd "I") 'jkf/embark-insert-full-path)
+;; (define-key embark-file-map (kbd "W") 'jkf/embark-save-full-path)
