@@ -145,7 +145,7 @@
 (global-set-key (kbd "C-c =") 'jkf/calc-eval-line-and-insert)
 (global-set-key (kbd "C-c k") 'jkf/kill-all-buffers)
 (global-set-key (kbd "C-c K") 'jkf/kill-other-buffers)
-(global-set-key (kbd "C-c i") 'imenu)
+(global-set-key (kbd "C-c i") 'consult-imenu)
 (global-set-key (kbd "C-c g") 'goto-line)
 (global-set-key (kbd "C-c r") 'replace-string)
 (global-set-key (kbd "C-c R") 'revert-buffer)
