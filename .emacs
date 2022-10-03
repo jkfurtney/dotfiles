@@ -624,6 +624,7 @@ file with a2ps"
   (global-set-key (kbd "C-S-o") 'consult-recent-file)
   (global-set-key (kbd "C-x b") 'consult-buffer))
 ; consult-yank-from-kill-ring
+(add-to-list 'exec-path "c:/users/jfurtney/scoop/shims/")
 
 (define-key global-map (kbd "<RET>") 'newline-and-indent)
 
@@ -716,8 +717,6 @@ Useful when editing a datafile in emacs and loading it a lisp."
       (end-of-line)
       (newline-and-indent)
       (insert (format "%s = %s" (chomp rhs) (chomp lhs))))))
-
-(load-theme 'cyberpunk t) ; for some reason this needs to be called 2x?
 
 (defun jkf/calc-eval-and-insert (&optional start end)
   (interactive "r")
