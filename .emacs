@@ -204,10 +204,10 @@
 (global-set-key (kbd "C-<apps>") 'other-window)
 (global-set-key (kbd "M-<lwindow>") 'other-window)
 (global-set-key (kbd "M-k") ; kill the entire line
-                '(lambda () (interactive)
+                #'(lambda () (interactive)
                   (move-beginning-of-line nil)
                   (kill-line)))
-(global-set-key (kbd  "C-z") '(lambda () (interactive) nil))
+(global-set-key (kbd  "C-z") #'(lambda () (interactive) nil))
 
 (define-key help-mode-map (kbd "<backspace>") 'help-go-back)
 (define-key help-mode-map (kbd "M-<backspace>") 'help-go-forward)
