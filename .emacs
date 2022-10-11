@@ -82,7 +82,7 @@
 
 ;;;; packages
 
-(defvar my-packages '( auto-complete helm macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word)
+(defvar my-packages '(auto-complete macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word)
   "A list of packages to ensure are installed at launch.")
 
 
@@ -694,7 +694,15 @@ Useful when editing a datafile in emacs and loading it a lisp."
       (message "%s copied" new-kill-string)
       (kill-new new-kill-string))))
 
-(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(use-package markdown-mode
+  :ensure t
+  :config
+  (add-hook 'markdown-mode-hook
+          (lambda()
+            (local-unset-key (kbd "M-p"))
+            (local-unset-key (kbd "M-n"))))
+  (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
+
 
 
 (use-package multiple-cursors
