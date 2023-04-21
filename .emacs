@@ -5,6 +5,7 @@
          (package-initialize)
          (unless (package-installed-p 'use-package) (package-install 'use-package)))
 
+(use-package diminish :ensure t)
 (use-package vertico
   :ensure t
   :config (vertico-mode))
@@ -82,10 +83,24 @@
 
 ;;;; packages
 
-(defvar my-packages '(auto-complete macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish elisp-slime-nav multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word)
+(defvar my-packages '(auto-complete macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish  multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word elisp-slime-nav)
   "A list of packages to ensure are installed at launch.")
 
+;(setq package-selected-packages my-packages)
+;(package-install-selected-packages)
 
+
+(use-package smartparens)
+
+(use-package smartparens
+  :diminish smartparens-mode ;; Do not show in modeline
+  :init
+  (require 'smartparens-config)
+  :config
+  (smartparens-global-mode t) ;; These options can be t or nil.
+  (show-smartparens-global-mode t)
+  (setq sp-show-pair-from-inside t)
+  )
 
 ; for new installs
 
@@ -1223,6 +1238,10 @@ incriment it and write on a new line below. Leave the origional inplace"
 (add-hook 'org-mode-hook 'my/org-mode-hook)
 
 (require 'ispell)
+(setq ispell-hunspell-dict-paths-alist
+'(("en_US" "C:/Program Files/Git/cmd/en_US.aff")))
+
+(setq ispell-local-dictionary "en_US")
 (add-to-list 'exec-path "C:/unix_bin/hunspell-1.3.2-3-w32-bin/bin")
 (setq ispell-local-dictionary-alist '(
 
@@ -1244,10 +1263,11 @@ incriment it and write on a new line below. Leave the origional inplace"
            nil
            iso-8859-1)
         ))
-
+(setq ispell-local-dictionary-alist
+      '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
 (setq ispell-program-name (locate-file "hunspell"
                                        exec-path exec-suffixes 'file-executable-p))
-;https://lists.gnu.org/archive/html/help-gnu-emacs/2014-04/msg00030.html
+;https://lists.gnu.org/archive/html/help-gnu-emacs/2014-04/msg00030.html asdasd
 
 
 (use-package minimap
