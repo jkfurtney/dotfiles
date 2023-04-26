@@ -83,14 +83,14 @@
 
 ;;;; packages
 
-(defvar my-packages '(auto-complete macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish  multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word elisp-slime-nav)
+(defvar my-packages '(auto-complete macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish  multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word elisp-slime-nav smartparens)
   "A list of packages to ensure are installed at launch.")
 
-;(setq package-selected-packages my-packages)
-;(package-install-selected-packages)
+(setq package-selected-packages my-packages)
+(package-install-selected-packages)
 
 
-(use-package smartparens)
+;(use-package smartparens)
 
 (use-package smartparens
   :diminish smartparens-mode ;; Do not show in modeline
@@ -1267,6 +1267,9 @@ incriment it and write on a new line below. Leave the origional inplace"
       '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
 (setq ispell-program-name (locate-file "hunspell"
                                        exec-path exec-suffixes 'file-executable-p))
+(if (string= (system-name) "TESLA")
+    (setq ispell-program-name "aspell"))
+
 ;https://lists.gnu.org/archive/html/help-gnu-emacs/2014-04/msg00030.html asdasd
 
 
