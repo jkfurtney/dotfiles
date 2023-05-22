@@ -1,3 +1,5 @@
+
+
 (defmacro disable (&rest body))
 (setq package-archives '(("melpa" . "http://melpa.org/packages/")
                          ("gnu" . "https://elpa.gnu.org/packages/")))
@@ -428,13 +430,16 @@
 
 (require 'json)
 (defun jkf/windows-get-dropbox-folder ()
- (let* ((dropbox-file
+  (if (file-exists-p
+       (concat (getenv "LOCALAPPDATA") "/Dropbox/info.json"))
+      (let* ((dropbox-file
          (if (file-exists-p
               (concat (getenv "LOCALAPPDATA") "/Dropbox/info.json"))
              (concat (getenv "LOCALAPPDATA") "/Dropbox/info.json")
            (concat (getenv "APPDATA") "/Dropbox/info.json")))
         (data (json-read-file dropbox-file)))
-   (cdr (assoc 'path (cdr (assoc 'personal data))))))
+        (cdr (assoc 'path (cdr (assoc 'personal data)))))
+    "" ))
 
 ;;;; windows specific setup
 (if  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
@@ -615,7 +620,7 @@ file with a2ps"
   :ensure t
   :config
   (recentf-mode 1)
-  (run-at-time nil 600 'recentf-save-list)
+  (disable (run-at-time nil 600 'recentf-save-list))
   (setq recentf-max-menu-items 250))
 
 (use-package consult
@@ -1310,3 +1315,8 @@ incriment it and write on a new line below. Leave the origional inplace"
 
 ;; (define-key embark-file-map (kbd "I") 'jkf/embark-insert-full-path)
 ;; (define-key embark-file-map (kbd "W") 'jkf/embark-save-full-path)
+(setq warning-suppress-log-types
+   '(((unlock-file))
+     ((unlock-file))
+     ((unlock-file))
+     ((unlock-file))))
