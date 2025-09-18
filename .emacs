@@ -1343,3 +1343,5 @@ incriment it and write on a new line below. Leave the origional inplace"
      ((unlock-file))
      ((unlock-file))
      ((unlock-file))))
+(setq native-comp-async-report-warnings-errors 'silent)
+(setq warning-minimum-level :emergency)
