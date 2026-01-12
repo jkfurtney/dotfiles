@@ -1,6 +1,6 @@
 
-
 (defmacro disable (&rest body))
+
 (setq package-archives '(("melpa" . "http://melpa.org/packages/")
                          ("gnu" . "https://elpa.gnu.org/packages/")))
 (disable (require 'package)
@@ -68,9 +68,14 @@
 (defvar dotfile-dir nil "location of .emacs and other stuff")
 (defvar jkf/src-dir nil "location of src folder")
 (defvar jkf/dropbox-dir nil "location of dropbox")
+
+;; Linux vs Windows set up.
 (if (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
-    (setq dotfile-dir (expand-file-name "~/src/dotfiles/"))
-  (setq dotfile-dir "c:/src/dotfiles/"))
+    (progn
+      (setq dotfile-dir (expand-file-name "~/src/dotfiles/")))
+  (progn
+    (setq dotfile-dir "c:/src/dotfiles/")))
+
 (add-to-list 'load-path dotfile-dir)
 
 (require 'pair-jump-mode)
@@ -91,9 +96,6 @@
 (setq package-selected-packages my-packages)
 (package-install-selected-packages)
 
-
-;(use-package smartparens)
-
 (use-package smartparens
   :diminish smartparens-mode ;; Do not show in modeline
   :init
@@ -105,7 +107,6 @@
   )
 
 ; for new installs
-
 (defun jkf/get-package-dir (pname)
   (interactive)
   "return the directory in which the package pname is installed."
@@ -131,9 +132,7 @@
 (add-hook 'emacs-lisp-mode-hook (lambda() (setq mode-name "el")))
 
 
-;;(require 'python)
 ;;;; basic key bindings
-
 (global-set-key "\C-o" 'find-file)
 (add-hook 'dired-mode-hook
           (function (lambda ()
@@ -216,7 +215,7 @@
 (global-set-key (kbd "M-1") 'delete-other-windows)
 (global-set-key (kbd "M-2") 'split-window-below)
 (global-set-key (kbd "M-3") 'split-window-right)
-(global-set-key (kbd "<f1>") 'kill-this-buffer)
+(global-set-key (kbd "<f1>") 'kill-current-buffer)
 (global-set-key (kbd "<f12>") 'other-window)
 (global-set-key (kbd "C-<apps>") 'other-window)
 (global-set-key (kbd "M-<lwindow>") 'other-window)
@@ -241,16 +240,6 @@
 (global-unset-key [down])
 (global-unset-key (kbd "<insert>"))
 (global-set-key (kbd "C-x r q") 'kill-emacs)
-
-
-;; (set-background-color "black")
-;; (set-face-background 'default "black")
-;; (set-face-background 'region "black")
-;; (set-face-foreground 'default "white")
-;; (set-face-foreground 'region "gray60")
-;; (set-foreground-color "white")
-;; (set-cursor-color "red")
-
 
 (setq calendar-latitude 44.954109)
 (setq calendar-longitude -93.187408)
@@ -335,7 +324,6 @@
                        (untabify (point-min) (point-max)))))
 
 ;;;; Python Setup
-;(require 'cython-mode)
 (add-to-list 'auto-mode-alist '("\\.pyx\\'" . cython-mode))
 (add-hook 'python-mode-hook 'hs-minor-mode)
 (add-hook 'python-mode-hook 'flyspell-prog-mode)
@@ -365,9 +353,6 @@
 
 ;;;; Org-mode Setup
 
-
-
-
 (use-package org
   :config
   (setq org-imenu-depth 3)
@@ -377,9 +362,7 @@
   (setq org-src-fontify-natively t)
   (setq org-confirm-babel-evaluate nil))
 
-;(setq org-startup-truncated nil)
 
-                  ; Show full paths for refiling
 (defun jkf/kill-all-buffers ()
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
@@ -523,8 +506,11 @@
 (setq display-time-default-load-average nil)
 ;;;; computer specific setup
 (pcase system-name
-  ("ABITA" ; 6 core i7
 
+  ("Luigi"
+   (setq ispell-program-name "hunspell")))
+
+  ("ABITA"
    (display-time)
    (let ((org-note-file
           "c:/Users/jfurtney/Dropbox/org/notes.org"))
@@ -540,27 +526,6 @@
   ("UNSER"        ; old work computer
    (setq initial-frame-alist '((width . 80) (height . 41)))
    (set-face-attribute 'default nil :height 140))
-
-  ("FUNKY"
-   (set-face-attribute 'default nil :height 140))
-
-
-  ("u64" ; vaio Ubuntu virtual machine
-   (setq initial-frame-alist '((width . 80) (height . 40))))
-
-  ("uvb64" ; work virtual machine
-   (set-face-attribute 'default nil :height 140)
-   ;(setq inferior-lisp-program "sbcl")
-   )
-
-  ("jason-furtneys-imac.local"
-   (setq initial-frame-alist '((width . 80) (height . 48))))
-
-  ("LAKEMAIDEN" ; build server
-   (setq magit-git-executable "C:/Program Files (x86)/Git/bin/git")
-   (setq initial-frame-alist '((width . 80) (height . 28)))
-   (set-face-attribute 'default nil :height 140))
-
   (_ (setq initial-frame-alist '((width . 80) (height . 34)))))
 
  ;; note on windows $HOME is different in bash and emacs!
@@ -592,8 +557,6 @@ file with a2ps"
   (let ((template  "a2ps.exe --columns=2 -o %s.ps -M letter --portrait %s")
         (fn (dired-get-filename)))
     (shell-command (format template fn fn ))))
-
-;(require 'magit)
 
 
 (use-package ace-jump-mode
@@ -1033,10 +996,6 @@ incriment it and write on a new line below. Leave the origional inplace"
       (setf name (format base i)))
     (find-file name)))
 
-(defun jkf/clear-ispell-local-words ()
-  (interactive)
-  (setq ispell-buffer-session-localwords nil))
-
 (defun jkf/journal ()
   (interactive)
   (find-file jkf/journal-file)
@@ -1243,31 +1202,10 @@ incriment it and write on a new line below. Leave the origional inplace"
 (add-hook 'org-mode-hook 'my/org-mode-hook)
 
 (require 'ispell)
+(setq ispell-local-dictionary "en_US")
 (setq ispell-hunspell-dict-paths-alist
 '(("en_US" "C:/Program Files/Git/cmd/en_US.aff")))
 
-(setq ispell-local-dictionary "en_US")
-(add-to-list 'exec-path "C:/unix_bin/hunspell-1.3.2-3-w32-bin/bin")
-(setq ispell-local-dictionary-alist '(
-
-       (nil
-           "[[:alpha:]]"
-           "[^[:alpha:]]"
-           "[']"
-           t
-           ("-d" "en_US" "-p" "C:\\unix_bin\\hunspell-1.3.2-3-w32-bin\\share\\hunspell\\personal.en")
-           nil
-           iso-8859-1)
-
-       ("american"
-           "[[:alpha:]]"
-           "[^[:alpha:]]"
-           "[']"
-           t
-           ("-d" "en_US" "-p" "C:\\unix_bin\\hunspell-1.3.2-3-w32-bin\\share\\hunspell\\personal.en")
-           nil
-           iso-8859-1)
-        ))
 (setq ispell-local-dictionary-alist
       '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
 (setq ispell-program-name (locate-file "hunspell"
@@ -1338,10 +1276,13 @@ incriment it and write on a new line below. Leave the origional inplace"
 
 ;; (define-key embark-file-map (kbd "I") 'jkf/embark-insert-full-path)
 ;; (define-key embark-file-map (kbd "W") 'jkf/embark-save-full-path)
+
 (setq warning-suppress-log-types
    '(((unlock-file))
      ((unlock-file))
      ((unlock-file))
      ((unlock-file))))
+
 (setq native-comp-async-report-warnings-errors 'silent)
+
 (setq warning-minimum-level :emergency)
