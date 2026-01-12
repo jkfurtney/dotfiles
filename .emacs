@@ -69,8 +69,12 @@
 (defvar jkf/src-dir nil "location of src folder")
 (defvar jkf/dropbox-dir nil "location of dropbox")
 
+(defvar jkf/windows-p
+  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
+  "True if running Windows")
+
 ;; Linux vs Windows set up.
-(if (not (or (eq system-type 'ms-dos) (eq system-type 'windows-nt)))
+(if (not jkf/windows-p)
     (progn
       (setq dotfile-dir (expand-file-name "~/src/dotfiles/")))
   (progn
@@ -508,16 +512,16 @@
 (pcase system-name
 
   ("Luigi"
-   (setq ispell-program-name "hunspell")))
+   (setq ispell-program-name "hunspell"))
 
-  ("ABITA"
+ ("ABITA"
    (display-time)
    (let ((org-note-file
           "c:/Users/jfurtney/Dropbox/org/notes.org"))
      (setq magit-git-executable "C:\\Program Files (x86)\\Git\\bin\\git")
      (setq initial-frame-alist '((width . 80) (height . 44)))))
 
-  ("SHOTOVER"                            ; vaio
+ ("SHOTOVER"                            ; vaio
    (setq initial-frame-alist '((width . 80) (height . 37)))
    (set-face-attribute 'default nil :height 140)
    ;(setq inferior-lisp-program "C:/src/ecl/msvc/ecl2.exe")
@@ -1203,17 +1207,19 @@ incriment it and write on a new line below. Leave the origional inplace"
 
 (require 'ispell)
 (setq ispell-local-dictionary "en_US")
-(setq ispell-hunspell-dict-paths-alist
-'(("en_US" "C:/Program Files/Git/cmd/en_US.aff")))
 
-(setq ispell-local-dictionary-alist
-      '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
-(setq ispell-program-name (locate-file "hunspell"
-                                       exec-path exec-suffixes 'file-executable-p))
-(if (string= (system-name) "TESLA")
-    (setq ispell-program-name "aspell"))
 
-;https://lists.gnu.org/archive/html/help-gnu-emacs/2014-04/msg00030.html asdasd
+(if jkf/windows-p
+    (progn
+      (setq ispell-program-name (locate-file "hunspell" exec-path exec-suffixes 'file-executable-p))
+      (setenv "LANG" "en_US.UTF-8")
+      (setq ispell-hunspell-dict-paths-alist '(("en_US" "c:/src/dotfiles/dict-en-20260101/en_US.aff")))
+      (setenv "DICPATH" "C:/src/dotfiles/dict-en-20260101")
+      (ispell-change-dictionary "english")))
+
+
+;(setq ispell-local-dictionary-alist      '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[\']" t ("-d" "en_US") nil iso-8859-1)))
+
 
 
 (use-package minimap
