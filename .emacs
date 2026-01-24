@@ -76,6 +76,7 @@
 ;; Linux vs Windows set up.
 (if (not jkf/windows-p)
     (progn
+      (setq ispell-program-name "hunspell")
       (setq dotfile-dir (expand-file-name "~/src/dotfiles/")))
   (progn
     (setq dotfile-dir "c:/src/dotfiles/")))
@@ -1292,3 +1293,4 @@ incriment it and write on a new line below. Leave the origional inplace"
 (setq native-comp-async-report-warnings-errors 'silent)
 
 (setq warning-minimum-level :emergency)
+; (set-face-attribute 'default nil :height 180)
