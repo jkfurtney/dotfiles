@@ -129,5 +129,7 @@ paste() {
     local cmd
     cmd="$(xclip -o -selection clipboard)"
     echo "$cmd"
+    history -s "$cmd"
+    history -a
     printf "%s\n" "$cmd" | bash
 }
