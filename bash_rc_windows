@@ -1,0 +1,26 @@
+alias gs='git status'
+alias gk='gitk --all'
+alias pi='ipython -i'
+set -o ignoreeof
+alias rm='rm -i'
+alias mv='mv -i'
+alias gd='git diff'
+alias gba='git branch -a'
+alias exit=''
+
+
+paste() {
+    local cmd
+
+    # Read Windows clipboard (raw) and normalize CRLF -> LF
+    cmd="$(powershell.exe -NoProfile -Command Get-Clipboard -Raw 2>/dev/null | tr -d '\r')"
+
+    echo ">>> Running:"
+    echo "$cmd"
+    echo "----------------"
+
+    history -s "$cmd"
+    history -a
+
+    printf "%s\n" "$cmd" | bash
+}
