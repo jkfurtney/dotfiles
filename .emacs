@@ -63,7 +63,8 @@
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none)))))
-
+(use-package flyspell-correct)
+(use-package flyspell-correct-popop)
 
 (defvar dotfile-dir nil "location of .emacs and other stuff")
 (defvar jkf/src-dir nil "location of src folder")
@@ -79,6 +80,7 @@
       (setq ispell-program-name "hunspell")
       (setq dotfile-dir (expand-file-name "~/src/dotfiles/")))
   (progn
+    (setq jkf/onedrive-dir "c:/Users/jason.furtney/OneDrive/")
     (setq dotfile-dir "c:/src/dotfiles/")))
 
 (add-to-list 'load-path dotfile-dir)
@@ -95,7 +97,7 @@
 
 ;;;; packages
 
-(defvar my-packages '(auto-complete macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish  multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word elisp-slime-nav smartparens)
+(defvar my-packages '(auto-complete macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish  multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word elisp-slime-nav smartparens flyspell-correct flyspell-correct-popup)
   "A list of packages to ensure are installed at launch.")
 
 (setq package-selected-packages my-packages)
@@ -180,7 +182,10 @@
 
 ;; org-mode C-c bindings
 (defun jkf/open-notes () (interactive)
-       (find-file (concat jkf/dropbox-dir "/org/notes.org"))
+       (if jkf/windows-p
+           (find-file (concat jkf/onedrive-dir "/notes.org"))
+         (find-file (concat jkf/dropbox-dir "/org/notes.org")))
+
                   ;(find-file jkf/notes-file)
        (org-overview))
 (global-set-key (kbd "C-c o o") 'org-capture)
@@ -212,8 +217,7 @@
 (global-set-key (kbd "H-i") 'consult-line)
 (define-key isearch-mode-map (kbd "H-i") 'isearch-repeat-forward)
 
-(global-set-key (kbd "M-s") 'ispell-word)
-(global-set-key (kbd "M-s") 'flyspell-correct-word-before-point)
+(global-set-key (kbd "M-s") 'flyspell-correct-previous)
 (global-set-key (kbd "C-s") 'save-buffer)
 (global-set-key (kbd "M-u") 'undo)
 (global-set-key (kbd "M-0") 'delete-window)
