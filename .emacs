@@ -185,8 +185,6 @@
        (if jkf/windows-p
            (find-file (concat jkf/onedrive-dir "/notes.org"))
          (find-file (concat jkf/dropbox-dir "/org/notes.org")))
-
-                  ;(find-file jkf/notes-file)
        (org-overview))
 (global-set-key (kbd "C-c o o") 'org-capture)
 (global-set-key (kbd "C-c o n") 'jkf/open-notes)
@@ -364,6 +362,7 @@
 
 (use-package org
   :config
+  (setq org-hide-emphasis-markers t)
   (setq org-imenu-depth 3)
   (setq org-cycle-separator-lines 0)
   (define-key org-mode-map (kbd "C-c <up>") 'org-move-subtree-up)
