@@ -135,9 +135,6 @@
         (search-forward-regexp from nil 'noerror)
       (replace-match to))))
 
-(require 'smartparens-config)
-(smartparens-global-mode t)
-(diminish 'smartparens-mode)
 (diminish 'hs-minor-mode)
 (add-hook 'emacs-lisp-mode-hook (lambda() (setq mode-name "el")))
 
@@ -275,7 +272,7 @@
     (fill-paragraph nil)))
 
 
-(fset 'yes-or-no-p 'y-or-n-p)
+(setopt use-short-answers t)
 (setq-default transient-mark-mode t)
 (setq-default global-font-lock-mode t)
 (setq sentence-end-double-space nil)
@@ -285,7 +282,6 @@
 (setq font-lock-maximum-decoration t)
 (show-paren-mode 1)
 (setq show-paren-delay 0)
-(setq calendar-week-start-day 1)
 
 (column-number-mode 1)
 (setq make-backup-files nil)
@@ -344,13 +340,9 @@
 ;;;; Lisp Setup
 (require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'python-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'scheme-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'lisp-mode-hook 'hs-minor-mode)
 
 (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
-(add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 (add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
 (setq edebug-trace nil)
@@ -402,7 +394,7 @@
   (let* ((itasca-pkg-dir (jkf/get-package-dir 'itasca))
          (itasca-snippets (concat itasca-pkg-dir "snippets"))
          (itasca-ac (concat itasca-pkg-dir "ac-dict")))
-    (add-to-list 'yas/snippet-dirs itasca-snippets)
+    (add-to-list 'yas-snippet-dirs itasca-snippets)
     (add-to-list 'ac-dictionary-directories itasca-ac))
 
   (add-to-list 'ac-modes 'itasca-general-mode)
@@ -419,11 +411,10 @@
     (progn
       (setq jkf/src-dir "~/src/")
       (setq jkf/dropbox-dir "~/Dropbox")
-      (setq x-select-enable-clipboard t)
+      (setq select-enable-clipboard t)
       (setq common-lisp-hyperspec-root "/usr/share/doc/hyperspec/")
-      (setq jkf/dropbox-dir "~/Dropbox")
       (global-unset-key (kbd "<menu>"))
-      (add-to-list 'yas/snippet-dirs "~/src/dotfiles/snippets")
+      (add-to-list 'yas-snippet-dirs "~/src/dotfiles/snippets")
       (setq eshell-rc-script "~/src/dotfiles/eshellrc")))
 
 ;;;; OS X specific setup
@@ -434,22 +425,17 @@
       (set-face-attribute 'default nil :family "Monaco"
                           :height 145 :weight 'normal)
       (setq eshell-rc-script "~/src/dotfiles/eshellrc_osx")
-      (setq x-select-enable-clipboard t)
+      (setq select-enable-clipboard t)
       (add-to-list 'exec-path "/opt/local/bin/")))
 
 
 (require 'json)
 (defun jkf/windows-get-dropbox-folder ()
-  (if (file-exists-p
-       (concat (getenv "LOCALAPPDATA") "/Dropbox/info.json"))
-      (let* ((dropbox-file
-         (if (file-exists-p
-              (concat (getenv "LOCALAPPDATA") "/Dropbox/info.json"))
-             (concat (getenv "LOCALAPPDATA") "/Dropbox/info.json")
-           (concat (getenv "APPDATA") "/Dropbox/info.json")))
-        (data (json-read-file dropbox-file)))
-        (cdr (assoc 'path (cdr (assoc 'personal data)))))
-    "" ))
+  (let ((dropbox-file (concat (getenv "LOCALAPPDATA") "/Dropbox/info.json")))
+    (if (file-exists-p dropbox-file)
+        (let ((data (json-read-file dropbox-file)))
+          (cdr (assoc 'path (cdr (assoc 'personal data)))))
+      "")))
 
 ;;;; windows specific setup
 (if  (or (eq system-type 'ms-dos) (eq system-type 'windows-nt))
@@ -458,22 +444,20 @@
       (setq jkf/src-dir "c:/src/")
       (setq jkf/dropbox-dir (jkf/windows-get-dropbox-folder))
                                         ; to get grep working?
-      (defadvice shell-quote-argument
-        (after windows-nt-special-quote (argument) activate)
-        "Add special quotes to ARGUMENT in case the system type is 'windows-nt."
-        (when
-            (and (eq system-type 'windows-nt) (w32-shell-dos-semantics))
-          (if (string-match "[\\.~]" ad-return-value)
-              (setq ad-return-value
-                    (replace-regexp-in-string
-                     "\\([\\.~]\\)"
-                     "\\\\\\1"
-                     ad-return-value)))))
+      (advice-add 'shell-quote-argument :filter-return
+        (lambda (result)
+          "Add special quotes to RESULT when running on windows-nt."
+          (when (and (eq system-type 'windows-nt) (w32-shell-dos-semantics))
+            (when (string-match "[\\.~]" result)
+              (setq result (replace-regexp-in-string
+                            "\\([\\.~]\\)"
+                            "\\\\\\1"
+                            result))))
+          result))
 
       (add-to-list 'exec-path "C:/Program Files (x86)/GnuWin32/bin/")
       (add-to-list 'exec-path "c:/Program Files/Git/bin/")
       (add-to-list 'exec-path "c:/Program Files (x86)/Git/bin/")
-      (add-to-list 'exec-path "C:/Program Files (x86)/ImageMagick-6.8.5-Q16/")
       (add-to-list 'exec-path "C:/Program Files (x86)/ImageMagick-6.8.5-Q16/")
       (add-to-list 'exec-path "C:/Program Files (x86)/MiKTeX 2.9/miktex/bin/")
 
@@ -484,7 +468,7 @@
       (jkf/add-to-path "C:/Program Files (x86)/GnuWin32/bin/")
       (jkf/add-to-path "C:/Program Files (x86)/MiKTeX 2.9/miktex/bin/")
 
-      (add-to-list 'yas/snippet-dirs "c:/src/dotfiles/snippets")
+      (add-to-list 'yas-snippet-dirs "c:/src/dotfiles/snippets")
       (add-to-list 'ac-dictionary-directories "c:/src/dotfiles/ac-dict")
       (setq eshell-rc-script "c:/src/dotfiles/eshellrc")
 
@@ -495,7 +479,7 @@
        "-outline-Consolas-normal-r-normal-normal-14-97-96-96-c-*-iso8859-1" t nil)
       (set-face-attribute 'default nil :height 140)))
 
-(add-to-list 'yas/snippet-dirs (concat jkf/src-dir "dotfiles/snippets"))
+(add-to-list 'yas-snippet-dirs (concat jkf/src-dir "dotfiles/snippets"))
 (set-register ?e `(file . ,(concat jkf/src-dir "dotfiles/.emacs")))
 
 (setq jkf/org-note-file (concat jkf/dropbox-dir "/org/notes.txt"))
@@ -715,8 +699,8 @@ Useful when editing a datafile in emacs and loading it a lisp."
                 (while (string-match "\\`\n+\\|^\\s-+\\|\\s-+$\\|\n+\\'" str)
                   (setq str (replace-match "" t t str)))
                 str))
-    (let ((lhs (buffer-substring (point-at-bol) (point)))
-          (rhs (buffer-substring (1+ (point)) (point-at-eol))))
+    (let ((lhs (buffer-substring (line-beginning-position) (point)))
+          (rhs (buffer-substring (1+ (point)) (line-end-position))))
       (end-of-line)
       (newline-and-indent)
       (insert (format "%s = %s" (chomp rhs) (chomp lhs))))))
@@ -724,12 +708,12 @@ Useful when editing a datafile in emacs and loading it a lisp."
 (defun jkf/calc-eval-and-insert (&optional start end)
   (interactive "r")
   (let ((result (calc-eval (buffer-substring-no-properties start end))))
-    (goto-char (point-at-eol))
+    (goto-char (line-end-position))
     (insert " = " result)))
 
 (defun jkf/calc-eval-line-and-insert ()
   (interactive)
-  (jkf/calc-eval-and-insert (point-at-bol) (point-at-eol)))
+  (jkf/calc-eval-and-insert (line-beginning-position) (line-end-position)))
 
 (global-set-key (kbd "C-}") 'sp-forward-slurp-sexp)
 (global-set-key (kbd "C-{") 'sp-backward-slurp-sexp)
@@ -773,10 +757,9 @@ Useful when editing a datafile in emacs and loading it a lisp."
   (if (looking-at " ") (delete-char 1)))
 (global-set-key (kbd "M-(") 'jkf/wrap-sexp)
 
-(defadvice sp-forward-slurp-sexp (after jkf/slurp-remove-whitespace)
-  "Removes the whitespace inserted after a sp-forward-slurp-sexp"
-  (if (looking-at " ") (delete-char 1)))
-(ad-activate 'sp-forward-slurp-sexp)
+(advice-add 'sp-forward-slurp-sexp :after
+  (lambda (&rest _)
+    (when (looking-at " ") (delete-char 1))))
 
 (defun jkf/insert-basename ()
   "insert the string of the buffername without extension"
@@ -791,8 +774,8 @@ incriment it and write on a new line below. Leave the origional inplace"
   (interactive)
   (save-match-data
     (let* ((current-line  (buffer-substring
-                           (point-at-bol)
-                           (point-at-eol)))
+                           (line-beginning-position)
+                           (line-end-position)))
            (tmp (string-match "\\([0-9]+\\)"current-line))
            (old-number (match-string 1 current-line))
            (new-number (number-to-string (1+ (string-to-number old-number))))
@@ -979,14 +962,14 @@ incriment it and write on a new line below. Leave the origional inplace"
                   (while (string-match "\\`\n+\\|^\\s-+\\|\\s-+$\\|\n+\\'" str)
                     (setq str (replace-match "" t t str)))
                   str))
-      (let* ((line (buffer-substring (point-at-bol) (point-at-eol)))
+      (let* ((line (buffer-substring (line-beginning-position) (line-end-position)))
                 ;;; find number of leading whitespace chars
              (nindent (cl-loop for c in (string-to-list line)
                            sum (if (char-equal c ?\ ) 1 0) into count do
                            (when (not (char-equal c ?\ )) (cl-return count))))
              (lhs-rhs (split-string line "=" t))
-             (lhs (split-string (first lhs-rhs) "," t))
-             (rhs (split-string (second lhs-rhs) "," t)))
+             (lhs (split-string (cl-first lhs-rhs) "," t))
+             (rhs (split-string (cl-second lhs-rhs) "," t)))
         (move-beginning-of-line nil)
         (kill-line)
         (cl-loop for l in lhs for r in rhs do
@@ -1122,7 +1105,7 @@ incriment it and write on a new line below. Leave the origional inplace"
        (while (< (point) end) (if (forward-word 1) (setq n (1+ n)))))
      (message "%3d %3d %3d" (count-lines start end) n (- end start))))
 
-(defun jkf/mean (data) (/ (reduce '+ data) (float (length data))))
+(defun jkf/mean (data) (/ (cl-reduce '+ data) (float (length data))))
 
 (defun jkf/percent-change (a b) (* 100 (/ (abs (- a b)) (max (abs a) (abs b))  )))
 
