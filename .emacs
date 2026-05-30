@@ -1292,10 +1292,10 @@ incriment it and write on a new line below. Leave the origional inplace"
 (use-package eat :ensure t)
 (use-package inheritenv :ensure t)
 
-
-(use-package claude-code
-  :demand t
-  :ensure t
-  :config
-  (setq claude-code-terminal-backend 'vterm)
-  (claude-code-mode))
+(if (not jkf/windows-p)
+    (use-package claude-code
+      :demand t
+      :ensure t
+      :config
+      (setq claude-code-terminal-backend 'vterm)
+      (claude-code-mode)))
