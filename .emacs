@@ -67,7 +67,7 @@
                  nil
                  (window-parameters (mode-line-format . none)))))
 (use-package flyspell-correct)
-(use-package flyspell-correct-popop)
+(use-package flyspell-correct-popup)
 
 (defvar dotfile-dir nil "location of .emacs and other stuff")
 (defvar jkf/src-dir nil "location of src folder")
@@ -118,8 +118,8 @@
 
 ; for new installs
 (defun jkf/get-package-dir (pname)
+  "Return the directory in which the package PNAME is installed."
   (interactive)
-  "return the directory in which the package pname is installed."
   (if (package-installed-p pname)
       (file-name-as-directory
        (package-desc-dir (cadr (assq pname package-alist))))
@@ -199,8 +199,9 @@
 (global-set-key (kbd "C-c M-c") 'jkf/copy-buffer-file-name-as-kill)
 
 ; emacs lisp specific
-(defun jkf/to-init () (interactive)
-       "open .emacs file and jump to the end of the file."
+(defun jkf/to-init ()
+       "Open .emacs file and jump to the end of the file."
+       (interactive)
        (find-file (concat jkf/src-dir "dotfiles/.emacs"))
        (goto-char (point-max)))
 
@@ -562,9 +563,9 @@ the resulting postscript file"
     ))
 
 
-(defun jkf/a2ps-file () (interactive)
-  "in dired call this function on a selected file to process the
-file with a2ps"
+(defun jkf/a2ps-file ()
+  "In dired call this function on a selected file to process the file with a2ps."
+  (interactive)
   (let ((template  "a2ps.exe --columns=2 -o %s.ps -M letter --portrait %s")
         (fn (dired-get-filename)))
     (shell-command (format template fn fn ))))
@@ -890,8 +891,8 @@ incriment it and write on a new line below. Leave the origional inplace"
 ; http://en.wikipedia.org/wiki/Leitner_system
 (defvar jkf/atest-data nil "store results of training")
 (defun jkf/atest ()
+  "Mental arithmetic trainer."
   (interactive)
-  "mental arithmetic trainer"
   (setq jkf/atest-data nil)
   (unwind-protect
       (progn
@@ -965,9 +966,8 @@ incriment it and write on a new line below. Leave the origional inplace"
   (tts-start)
   (process-send-string tts (concat text "\n")))
 (defun speech-read-from-minibuffer (text)
-  "speak the given string and read from the minibuffer"
+  "Speak TEXT and read a response from the minibuffer."
   (interactive)
-  "say the message and read from the minibuffer"
   (tts-say text)
   (read-from-minibuffer "<speech>"))
 
@@ -1169,7 +1169,7 @@ incriment it and write on a new line below. Leave the origional inplace"
     (goto-char (point-min))
     (jkf/replace-regexp "moon\\.css" "white.css")))
 
-(add-hook 'jkf/fix-reveal-output 'org-export-html-final-hook)
+(add-hook 'org-export-html-final-hook 'jkf/fix-reveal-output)
 
 
 (defun jkf/insert-random-string ()
@@ -1309,9 +1309,10 @@ incriment it and write on a new line below. Leave the origional inplace"
 (use-package eat :ensure t)
 (use-package inheritenv :ensure t)
 
+
 (use-package claude-code
+  :demand t
   :ensure t
   :config
   (setq claude-code-terminal-backend 'vterm)
-  (claude-code-mode)
-  :bind-keymap ("C-c c" . claude-code-command-map))
+  (claude-code-mode))
