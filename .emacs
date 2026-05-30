@@ -2,7 +2,10 @@
 (defmacro disable (&rest body))
 
 (setq package-archives '(("melpa" . "http://melpa.org/packages/")
-                         ("gnu" . "https://elpa.gnu.org/packages/")))
+                         ("gnu" . "https://elpa.gnu.org/packages/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+
+
 (disable (require 'package)
          (package-initialize)
          (unless (package-installed-p 'use-package) (package-install 'use-package)))
@@ -97,7 +100,7 @@
 
 ;;;; packages
 
-(defvar my-packages '(auto-complete macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish  multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word elisp-slime-nav smartparens flyspell-correct flyspell-correct-popup)
+(defvar my-packages '(auto-complete macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish  multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word elisp-slime-nav smartparens flyspell-correct flyspell-correct-popup inheritenv eat)
   "A list of packages to ensure are installed at launch.")
 
 (setq package-selected-packages my-packages)
@@ -1297,3 +1300,18 @@ incriment it and write on a new line below. Leave the origional inplace"
 
 (setq warning-minimum-level :emergency)
 ; (set-face-attribute 'default nil :height 180)
+(defun jkf/align-commas (beg end)
+  "Align text by commas in the selected region."
+  (interactive "r")
+  (align-regexp beg end ",\\(\\s-*\\)" 1 1 t))
+
+
+(use-package eat :ensure t)
+(use-package inheritenv :ensure t)
+
+(use-package claude-code
+  :ensure t
+  :config
+  (setq claude-code-terminal-backend 'vterm)
+  (claude-code-mode)
+  :bind-keymap ("C-c c" . claude-code-command-map))
