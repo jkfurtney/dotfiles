@@ -38,9 +38,12 @@
   :prefix "npy-view-")
 
 (defcustom npy-view-max-elements 10000
-  "Maximum number of array elements to read and consider for display.
-Large arrays are read only up to this many elements (in flat storage
-order) to keep the viewer responsive."
+  "Maximum number of elements to show for a 1-D array's flat list display.
+Has no effect on 2-D/N-D display, which is instead bounded by
+`npy-view-table-max-rows', `npy-view-table-max-cols', and
+`npy-view-max-slices' — those decode only the cells actually shown,
+by direct index, so they work correctly for Fortran-ordered arrays
+too."
   :type 'integer
   :group 'npy-view)
 
@@ -192,14 +195,6 @@ DESCR-PLIST is as returned by `npy-view--parse-descr'."
       (?S (lambda (bytes off) (npy-view--read-bytes-str bytes off itemsize)))
       (_ (lambda (_bytes _off) (format "<%d raw bytes>" itemsize))))))
 
-(defun npy-view--read-elements (bytes data-start n elem-size reader)
-  "Read N elements of ELEM-SIZE bytes each starting at DATA-START, using READER."
-  (let ((vec (make-vector n nil)) (off data-start))
-    (dotimes (i n)
-      (aset vec i (funcall reader bytes off))
-      (setq off (+ off elem-size)))
-    vec))
-
 ;;; Value / strides helpers
 
 (defun npy-view--fmt-num (x)
@@ -245,21 +240,39 @@ DESCR-PLIST is as returned by `npy-view--parse-descr'."
   (let ((len (length s)))
     (if (>= len width) s (concat (make-string (- width len) ?\s) s))))
 
+(defun npy-view--make-getter (bytes data-start elem-size reader shape fortran)
+  "Return a function (INDICES) -> decoded value at multi-dim INDICES.
+Decodes directly from BYTES at the byte offset implied by SHAPE/FORTRAN
+strides, rather than relying on any flat storage-order prefix.  This
+matters for Fortran-ordered arrays, where the elements needed for, say,
+row 0 of every displayed column are scattered far apart in the file."
+  (let ((strides (npy-view--strides shape fortran))
+        (total-bytes (length bytes)))
+    (lambda (indices)
+      (let ((fi 0) (k 0))
+        (dolist (i indices)
+          (setq fi (+ fi (* i (nth k strides))))
+          (setq k (1+ k)))
+        (let ((off (+ data-start (* fi elem-size))))
+          (if (<= (+ off elem-size) total-bytes)
+              (funcall reader bytes off)
+            "?"))))))
+
 ;;; Data rendering
 
-(defun npy-view--insert-scalar (vec)
-  (insert (format "Value: %s\n" (if (> (length vec) 0) (npy-view--val-str (aref vec 0)) "<no data>"))))
+(defun npy-view--insert-scalar (getter)
+  (insert (format "Value: %s\n" (npy-view--val-str (funcall getter '())))))
 
-(defun npy-view--insert-1d (vec)
-  (let ((start (point)) (n (length vec)))
+(defun npy-view--insert-1d (getter n)
+  (let ((start (point)))
     (insert "[")
     (dotimes (i n)
-      (insert (npy-view--val-str (aref vec i)))
+      (insert (npy-view--val-str (funcall getter (list i))))
       (when (< i (1- n)) (insert ", ")))
     (insert "]\n")
     (let ((fill-column 78)) (fill-region start (point)))))
 
-(defun npy-view--insert-2d-generic (vec shape fortran lead-idx rows cols)
+(defun npy-view--insert-2d-generic (getter lead-idx rows cols)
   "Insert a table for the trailing ROWSxCOLS matrix at LEAD-IDX prefix indices."
   (let* ((show-rows (min rows npy-view-table-max-rows))
          (show-cols (min cols npy-view-table-max-cols))
@@ -267,8 +280,7 @@ DESCR-PLIST is as returned by `npy-view--parse-descr'."
          (cellstrs (make-vector (* (max show-rows 1) (max show-cols 1)) "")))
     (dotimes (r show-rows)
       (dotimes (c show-cols)
-        (let* ((fi (npy-view--flat-index (append lead-idx (list r c)) shape fortran))
-               (s (if (< fi (length vec)) (npy-view--val-str (aref vec fi)) "?")))
+        (let ((s (npy-view--val-str (funcall getter (append lead-idx (list r c))))))
           (aset cellstrs (+ (* r show-cols) c) s)
           (when (> (length s) (aref colwidths c)) (aset colwidths c (length s))))))
     (dotimes (r show-rows)
@@ -282,8 +294,8 @@ DESCR-PLIST is as returned by `npy-view--parse-descr'."
     (when (< show-cols cols)
       (insert (format "  (showing first %d of %d columns)\n" show-cols cols)))))
 
-(defun npy-view--insert-2d (vec shape fortran)
-  (npy-view--insert-2d-generic vec shape fortran '() (nth 0 shape) (nth 1 shape)))
+(defun npy-view--insert-2d (getter shape)
+  (npy-view--insert-2d-generic getter '() (nth 0 shape) (nth 1 shape)))
 
 (defun npy-view--iterate-combos (dims prefix fn)
   "Depth-first call FN with each full index combo over DIMS, extending PREFIX."
@@ -292,7 +304,7 @@ DESCR-PLIST is as returned by `npy-view--parse-descr'."
     (dotimes (i (car dims))
       (npy-view--iterate-combos (cdr dims) (cons i prefix) fn))))
 
-(defun npy-view--insert-nd (vec shape fortran)
+(defun npy-view--insert-nd (getter shape)
   (let* ((ndim (length shape))
          (lead-shape (butlast shape 2))
          (rows (nth (- ndim 2) shape))
@@ -307,7 +319,7 @@ DESCR-PLIST is as returned by `npy-view--parse-descr'."
        lead-shape '()
        (lambda (idx)
          (insert (format "slice [%s, :, :]:\n" (mapconcat #'number-to-string idx ", ")))
-         (npy-view--insert-2d-generic vec shape fortran idx rows cols)
+         (npy-view--insert-2d-generic getter idx rows cols)
          (insert "\n")
          (setq count (1+ count))
          (when (>= count npy-view-max-slices) (throw 'npy-view-done nil)))))
@@ -327,9 +339,14 @@ DESCR-PLIST is as returned by `npy-view--parse-descr'."
          (reader (npy-view--make-reader descr-plist))
          (ndim (length shape))
          (total (if (= ndim 0) 1 (apply #'* shape)))
-         (navail (/ (max 0 (- (length bytes) data-start)) elem-size))
-         (nread (max 0 (min total navail npy-view-max-elements)))
-         (vec (npy-view--read-elements bytes data-start nread elem-size reader)))
+         (getter (npy-view--make-getter bytes data-start elem-size reader shape fortran))
+         ;; The element cap only matters for the flat 1-D list rendering.
+         ;; 2-D tables and N-D slices only ever decode the handful of cells
+         ;; they actually display (bounded by npy-view-table-max-rows/cols
+         ;; and npy-view-max-slices), computed by direct index rather than
+         ;; a flat storage-order prefix, so they are unaffected by it and
+         ;; unaffected by Fortran vs C ordering.
+         (n1d (and (= ndim 1) (max 0 (min total npy-view-max-elements)))))
     (with-temp-buffer
       (insert "NumPy array viewer\n")
       (insert (make-string 60 ?-) "\n")
@@ -339,15 +356,15 @@ DESCR-PLIST is as returned by `npy-view--parse-descr'."
       (insert (format "total elems  : %d\n" total))
       (insert (format "item size    : %d bytes\n" elem-size))
       (insert (format "data bytes   : %d\n" (* total elem-size)))
-      (when (< nread total)
-        (insert (format "NOTE: showing first %d of %d elements (see `npy-view-max-elements')\n" nread total)))
+      (when (and n1d (< n1d total))
+        (insert (format "NOTE: showing first %d of %d elements (see `npy-view-max-elements')\n" n1d total)))
       (insert (make-string 60 ?-) "\n\n")
       (cond
        ((= total 0) (insert "(empty array - no data)\n"))
-       ((= ndim 0) (npy-view--insert-scalar vec))
-       ((= ndim 1) (npy-view--insert-1d vec))
-       ((= ndim 2) (npy-view--insert-2d vec shape fortran))
-       (t (npy-view--insert-nd vec shape fortran)))
+       ((= ndim 0) (npy-view--insert-scalar getter))
+       ((= ndim 1) (npy-view--insert-1d getter n1d))
+       ((= ndim 2) (npy-view--insert-2d getter shape))
+       (t (npy-view--insert-nd getter shape)))
       (buffer-string))))
 
 (defun npy-view--render-current-buffer ()
