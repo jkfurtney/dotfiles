@@ -1299,3 +1299,5 @@ incriment it and write on a new line below. Leave the origional inplace"
       :config
       (setq claude-code-terminal-backend 'vterm)
       (claude-code-mode)))
+
+(require 'npy-view)
