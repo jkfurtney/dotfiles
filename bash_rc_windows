@@ -24,3 +24,7 @@ paste() {
 
     printf "%s\n" "$cmd" | bash
 }
+
+export PATH="/c/Users/jason.furtney/google-cloud-sdk/bin:/c/Users/jason.furtney/.pixi/bin:$PATH"
+
+export CLAUDE_CODE_DISABLE_MOUSE_CLICKS=1

@@ -100,7 +100,7 @@
 
 ;;;; packages
 
-(defvar my-packages '(auto-complete macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish  multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word elisp-slime-nav smartparens flyspell-correct flyspell-correct-popup inheritenv eat)
+(defvar my-packages '(auto-complete macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish  multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word elisp-slime-nav smartparens flyspell-correct flyspell-correct-popup inheritenv eat yaml-mode)
   "A list of packages to ensure are installed at launch.")
 
 (setq package-selected-packages my-packages)
@@ -1301,3 +1301,38 @@ incriment it and write on a new line below. Leave the origional inplace"
       (claude-code-mode)))
 
 (require 'npy-view)
+
+(use-package yaml-mode
+  :ensure t
+  :mode ("\\.yaml\\'" "\\.yml\\'"))
+
+(defun toggle-true-false ()
+  "Toggle the word at point or immediately before point between \"true\" and \"false\"."
+  (interactive)
+  (save-excursion
+    (let (bounds word)
+      ;; If point is not within a word, move back to the end of the previous word
+      (unless (thing-at-point 'word t)
+        (skip-syntax-backward " ")
+        (backward-word 1)
+        (forward-word 1))
+      (setq bounds (bounds-of-thing-at-point 'word))
+      (if bounds
+          (progn
+            (setq word (buffer-substring-no-properties (car bounds) (cdr bounds)))
+            (cond
+             ((string= word "true")
+              (goto-char (car bounds))
+              (delete-region (car bounds) (cdr bounds))
+              (insert "false"))
+             ((string= word "false")
+              (goto-char (car bounds))
+              (delete-region (car bounds) (cdr bounds))
+              (insert "true"))
+             (t
+              (message "Word at point is not \"true\" or \"false\": %s" word))))
+        (message "No word found at or before point")))))
+
+;; scratch buffer
+
+(global-set-key (kbd "C-c t") 'toggle-true-false)
