@@ -86,6 +86,12 @@
     (setq jkf/onedrive-dir "c:/Users/jason.furtney/OneDrive/")
     (setq dotfile-dir "c:/src/dotfiles/")))
 
+;; MSYS2 mingw64 gcc/pkgconf/enchant must be on PATH before
+;; `package-install-selected-packages' below builds jinx's native module.
+(when jkf/windows-p
+  (add-to-list 'exec-path "C:/msys64/mingw64/bin/")
+  (setenv "PATH" (concat (getenv "PATH") ";C:/msys64/mingw64/bin/")))
+
 (add-to-list 'load-path dotfile-dir)
 
 (require 'pair-jump-mode)
@@ -100,7 +106,7 @@
 
 ;;;; packages
 
-(defvar my-packages '(auto-complete macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish  multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word elisp-slime-nav smartparens flyspell-correct flyspell-correct-popup inheritenv eat yaml-mode)
+(defvar my-packages '(auto-complete macrostep markdown-mode magit smartparens popup dash request s yasnippet rainbow-delimiters diminish  multiple-cursors cyberpunk-theme fold-dwim cython-mode w32-browser guide-key itasca nyan-mode js2-mode jinja2-mode web-mode define-word elisp-slime-nav smartparens flyspell-correct flyspell-correct-popup inheritenv eat yaml-mode jinx)
   "A list of packages to ensure are installed at launch.")
 
 (setq package-selected-packages my-packages)
@@ -292,8 +298,8 @@
 
 
 (require 'rst)
-(add-hook 'rst-mode-hook 'flyspell-mode)
-(add-hook 'text-mode-hook 'flyspell-mode)
+(add-hook 'rst-mode-hook 'jinx-mode)
+(add-hook 'text-mode-hook 'jinx-mode)
 
 
 ;;;; C/C++ Setup
@@ -333,7 +339,7 @@
 ;;;; Python Setup
 (add-to-list 'auto-mode-alist '("\\.pyx\\'" . cython-mode))
 (add-hook 'python-mode-hook 'hs-minor-mode)
-(add-hook 'python-mode-hook 'flyspell-prog-mode)
+(add-hook 'python-mode-hook 'jinx-mode)
 (add-hook 'python-mode-hook (function (lambda ()
                                         (setq python-indent-offset 4))))
 
@@ -1058,7 +1064,7 @@ incriment it and write on a new line below. Leave the origional inplace"
 (defun jkf/active-minor-modes () (interactive)
        (--filter (and (boundp it) (symbol-value it)) minor-mode-list))
 
-(add-hook 'org-mode-hook 'flyspell-mode)
+(add-hook 'org-mode-hook 'jinx-mode)
 (setq org-startup-truncated nil)  ; linewrap for org-mode
 (setq org-log-done 'time)
 
@@ -1211,6 +1217,36 @@ incriment it and write on a new line below. Leave the origional inplace"
       ;; once Emacs is idle instead of stalling the first interactive
       ;; spell-check.
       (run-with-idle-timer 2 nil (lambda () (ignore-errors (ispell-init-process))))))
+
+;; jinx: enchant-backed spell checker, now the default (see
+;; text-mode-hook/rst-mode-hook/org-mode-hook/python-mode-hook above).
+;; It binds directly to libenchant's C API instead of piping through a
+;; hunspell subprocess, so there's no per-buffer startup stall. flyspell
+;; (configured above via ispell/hunspell) is kept installed as a
+;; fallback -- use `jkf/spell-checker-flyspell' to switch a buffer back
+;; to it if jinx ever misbehaves.
+(use-package jinx
+  :ensure t
+  :diminish jinx-mode
+  :config
+  (setq jinx-languages "en_US"))
+
+(defun jkf/spell-checker-flyspell ()
+  "Switch the current buffer from jinx to flyspell."
+  (interactive)
+  (when (bound-and-true-p jinx-mode) (jinx-mode -1))
+  (if (derived-mode-p 'prog-mode)
+      (flyspell-prog-mode)
+    (flyspell-mode 1)))
+
+(defun jkf/spell-checker-jinx ()
+  "Switch the current buffer from flyspell to jinx."
+  (interactive)
+  (when (bound-and-true-p flyspell-mode) (flyspell-mode -1))
+  (jinx-mode 1))
+
+(global-set-key (kbd "C-c s j") 'jkf/spell-checker-jinx)
+(global-set-key (kbd "C-c s f") 'jkf/spell-checker-flyspell)
 
 
 ;(setq ispell-local-dictionary-alist      '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[\']" t ("-d" "en_US") nil iso-8859-1)))
