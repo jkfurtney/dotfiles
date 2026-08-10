@@ -222,7 +222,15 @@
 (global-set-key (kbd "H-i") 'consult-line)
 (define-key isearch-mode-map (kbd "H-i") 'isearch-repeat-forward)
 
-(global-set-key (kbd "M-s") 'flyspell-correct-previous)
+(defun jkf/spell-correct-nearest ()
+  "Correct the nearest misspelled word, via jinx or flyspell,
+whichever is active in the current buffer."
+  (interactive)
+  (cond
+   ((bound-and-true-p jinx-mode) (jinx-correct))
+   ((bound-and-true-p flyspell-mode) (flyspell-correct-previous))
+   (t (user-error "No spell-checker is active in this buffer"))))
+(global-set-key (kbd "M-s") 'jkf/spell-correct-nearest)
 (global-set-key (kbd "C-s") 'save-buffer)
 (global-set-key (kbd "M-u") 'undo)
 (global-set-key (kbd "M-0") 'delete-window)
