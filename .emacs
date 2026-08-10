@@ -1205,7 +1205,12 @@ incriment it and write on a new line below. Leave the origional inplace"
       (setenv "LANG" "en_US.UTF-8")
       (setq ispell-hunspell-dict-paths-alist '(("en_US" "c:/src/dotfiles/dict-en-20260101/en_US.aff")))
       (setenv "DICPATH" "C:/src/dotfiles/dict-en-20260101")
-      (ispell-change-dictionary "english")))
+      (ispell-change-dictionary "english")
+      ;; hunspell's first startup (spawning the process + parsing the
+      ;; affix/dictionary files) is slow. Kick it off in the background
+      ;; once Emacs is idle instead of stalling the first interactive
+      ;; spell-check.
+      (run-with-idle-timer 2 nil (lambda () (ignore-errors (ispell-init-process))))))
 
 
 ;(setq ispell-local-dictionary-alist      '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[\']" t ("-d" "en_US") nil iso-8859-1)))
